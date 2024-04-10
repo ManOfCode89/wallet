@@ -29,12 +29,19 @@ export const useInitSafeCoreSDK = () => {
       .getNetwork()
       .then((network) => {
         if (network.chainId === Number(chainId)) {
-          // get implementation address
-          return web3ReadOnly.getStorageAt(address, 0)
+          return web3ReadOnly.getCode(address)
         } else {
           throw {
             skip: true,
           }
+        }
+      })
+      .then((code) => {
+        if (code !== '0x') {
+          // get implementation address
+          return web3ReadOnly.getStorageAt(address, 0)
+        } else {
+          throw new Error(`No Safe found at address ${address} on chain with ID ${chainId}.`)
         }
       })
       .then((impl) => {
