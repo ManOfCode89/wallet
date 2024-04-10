@@ -4,13 +4,16 @@ import ShareIcon from '@/public/images/common/share.svg'
 import { AppRoutes } from '@/config/routes'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
+import type { SafeTransaction } from '@safe-global/safe-core-sdk-types'
+import { useShareMagicLink } from '@/hooks/useMagicLink'
 
-const TxShareLink = ({ id }: { id: string }): ReactElement => {
+const TxShareLink = ({ safeTx }: { safeTx: SafeTransaction }): ReactElement => {
   const [isCopyEnabled, setIsCopyEnabled] = useState(true)
+  const tx = useShareMagicLink(safeTx)
 
   const router = useRouter()
   const { safe = '' } = router.query
-  const href = `${AppRoutes.transactions.tx}?safe=${safe}&id=${id}`
+  const href = `${AppRoutes.transactions.tx}?safe=${safe}&tx=${tx}`
 
   const onClick = (e: MouseEvent) => {
     if (!e.ctrlKey && !e.metaKey) {

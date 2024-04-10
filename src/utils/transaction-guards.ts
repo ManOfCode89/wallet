@@ -37,6 +37,7 @@ import {
 import { getSpendingLimitModuleAddress } from '@/services/contracts/spendingLimitContracts'
 import { sameAddress } from '@/utils/addresses'
 import type { NamedAddress } from '@/components/new-safe/create/types'
+import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
 export const isTxQueued = (value: TransactionStatus): boolean => {
   return [TransactionStatus.AWAITING_CONFIRMATIONS, TransactionStatus.AWAITING_EXECUTION].includes(value)
@@ -203,4 +204,10 @@ export const isERC20Transfer = (value: TransferInfo): value is Erc20Transfer => 
 
 export const isERC721Transfer = (value: TransferInfo): value is Erc721Transfer => {
   return value.type === TransactionTokenType.ERC721
+}
+
+export const isDetailedTransactionListItem = (
+  value: TransactionListItem | DetailedTransactionListItem,
+): value is DetailedTransactionListItem => {
+  return (value as DetailedTransactionListItem).details !== undefined
 }

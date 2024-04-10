@@ -3,8 +3,9 @@ import type { Transaction, TransactionListItem } from '@safe-global/safe-gateway
 
 import { isConflictHeaderListItem, isNoneConflictType, isTransactionListItem } from '@/utils/transaction-guards'
 import { sameAddress } from './addresses'
+import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
-type GroupedTxs = Array<TransactionListItem | Transaction[]>
+type GroupedTxs = Array<DetailedTransactionListItem | TransactionListItem | Transaction[]>
 
 /**
  * Group txs by conflict header

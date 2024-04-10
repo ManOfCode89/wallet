@@ -154,7 +154,7 @@ export const extractTxDetails = async (
   // TODO(devanon): compare with https://github.com/safe-global/safe-client-gateway/blob/5293d98286bee62f1a7d13c3a405ed8e73bcf770/src/routes/transactions/mappers/multisig-transactions/multisig-transaction-execution-details.mapper.ts#L26
   const detailedExecutionInfo: MultisigExecutionDetails = {
     type: DetailedExecutionInfoType.MULTISIG,
-    submittedAt: 200, // TOOD(devanon): implement this
+    submittedAt: 1000000, // TOOD(devanon): implement this
     nonce: safeTx.data.nonce,
     safeTxGas: safeTx.data.safeTxGas?.toString() ?? '0',
     baseGas: safeTx.data.baseGas?.toString() ?? '0',
@@ -182,7 +182,7 @@ export const extractTxDetails = async (
     txId: proposedTxId,
     txStatus: transactionStatus ?? TransactionStatus.AWAITING_CONFIRMATIONS,
     txInfo,
-    executedAt: undefined, // TOOD(devanon): implement this
+    executedAt: undefined,
     txData,
     detailedExecutionInfo,
   }

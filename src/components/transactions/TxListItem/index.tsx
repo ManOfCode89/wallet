@@ -1,12 +1,18 @@
 import { type ReactElement } from 'react'
-import type { TransactionListItem } from '@safe-global/safe-gateway-typescript-sdk'
-import { isDateLabel, isLabelListItem, isTransactionListItem } from '@/utils/transaction-guards'
+import {
+  isDateLabel,
+  isDetailedTransactionListItem,
+  isLabelListItem,
+  isTransactionListItem,
+} from '@/utils/transaction-guards'
 import GroupLabel from '@/components/transactions/GroupLabel'
 import TxDateLabel from '@/components/transactions/TxDateLabel'
 import ExpandableTransactionItem from './ExpandableTransactionItem'
+import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
+import type { TransactionListItem } from '@safe-global/safe-gateway-typescript-sdk'
 
 type TxListItemProps = {
-  item: TransactionListItem
+  item: DetailedTransactionListItem | TransactionListItem
 }
 
 const TxListItem = ({ item }: TxListItemProps): ReactElement | null => {
@@ -14,6 +20,9 @@ const TxListItem = ({ item }: TxListItemProps): ReactElement | null => {
     return <GroupLabel item={item} />
   }
   if (isTransactionListItem(item)) {
+    if (isDetailedTransactionListItem(item)) {
+      return <ExpandableTransactionItem item={item} txDetails={item.details} />
+    }
     return <ExpandableTransactionItem item={item} />
   }
   if (isDateLabel(item)) {

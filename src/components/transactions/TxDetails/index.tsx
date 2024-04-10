@@ -30,6 +30,7 @@ import Multisend from '@/components/transactions/TxDetails/TxData/DecodedData/Mu
 import useSafeInfo from '@/hooks/useSafeInfo'
 import useIsPending from '@/hooks/useIsPending'
 import { isTrustedTx } from '@/utils/transactions'
+import { useSafeTransactionFromDetails } from '@/hooks/useConvertTx'
 
 export const NOT_AVAILABLE = 'n/a'
 
@@ -51,13 +52,17 @@ const TxDetailsBlock = ({ txSummary, txDetails }: TxDetailsProps): ReactElement 
 
   const isTrustedTransfer = isTrustedTx(txSummary)
 
+  const safeTx = useSafeTransactionFromDetails(txDetails)
+
   return (
     <>
       {/* /Details */}
       <div className={`${css.details} ${isUnsigned ? css.noSigners : ''}`}>
-        <div className={css.shareLink}>
-          <TxShareLink id={txSummary.id} />
-        </div>
+        {safeTx && (
+          <div className={css.shareLink}>
+            <TxShareLink safeTx={safeTx} />
+          </div>
+        )}
 
         <div className={css.txData}>
           <ErrorBoundary fallback={<div>Error parsing data</div>}>

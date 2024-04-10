@@ -3,7 +3,6 @@ import { Box, CircularProgress, Typography } from '@mui/material'
 import type { ReactElement } from 'react'
 import { type Transaction, TransactionStatus } from '@safe-global/safe-gateway-typescript-sdk'
 
-import DateTime from '@/components/common/DateTime'
 import TxInfo from '@/components/transactions/TxInfo'
 import SignTxButton from '@/components/transactions/SignTxButton'
 import ExecuteTxButton from '@/components/transactions/ExecuteTxButton'
@@ -92,10 +91,6 @@ const TxSummary = ({ item, isGrouped }: TxSummaryProps): ReactElement => {
         className={classNames(css.columnWrap, { [css.untrusted]: !isTrusted })}
       >
         <TxInfo info={tx.txInfo} />
-      </Box>
-
-      <Box data-testid="tx-date" gridArea="date" className={classNames({ [css.untrusted]: !isTrusted })}>
-        <DateTime value={tx.timestamp} />
       </Box>
 
       {displayConfirmations && (

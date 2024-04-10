@@ -7,7 +7,7 @@ import { TxEvent, txSubscribe } from '@/services/tx/txEvents'
 import { AppRoutes } from '@/config/routes'
 import { useCurrentChain } from './useChains'
 import useTxQueue from './useTxQueue'
-import { isSignableBy, isTransactionListItem } from '@/utils/transaction-guards'
+import { isSignableBy } from '@/utils/transaction-guards'
 import { type ChainInfo, TransactionStatus } from '@safe-global/safe-gateway-typescript-sdk'
 import { selectPendingTxs } from '@/store/pendingTxsSlice'
 import useIsSafeOwner from '@/hooks/useIsSafeOwner'
@@ -113,7 +113,7 @@ const useTxNotifications = (): void => {
    * If there's at least one transaction awaiting confirmations, show a notification for it
    */
 
-  const { page } = useTxQueue()
+  const { data } = useTxQueue()
   const isOwner = useIsSafeOwner()
   const pendingTxs = useAppSelector(selectPendingTxs)
   const notifications = useAppSelector(selectNotifications)
@@ -121,17 +121,17 @@ const useTxNotifications = (): void => {
   const notifiedAwaitingTxIds = useRef<Array<string>>([])
 
   const txsAwaitingConfirmation = useMemo(() => {
-    if (!page?.results) {
+    if (!data) {
       return []
     }
 
-    return page.results.filter(isTransactionListItem).filter(({ transaction }) => {
+    return data.filter(({ transaction }) => {
       const isAwaitingConfirmations = transaction.txStatus === TransactionStatus.AWAITING_CONFIRMATIONS
       const isPending = !!pendingTxs[transaction.id]
       const canSign = isSignableBy(transaction, wallet?.address || '')
       return isAwaitingConfirmations && !isPending && canSign
     })
-  }, [page?.results, pendingTxs, wallet?.address])
+  }, [data, pendingTxs, wallet?.address])
 
   useEffect(() => {
     if (!isOwner || txsAwaitingConfirmation.length === 0) {

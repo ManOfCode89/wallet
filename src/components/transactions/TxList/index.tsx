@@ -1,14 +1,14 @@
 import type { ReactElement, ReactNode } from 'react'
 import { useMemo } from 'react'
 import { Box } from '@mui/material'
-import type { TransactionListPage } from '@safe-global/safe-gateway-typescript-sdk'
 import TxListItem from '../TxListItem'
 import GroupedTxListItems from '@/components/transactions/GroupedTxListItems'
 import { groupConflictingTxs } from '@/utils/tx-list'
 import css from './styles.module.css'
+import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
 type TxListProps = {
-  items: TransactionListPage['results']
+  items: Array<DetailedTransactionListItem>
 }
 
 export const TxListGrid = ({ children }: { children: ReactNode }): ReactElement => {

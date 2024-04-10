@@ -1,54 +1,66 @@
-import { useMemo } from 'react'
-import { getTransactionHistory, type TransactionListPage } from '@safe-global/safe-gateway-typescript-sdk'
+import { ConflictType, TransactionListItemType } from '@safe-global/safe-gateway-typescript-sdk'
 import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
-import { selectTxHistory } from '@/store/txHistorySlice'
 import useSafeInfo from './useSafeInfo'
-import { fetchFilteredTxHistory, useTxFilter } from '@/utils/tx-history-filter'
+import { useTxFilter } from '@/utils/tx-history-filter'
+import { selectAddedTxs } from '@/store/addedTxsSlice'
+import { isEqual } from 'lodash'
+import { extractTxDetails } from '@/services/tx/extractTxInfo'
+import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
-const useTxHistory = (
-  pageUrl?: string,
-): {
-  page?: TransactionListPage
+const useTxHistory = (): {
+  data?: Array<DetailedTransactionListItem>
   error?: string
   loading: boolean
 } => {
-  // The latest page of the history is always in the store
-  const historyState = useAppSelector(selectTxHistory)
   const [filter] = useTxFilter()
 
-  const {
-    safe: { chainId },
-    safeAddress,
-  } = useSafeInfo()
+  const { safe, safeAddress } = useSafeInfo()
+  const { chainId } = safe
+
+  const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
 
   // If filter exists or pageUrl is passed, load a new history page from the API
-  const [page, error, loading] = useAsync<TransactionListPage>(
-    () => {
-      if (!(filter || pageUrl)) return
+  const [data, error, loading] = useAsync<Array<DetailedTransactionListItem>>(
+    async () => {
+      if (!transactions) {
+        return []
+      }
 
-      return filter
-        ? fetchFilteredTxHistory(chainId, safeAddress, filter, pageUrl)
-        : getTransactionHistory(chainId, safeAddress, pageUrl)
+      const results = await Promise.all(
+        Object.values(transactions).map(async (tx) => {
+          const txDetails = await extractTxDetails(safeAddress, tx, safe)
+          // TODO(devanon): at this point we have the full txDetails, but we only take some of them
+          // they are needed again inside TxDetails component
+          // we should pass them all the way down
+
+          return {
+            transaction: {
+              id: txDetails.txId,
+              timestamp: txDetails.executedAt ?? 0,
+              txStatus: txDetails.txStatus,
+              txInfo: txDetails.txInfo,
+              executionInfo: txDetails.detailedExecutionInfo,
+              safeAppInfo: txDetails.safeAppInfo,
+            },
+            details: txDetails,
+            conflictType: ConflictType.NONE, // TODO(devanon): Implement conflict type
+            type: TransactionListItemType.TRANSACTION,
+          } as DetailedTransactionListItem
+        }),
+      )
+
+      return results
     },
-    [chainId, safeAddress, pageUrl, filter],
+    [safe, safeAddress, transactions],
     false,
   )
 
-  const isFetched = filter || pageUrl
-  const dataPage = isFetched ? page : historyState.data
-  const errorMessage = isFetched ? error?.message : historyState.error
-  const isLoading = isFetched ? loading : historyState.loading
-
-  // Return the new page or the stored page
-  return useMemo(
-    () => ({
-      page: dataPage,
-      error: errorMessage,
-      loading: isLoading,
-    }),
-    [dataPage, errorMessage, isLoading],
-  )
+  return {
+    data,
+    error: error?.message,
+    loading: loading,
+  }
 }
 
 export default useTxHistory

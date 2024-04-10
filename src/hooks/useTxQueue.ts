@@ -1,71 +1,29 @@
-import {
-  ConflictType,
-  getTransactionQueue,
-  TransactionListItem,
-  TransactionListItemType,
-  type TransactionListPage,
-} from '@safe-global/safe-gateway-typescript-sdk'
+import { ConflictType, TransactionListItemType } from '@safe-global/safe-gateway-typescript-sdk'
 import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import { selectTxQueue, selectQueuedTransactionsByNonce } from '@/store/txQueueSlice'
 import useSafeInfo from './useSafeInfo'
-import { isTransactionListItem } from '@/utils/transaction-guards'
+import { isMultisigDetailedExecutionInfo, isTransactionListItem } from '@/utils/transaction-guards'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
-import { useEffect, useState } from 'react'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
+import { isEqual } from 'lodash'
+import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
-const useTxQueue = (
-  pageUrl?: string,
-): {
-  page?: TransactionListPage
+const useTxQueue = (): {
+  data?: Array<DetailedTransactionListItem>
   error?: string
   loading: boolean
 } => {
-  const { safe, safeAddress, safeLoaded } = useSafeInfo()
+  const { safe, safeAddress } = useSafeInfo()
   const { chainId } = safe
 
-  const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress))
-  // const [page, setPage] = useState<TransactionListPage | undefined>(undefined)
+  const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
 
-  // useEffect(() => {
-  //   if (!transactions) return
-  //   const transactionListPage = {
-  //     results: Object.values(transactions).map(
-  //       (tx) =>
-  //       extractTxDetails(safeAddress, tx, safe)
-  //         ({
-  //           transaction: {
-  //             id: tx;
-  //             timestamp: number;
-  //             txStatus: TransactionStatus;
-  //             txInfo: TransactionInfo;
-  //             executionInfo?: ExecutionInfo;
-  //             safeAppInfo?: SafeAppInfo;
-  //           },
-  //           conflictType: ConflictType.NONE, // TODO(devanon): Implement conflict type
-  //           type: TransactionListItemType.TRANSACTION,
-  //         } as TransactionListItem)
-  //     ),
-
-  //     next: undefined,
-  //     previous: undefined,
-  //   }
-  //   // for (const transaction of Object.values(transactions)) {
-  //   //   console.log(transaction)
-  //   // }
-  //   setPage(transactionListPage)
-  // }, [transactions])
-
-  const [page, error, loading] = useAsync<TransactionListPage>(
+  const [data, error, loading] = useAsync<Array<DetailedTransactionListItem>>(
     async () => {
       if (!transactions) {
-        return {
-          results: [],
-          next: undefined,
-          previous: undefined,
-        }
+        return []
       }
-      console.log({ transactions })
 
       const results = await Promise.all(
         Object.values(transactions).map(async (tx) => {
@@ -74,46 +32,34 @@ const useTxQueue = (
           // they are needed again inside TxDetails component
           // we should pass them all the way down
 
+          const timestamp = isMultisigDetailedExecutionInfo(txDetails?.detailedExecutionInfo)
+            ? txDetails?.detailedExecutionInfo.submittedAt
+            : 0
+
           return {
             transaction: {
               id: txDetails.txId,
-              timestamp: txDetails.executedAt ?? 0,
+              timestamp,
               txStatus: txDetails.txStatus,
               txInfo: txDetails.txInfo,
               executionInfo: txDetails.detailedExecutionInfo,
               safeAppInfo: txDetails.safeAppInfo,
             },
+            details: txDetails,
             conflictType: ConflictType.NONE, // TODO(devanon): Implement conflict type
             type: TransactionListItemType.TRANSACTION,
-          } as TransactionListItem
+          } as DetailedTransactionListItem
         }),
       )
 
-      return {
-        results,
-        next: undefined,
-        previous: undefined,
-      }
+      return results
     },
     [safe, safeAddress, transactions],
     false,
   )
 
-  // If pageUrl is passed, load a new queue page from the API
-  // const [page, error, loading] = useAsync<TransactionListPage>(() => {
-  //   if (!pageUrl || !safeLoaded) return
-  //   return getTransactionQueue(chainId, safeAddress, pageUrl)
-  // }, [chainId, safeAddress, safeLoaded, pageUrl])
-
-  // The latest page of the queue is always in the store
-  const queueState = useAppSelector(selectTxQueue)
-
-  console.log({ pageUrl })
-  console.log({ page })
-
-  // Return the new page or the stored page
   return {
-    page,
+    data,
     error: error?.message,
     loading: loading,
   }

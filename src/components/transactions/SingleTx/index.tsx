@@ -14,6 +14,7 @@ import { isMultisigDetailedExecutionInfo } from '@/utils/transaction-guards'
 import { useAppSelector } from '@/store'
 import { selectAddedTx } from '@/store/addedTxsSlice'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
+import { useTransactionMagicLink } from '@/hooks/useMagicLink'
 
 const SingleTxGrid = ({ txDetails }: { txDetails: TransactionDetails }): ReactElement => {
   const tx: Transaction = makeTxFromDetails(txDetails)
@@ -39,6 +40,8 @@ const SingleTx = () => {
   const { id } = router.query
   const transactionId = Array.isArray(id) ? id[0] : id
   const transactionKey = transactionId ? transactionId.split('_')[2] : undefined
+  const { txKey } = useTransactionMagicLink()
+
   const { safe, safeAddress } = useSafeInfo()
   const transaction = useAppSelector((state) => selectAddedTx(state, safe.chainId, safeAddress, transactionKey ?? ''))
 
@@ -49,6 +52,14 @@ const SingleTx = () => {
     if (!safeAddress || !transaction || !transactionId) return
     extractTxDetails(safeAddress, transaction, safe, transactionId).then(setTxDetails).catch(setTxDetailsError)
   }, [safeAddress, transaction, safe, transactionId])
+
+  useEffect(() => {
+    if (txKey && safeAddress && router) {
+      router.query.id = `multisig_${safeAddress}_${txKey}`
+      delete router.query.tx
+      router.push(router)
+    }
+  }, [txKey, safeAddress, router])
 
   if (txDetailsError) {
     return <ErrorMessage error={txDetailsError}>Failed to load transaction</ErrorMessage>

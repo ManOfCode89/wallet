@@ -103,3 +103,7 @@ This app is built using the following frameworks:
 - MUI
 - ethers.js
 - web3-onboard
+
+### Notes
+
+- Need to use the [`legacy-safe-core-sdk`](https://github.com/safe-global/safe-core-sdk/tree/legacy-safe-core-sdk) branch, as that's what the web app depended on at time of fork.

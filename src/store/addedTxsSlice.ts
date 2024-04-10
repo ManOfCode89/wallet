@@ -7,6 +7,7 @@ import EthSignSignature from '@safe-global/safe-core-sdk/dist/src/utils/signatur
 export type StoredSafeTransaction = {
   data: SafeTransactionData
   signatures: Record<string, string>
+  timestamp: number
 }
 
 export type AddedTxs = {
@@ -49,9 +50,12 @@ export const addedTxsSlice = createSlice({
         signatures[signer] = signature.data
       }
 
+      const timestamp = state[chainId][safeAddress][txKey]?.timestamp ?? Date.now()
+
       const storedTx: StoredSafeTransaction = {
         data,
         signatures,
+        timestamp,
       }
 
       state[chainId][safeAddress][txKey] = storedTx
@@ -118,5 +122,19 @@ export const selectAddedTx = createSelector(
     })
 
     return safeTx
+  },
+)
+
+export const selectTimestampForAddedTx = createSelector(
+  [
+    selectAllAddedTxs,
+    (_: RootState, chainId: string, safeAddress: string, txKey: string) => [chainId, safeAddress, txKey],
+  ],
+  (allAddedTxs, [chainId, safeAddress, txKey]): number | undefined => {
+    const loaded = allAddedTxs?.[chainId]?.[safeAddress]?.[txKey]
+    if (!loaded) {
+      return
+    }
+    return loaded.timestamp
   },
 )

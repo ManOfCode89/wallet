@@ -21,7 +21,6 @@ import EthHashInfo from '@/components/common/EthHashInfo'
 import { sameAddress } from '@/utils/addresses'
 import PendingActionButtons from '@/components/sidebar/PendingActions'
 import usePendingActions from '@/hooks/usePendingActions'
-import useOnceVisible from '@/hooks/useOnceVisible'
 
 const SafeListItem = ({
   address,
@@ -51,8 +50,7 @@ const SafeListItem = ({
   const isCurrentSafe = chainId === currChainId && sameAddress(safeAddress, address)
   const name = allAddressBooks[chainId]?.[address]
   const shortName = chain?.shortName || ''
-  const isVisible = useOnceVisible(safeRef)
-  const { totalQueued, totalToSign } = usePendingActions(chainId, isAdded && isVisible ? address : undefined)
+  const { totalQueued, totalToSign } = usePendingActions()
 
   // Scroll to the current Safe
   useEffect(() => {

@@ -1,13 +1,18 @@
 import { useParams } from 'next/navigation'
 import { parse, type ParsedUrlQuery } from 'querystring'
 import { prefixedAddressRe } from '@/utils/url'
-import { decodeTransactionMagicLink, transactionKey } from '@/services/tx/txMagicLink'
+import { decodeTransactionMagicLink, encodeTransactionMagicLink, transactionKey } from '@/services/tx/txMagicLink'
 import { useEffect, useState, useCallback } from 'react'
 import { addOrUpdateTx, selectAllAddedTxs } from '@/store/addedTxsSlice'
 import { useAppDispatch, useAppSelector } from '@/store'
 import useChainId from './useChainId'
 import useSafeAddress from './useSafeAddress'
 import { type SafeTransaction } from '@safe-global/safe-core-sdk-types'
+import { asError } from '@/services/exceptions/utils'
+import { showNotification } from '@/store/notificationsSlice'
+import { trackError } from '@/services/exceptions'
+import ErrorCodes from '@/services/exceptions/ErrorCodes'
+import { useSafeSDK } from './coreSDK/safeCoreSDK'
 
 // Use the location object directly because Next.js's router.query is available only on mount
 const getLocationQuery = (): ParsedUrlQuery => {
@@ -30,6 +35,8 @@ const getLocationQuery = (): ParsedUrlQuery => {
 
 export const useTransactionMagicLink = (): { tx: SafeTransaction | undefined; txKey: string | undefined } => {
   const queryParams = useParams()
+  const dispatch = useAppDispatch()
+  const safeCoreSDK = useSafeSDK()
 
   // Dynamic query params
   const query = queryParams && queryParams.tx ? queryParams : getLocationQuery()
@@ -45,12 +52,37 @@ export const useTransactionMagicLink = (): { tx: SafeTransaction | undefined; tx
   }, [encodedTx])
 
   useEffect(() => {
-    if (tx) {
-      transactionKey(tx).then(setTxKey).catch(console.error)
+    if (tx && safeCoreSDK) {
+      transactionKey(tx)
+        .then(setTxKey)
+        .catch((_e) => {
+          setTxKey(undefined)
+
+          const e = asError(_e)
+          dispatch(
+            showNotification({
+              message: 'Could not load magic link, please check the URL and try again.',
+              groupKey: 'magic-link-error',
+              variant: 'error',
+              detailedMessage: e.message,
+            }),
+          )
+          trackError(ErrorCodes._105, e.message)
+        })
     }
-  }, [tx])
+  }, [tx, safeCoreSDK, dispatch])
 
   return { tx, txKey }
+}
+
+export const useShareMagicLink = (tx: SafeTransaction): string | undefined => {
+  const [encodedTx, setEncodedTx] = useState<string | undefined>()
+
+  useEffect(() => {
+    setEncodedTx(encodeTransactionMagicLink(tx))
+  }, [tx])
+
+  return encodedTx
 }
 
 export const useMagicLink = () => {
@@ -77,15 +109,17 @@ export const useAddOrUpdateTx = () => {
   const dispatch = useAppDispatch()
   const chainId = useChainId()
   const safeAddress = useSafeAddress()
+  const safeCoreSDK = useSafeSDK()
 
   const addOrUpdate = useCallback(
     async (tx: SafeTransaction) => {
+      if (!safeCoreSDK) return
       const txKey = await transactionKey(tx)
       dispatch(addOrUpdateTx({ chainId, safeAddress, tx, txKey }))
 
       return txKey
     },
-    [dispatch, chainId, safeAddress],
+    [dispatch, chainId, safeAddress, safeCoreSDK],
   )
 
   return addOrUpdate
