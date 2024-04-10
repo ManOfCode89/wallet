@@ -4,6 +4,7 @@ import type { Store } from 'redux'
 
 import type { RootState } from '@/store'
 import { getPersistedState } from '@/store'
+import { LS_NAMESPACE } from '@/config/constants'
 
 export const HYDRATE_ACTION = '@@HYDRATE'
 
@@ -24,6 +25,21 @@ export const createStoreHydrator = (makeStore: (initialState?: Partial<RootState
         type: HYDRATE_ACTION,
         payload: getPersistedState(),
       })
+
+      window.addEventListener('storage', this.handleStorageChange)
+    }
+
+    componentWillUnmount() {
+      window.removeEventListener('storage', this.handleStorageChange)
+    }
+
+    handleStorageChange = (event: StorageEvent) => {
+      if (event.key?.startsWith(LS_NAMESPACE) && event.newValue !== null) {
+        this.store.dispatch({
+          type: HYDRATE_ACTION,
+          payload: getPersistedState(),
+        })
+      }
     }
 
     render() {

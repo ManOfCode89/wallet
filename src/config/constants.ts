@@ -10,7 +10,7 @@ export const GATEWAY_URL_STAGING = process.env.NEXT_PUBLIC_GATEWAY_URL_STAGING |
 // Magic numbers
 export const POLLING_INTERVAL = 15_000
 export const BASE_TX_GAS = 21_000
-export const LS_NAMESPACE = 'SAFE_v2__'
+export const LS_NAMESPACE = 'ETERNALSAFE__'
 export const LATEST_SAFE_VERSION = process.env.NEXT_PUBLIC_SAFE_VERSION || '1.3.0'
 
 // Access keys
