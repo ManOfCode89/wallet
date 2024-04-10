@@ -48,6 +48,8 @@ export const useTransactionMagicLink = (): { tx: SafeTransaction | undefined; tx
   useEffect(() => {
     if (encodedTx) {
       setTx(decodeTransactionMagicLink(encodedTx))
+    } else {
+      setTx(undefined)
     }
   }, [encodedTx])
 
@@ -69,6 +71,8 @@ export const useTransactionMagicLink = (): { tx: SafeTransaction | undefined; tx
           )
           trackError(ErrorCodes._105, e.message)
         })
+    } else {
+      setTxKey(undefined)
     }
   }, [tx, safeCoreSDK, dispatch])
 

@@ -67,8 +67,8 @@ const useTxPendingStatuses = (): void => {
   const { chainId } = safe
   const txHistory = useTxHistory()
   const historicalTxs = useMemo(() => {
-    return txHistory.page?.results?.filter(isTransactionListItem) || []
-  }, [txHistory.page?.results])
+    return txHistory.data?.filter(isTransactionListItem) || []
+  }, [txHistory.data])
 
   useTxMonitor()
 

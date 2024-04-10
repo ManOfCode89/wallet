@@ -55,9 +55,10 @@ const SingleTx = () => {
 
   useEffect(() => {
     if (txKey && safeAddress && router) {
-      router.query.id = `multisig_${safeAddress}_${txKey}`
-      delete router.query.tx
-      router.push(router)
+      let query = { ...router.query }
+      query.id = `multisig_${safeAddress}_${txKey}`
+      delete query.tx
+      router.push({ query })
     }
   }, [txKey, safeAddress, router])
 
