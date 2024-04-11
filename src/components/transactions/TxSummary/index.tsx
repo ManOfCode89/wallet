@@ -1,7 +1,7 @@
 import { type Palette } from '@mui/material'
 import { Box, CircularProgress, Typography } from '@mui/material'
 import type { ReactElement } from 'react'
-import { type Transaction, TransactionStatus } from '@safe-global/safe-gateway-typescript-sdk'
+import { type Transaction, TransactionStatus, type TransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
 
 import TxInfo from '@/components/transactions/TxInfo'
 import SignTxButton from '@/components/transactions/SignTxButton'
@@ -36,9 +36,10 @@ const getStatusColor = (value: TransactionStatus, palette: Palette | Record<stri
 type TxSummaryProps = {
   isGrouped?: boolean
   item: Transaction
+  txDetails: TransactionDetails
 }
 
-const TxSummary = ({ item, isGrouped }: TxSummaryProps): ReactElement => {
+const TxSummary = ({ item, txDetails, isGrouped }: TxSummaryProps): ReactElement => {
   const tx = item.transaction
   const wallet = useWallet()
   const txStatusLabel = useTransactionStatus(tx)
@@ -117,9 +118,9 @@ const TxSummary = ({ item, isGrouped }: TxSummaryProps): ReactElement => {
           className={classNames({ [css.untrusted]: !isTrusted })}
         >
           {awaitingExecution ? (
-            <ExecuteTxButton txSummary={item.transaction} compact />
+            <ExecuteTxButton txSummary={item.transaction} txDetails={txDetails} compact />
           ) : (
-            <SignTxButton txSummary={item.transaction} compact />
+            <SignTxButton txSummary={item.transaction} txDetails={txDetails} compact />
           )}
           <RejectTxButton txSummary={item.transaction} compact />
         </Box>

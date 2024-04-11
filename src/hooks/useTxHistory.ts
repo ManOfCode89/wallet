@@ -18,6 +18,7 @@ const useTxHistory = (): {
   const { safe, safeAddress } = useSafeInfo()
   const { chainId } = safe
 
+  // TOOD(devanon): Get from chain
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
 
   // If filter exists or pageUrl is passed, load a new history page from the API

@@ -1,6 +1,6 @@
 import type { SyntheticEvent } from 'react'
 import { type ReactElement, useContext } from 'react'
-import { type TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
+import type { TransactionDetails, TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
 import { Button, Tooltip, SvgIcon } from '@mui/material'
 
 import useSafeInfo from '@/hooks/useSafeInfo'
@@ -17,9 +17,11 @@ import { ConfirmTxFlow } from '@/components/tx-flow/flows'
 
 const ExecuteTxButton = ({
   txSummary,
+  txDetails,
   compact = false,
 }: {
   txSummary: TransactionSummary
+  txDetails: TransactionDetails
   compact?: boolean
 }): ReactElement => {
   const { setTxFlow } = useContext(TxModalContext)
@@ -37,7 +39,7 @@ const ExecuteTxButton = ({
   const onClick = (e: SyntheticEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    setTxFlow(<ConfirmTxFlow txSummary={txSummary} />, undefined, false)
+    setTxFlow(<ConfirmTxFlow txSummary={txSummary} txDetails={txDetails} />, undefined, false)
   }
 
   const onMouseEnter = () => {

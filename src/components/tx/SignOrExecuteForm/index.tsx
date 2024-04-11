@@ -21,6 +21,7 @@ import { ErrorBoundary } from '@sentry/react'
 import ApprovalEditor from '../ApprovalEditor'
 import { isDelegateCall } from '@/services/tx/tx-sender/sdk'
 import useChainId from '@/hooks/useChainId'
+import type { TransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
 
 export type SubmitCallback = (txId: string, isExecuted?: boolean) => void
 
@@ -36,12 +37,14 @@ export type SignOrExecuteProps = {
   disableSubmit?: boolean
   origin?: string
   isCreation?: boolean
+  txDetails?: TransactionDetails
 }
 
 export const SignOrExecuteForm = ({
   chainId,
   safeTx,
   safeTxError,
+  txDetails,
   onSubmit,
   ...props
 }: SignOrExecuteProps & {
@@ -79,7 +82,7 @@ export const SignOrExecuteForm = ({
 
         <DecodedTx
           tx={safeTx}
-          txId={props.txId}
+          txDetails={txDetails}
           decodedData={decodedData}
           decodedDataError={decodedDataError}
           decodedDataLoading={decodedDataLoading}
@@ -114,7 +117,13 @@ export const SignOrExecuteForm = ({
         <RiskConfirmationError />
 
         {willExecute ? (
-          <ExecuteForm {...props} safeTx={safeTx} isCreation={isCreation} onSubmit={onFormSubmit} />
+          <ExecuteForm
+            {...props}
+            safeTx={safeTx}
+            isCreation={isCreation}
+            onSubmit={onFormSubmit}
+            txDetails={txDetails}
+          />
         ) : (
           <SignForm
             {...props}
@@ -122,6 +131,7 @@ export const SignOrExecuteForm = ({
             isBatchable={isBatchable}
             isCreation={isCreation}
             onSubmit={onFormSubmit}
+            txDetails={txDetails}
           />
         )}
       </TxCard>

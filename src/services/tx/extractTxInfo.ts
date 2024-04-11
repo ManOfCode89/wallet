@@ -121,7 +121,6 @@ export const extractTxDetails = async (
   safeTx: SafeTransaction,
   safe: SafeInfo,
   txId?: string,
-  transactionStatus?: TransactionStatus,
 ): Promise<TransactionDetails> => {
   const dataByteLength = safeTx.data.data ? Buffer.byteLength(safeTx.data.data) : 0
   const dataSize = dataByteLength >= 2 ? Math.floor((dataByteLength - 2) / 2) : 0
@@ -177,10 +176,16 @@ export const extractTxDetails = async (
 
   const proposedTxId = txId ?? `multisig_${safeAddress}_${txKey}`
 
+  // TODO(devanon): implement more statuses
+  const txStatus =
+    detailedExecutionInfo.confirmations.length >= safe.threshold
+      ? TransactionStatus.AWAITING_EXECUTION
+      : TransactionStatus.AWAITING_CONFIRMATIONS
+
   return {
     safeAddress,
     txId: proposedTxId,
-    txStatus: transactionStatus ?? TransactionStatus.AWAITING_CONFIRMATIONS,
+    txStatus,
     txInfo,
     executedAt: undefined,
     txData,

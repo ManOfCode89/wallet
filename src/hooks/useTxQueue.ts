@@ -1,13 +1,13 @@
-import { ConflictType, TransactionListItemType } from '@safe-global/safe-gateway-typescript-sdk'
 import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import { selectTxQueue, selectQueuedTransactionsByNonce } from '@/store/txQueueSlice'
 import useSafeInfo from './useSafeInfo'
-import { isMultisigDetailedExecutionInfo, isTransactionListItem } from '@/utils/transaction-guards'
+import { isTransactionListItem } from '@/utils/transaction-guards'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { isEqual } from 'lodash'
 import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
+import { makeTxFromDetails } from '@/utils/transactions'
 
 const useTxQueue = (): {
   data?: Array<DetailedTransactionListItem>
@@ -27,28 +27,13 @@ const useTxQueue = (): {
 
       const results = await Promise.all(
         Object.values(transactions).map(async (tx) => {
-          const txDetails = await extractTxDetails(safeAddress, tx, safe)
-          // TODO(devanon): at this point we have the full txDetails, but we only take some of them
-          // they are needed again inside TxDetails component
-          // we should pass them all the way down
-
-          const timestamp = isMultisigDetailedExecutionInfo(txDetails?.detailedExecutionInfo)
-            ? txDetails?.detailedExecutionInfo.submittedAt
-            : 0
+          const details = await extractTxDetails(safeAddress, tx, safe)
+          const transaction = makeTxFromDetails(details)
 
           return {
-            transaction: {
-              id: txDetails.txId,
-              timestamp,
-              txStatus: txDetails.txStatus,
-              txInfo: txDetails.txInfo,
-              executionInfo: txDetails.detailedExecutionInfo,
-              safeAppInfo: txDetails.safeAppInfo,
-            },
-            details: txDetails,
-            conflictType: ConflictType.NONE, // TODO(devanon): Implement conflict type
-            type: TransactionListItemType.TRANSACTION,
-          } as DetailedTransactionListItem
+            ...transaction,
+            details,
+          }
         }),
       )
 

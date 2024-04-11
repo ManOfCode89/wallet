@@ -1,6 +1,5 @@
-import type { SyntheticEvent } from 'react'
-import { useContext, type ReactElement } from 'react'
-import { type TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
+import { useContext, type ReactElement, type SyntheticEvent } from 'react'
+import type { TransactionDetails, TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
 import { Button, Tooltip } from '@mui/material'
 
 import { isSignableBy } from '@/utils/transaction-guards'
@@ -16,9 +15,11 @@ import { ConfirmTxFlow } from '@/components/tx-flow/flows'
 
 const SignTxButton = ({
   txSummary,
+  txDetails,
   compact = false,
 }: {
   txSummary: TransactionSummary
+  txDetails: TransactionDetails
   compact?: boolean
 }): ReactElement => {
   const { setTxFlow } = useContext(TxModalContext)
@@ -34,7 +35,7 @@ const SignTxButton = ({
   const onClick = (e: SyntheticEvent) => {
     e.stopPropagation()
     e.preventDefault()
-    setTxFlow(<ConfirmTxFlow txSummary={txSummary} />, undefined, false)
+    setTxFlow(<ConfirmTxFlow txSummary={txSummary} txDetails={txDetails} />, undefined, false)
   }
 
   return (

@@ -11,9 +11,7 @@ import {
 } from '@mui/material'
 import { OperationType, type SafeTransaction } from '@safe-global/safe-core-sdk-types'
 import type { DecodedDataResponse } from '@safe-global/safe-gateway-typescript-sdk'
-import { getTransactionDetails, type TransactionDetails, Operation } from '@safe-global/safe-gateway-typescript-sdk'
-import useChainId from '@/hooks/useChainId'
-import useAsync from '@/hooks/useAsync'
+import { type TransactionDetails, Operation } from '@safe-global/safe-gateway-typescript-sdk'
 import { MethodDetails } from '@/components/transactions/TxDetails/TxData/DecodedData/MethodDetails'
 import ErrorMessage from '../ErrorMessage'
 import Summary, { PartialSummary } from '@/components/transactions/TxDetails/Summary'
@@ -26,7 +24,7 @@ import accordionCss from '@/styles/accordion.module.css'
 
 type DecodedTxProps = {
   tx?: SafeTransaction
-  txId?: string
+  txDetails?: TransactionDetails
   showMultisend?: boolean
   decodedData?: DecodedDataResponse
   decodedDataError?: Error
@@ -35,20 +33,13 @@ type DecodedTxProps = {
 
 const DecodedTx = ({
   tx,
-  txId,
+  txDetails,
   showMultisend = true,
   decodedData,
   decodedDataError,
   decodedDataLoading = false,
 }: DecodedTxProps): ReactElement | null => {
-  const chainId = useChainId()
-
   const isMultisend = !!decodedData?.parameters?.[0]?.valueDecoded
-
-  const [txDetails, txDetailsError, txDetailsLoading] = useAsync<TransactionDetails>(() => {
-    if (!txId) return
-    return getTransactionDetails(chainId, txId)
-  }, [chainId, txId])
 
   const addressInfoIndex = txDetails?.txData?.addressInfoIndex
 
@@ -120,12 +111,6 @@ const DecodedTx = ({
             </Typography>
 
             {txDetails ? <Summary txDetails={txDetails} defaultExpanded /> : tx && <PartialSummary safeTx={tx} />}
-
-            {txDetailsLoading && <Skeleton />}
-
-            {txDetailsError && (
-              <ErrorMessage error={txDetailsError}>Failed loading all transaction details</ErrorMessage>
-            )}
           </Box>
         </AccordionDetails>
       </Accordion>

@@ -9,7 +9,7 @@ import { isCreationTxInfo } from '@/utils/transaction-guards'
 type ExpandableTransactionItemProps = {
   isGrouped?: boolean
   item: Transaction
-  txDetails?: TransactionDetails
+  txDetails: TransactionDetails
 }
 
 export const ExpandableTransactionItem = ({
@@ -30,14 +30,14 @@ export const ExpandableTransactionItem = ({
       data-testid={testId}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ justifyContent: 'flex-start', overflowX: 'auto' }}>
-        <TxSummary item={item} isGrouped={isGrouped} />
+        <TxSummary item={item} isGrouped={isGrouped} txDetails={txDetails} />
       </AccordionSummary>
 
       <AccordionDetails data-testid="accordion-details" sx={{ padding: 0 }}>
         {isCreationTxInfo(item.transaction.txInfo) ? (
           <CreateTxInfo txSummary={item.transaction} />
         ) : (
-          <TxDetails txSummary={item.transaction} txDetails={txDetails} />
+          txDetails && <TxDetails txSummary={item.transaction} txDetails={txDetails} />
         )}
       </AccordionDetails>
     </Accordion>

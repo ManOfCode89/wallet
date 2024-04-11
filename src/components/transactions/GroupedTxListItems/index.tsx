@@ -1,13 +1,13 @@
 import type { ReactElement } from 'react'
 import { useContext } from 'react'
 import { Box, Paper, Typography } from '@mui/material'
-import type { Transaction } from '@safe-global/safe-gateway-typescript-sdk'
 import { isMultisigExecutionInfo } from '@/utils/transaction-guards'
 import ExpandableTransactionItem from '@/components/transactions/TxListItem/ExpandableTransactionItem'
 import css from './styles.module.css'
 import { ReplaceTxHoverContext, ReplaceTxHoverProvider } from './ReplaceTxHoverProvider'
 import ExternalLink from '@/components/common/ExternalLink'
 import { HelpCenterArticle } from '@/config/constants'
+import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
 const Disclaimer = ({ nonce }: { nonce?: number }) => (
   <Box className={css.disclaimerContainer}>
@@ -26,7 +26,7 @@ const Disclaimer = ({ nonce }: { nonce?: number }) => (
   </Box>
 )
 
-const TxGroup = ({ groupedListItems }: { groupedListItems: Transaction[] }): ReactElement => {
+const TxGroup = ({ groupedListItems }: { groupedListItems: DetailedTransactionListItem[] }): ReactElement => {
   const nonce = isMultisigExecutionInfo(groupedListItems[0].transaction.executionInfo)
     ? groupedListItems[0].transaction.executionInfo.nonce
     : undefined
@@ -38,14 +38,18 @@ const TxGroup = ({ groupedListItems }: { groupedListItems: Transaction[] }): Rea
       <Disclaimer nonce={nonce} />
       {groupedListItems.map((tx) => (
         <div key={tx.transaction.id} className={replacedTxIds.includes(tx.transaction.id) ? css.willBeReplaced : ''}>
-          <ExpandableTransactionItem item={tx} isGrouped />
+          <ExpandableTransactionItem item={tx} txDetails={tx.details} isGrouped />
         </div>
       ))}
     </Paper>
   )
 }
 
-const GroupedTxListItems = ({ groupedListItems }: { groupedListItems: Transaction[] }): ReactElement | null => {
+const GroupedTxListItems = ({
+  groupedListItems,
+}: {
+  groupedListItems: DetailedTransactionListItem[]
+}): ReactElement | null => {
   if (groupedListItems.length === 0) return null
 
   return (
