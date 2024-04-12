@@ -30,7 +30,6 @@ export const ExecuteForm = ({
   txId,
   onSubmit,
   disableSubmit = false,
-  origin,
   onlyExecute,
   isCreation,
   isOwner,
@@ -77,7 +76,7 @@ export const ExecuteForm = ({
 
     let executedTxId: string
     try {
-      executedTxId = await executeTx(txOptions, safeTx, txId, origin)
+      executedTxId = await executeTx(txOptions, safeTx, txId)
     } catch (_err) {
       const err = asError(_err)
       trackError(Errors._804, err)

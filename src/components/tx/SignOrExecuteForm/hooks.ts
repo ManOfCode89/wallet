@@ -50,12 +50,7 @@ export const useTxActions = (): TxActions => {
      * Propose a transaction
      * If txId is passed, it's an existing tx being signed
      */
-    const proposeTx = async (
-      sender: string,
-      safeTx: SafeTransaction,
-      txId?: string,
-      _origin?: string, // TODO(devanon): check if we need this
-    ): Promise<TransactionDetails> => {
+    const proposeTx = async (sender: string, safeTx: SafeTransaction, txId?: string): Promise<TransactionDetails> => {
       const txKey = await addOrUpdateTx(safeTx)
       if (!txKey) throw new Error('Failed to propose tx')
 
@@ -73,7 +68,7 @@ export const useTxActions = (): TxActions => {
       return await extractTxDetails(safeAddress, safeTx, safe, proposedTxId)
     }
 
-    const signTx: TxActions['signTx'] = async (safeTx, txId, origin) => {
+    const signTx: TxActions['signTx'] = async (safeTx, txId) => {
       assertTx(safeTx)
       assertWallet(wallet)
       assertOnboard(onboard)
@@ -83,18 +78,18 @@ export const useTxActions = (): TxActions => {
         // If the first signature is a smart contract wallet, we have to propose w/o signatures
         // Otherwise the backend won't pick up the tx
         // The signature will be added once the on-chain signature is indexed
-        const id = txId || (await proposeTx(wallet.address, safeTx, txId, origin)).txId
+        const id = txId || (await proposeTx(wallet.address, safeTx, txId)).txId
         await dispatchOnChainSigning(safeTx, id, onboard, chainId)
         return id
       }
 
       // Otherwise, sign off-chain
       const signedTx = await dispatchTxSigning(safeTx, version, onboard, chainId, txId)
-      const tx = await proposeTx(wallet.address, signedTx, txId, origin)
+      const tx = await proposeTx(wallet.address, signedTx, txId)
       return tx.txId
     }
 
-    const executeTx: TxActions['executeTx'] = async (txOptions, safeTx, txId, origin) => {
+    const executeTx: TxActions['executeTx'] = async (txOptions, safeTx, txId) => {
       assertTx(safeTx)
       assertWallet(wallet)
       assertOnboard(onboard)
@@ -103,7 +98,7 @@ export const useTxActions = (): TxActions => {
 
       // Propose the tx if there's no id yet ("immediate execution")
       if (!txId) {
-        tx = await proposeTx(wallet.address, safeTx, txId, origin)
+        tx = await proposeTx(wallet.address, safeTx, txId)
         txId = tx.txId
       }
 

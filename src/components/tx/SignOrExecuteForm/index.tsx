@@ -35,7 +35,6 @@ export type SignOrExecuteProps = {
   isBatchable?: boolean
   onlyExecute?: boolean
   disableSubmit?: boolean
-  origin?: string
   isCreation?: boolean
   txDetails?: TransactionDetails
 }

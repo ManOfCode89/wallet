@@ -20,7 +20,6 @@ export const SignForm = ({
   txId,
   onSubmit,
   disableSubmit = false,
-  origin,
   isOwner,
   txActions,
   txSecurity,
@@ -56,7 +55,7 @@ export const SignForm = ({
 
     let resultTxId: string
     try {
-      resultTxId = await signTx(safeTx, txId, origin)
+      resultTxId = await signTx(safeTx, txId)
     } catch (_err) {
       const err = asError(_err)
       trackError(Errors._805, err)
