@@ -38,18 +38,9 @@ describe('txHistorySlice', () => {
         dispatch: jest.fn(),
       }
 
-      const transaction = {
-        type: TransactionListItemType.TRANSACTION,
-        transaction: {
-          id: '0x123',
-        },
-      } as TransactionListItem
-
       const action = txHistorySlice.actions.set({
         loading: false,
-        data: {
-          results: [transaction],
-        },
+        data: [{ txId: '0x123', txHash: '0x456', timestamp: 0, executor: '0x789' }],
       })
 
       listenerMiddlewareInstance.middleware(listenerApi)(jest.fn())(action)
@@ -57,6 +48,9 @@ describe('txHistorySlice', () => {
       expect(txDispatchSpy).toHaveBeenCalledWith(txEvents.TxEvent.SUCCESS, {
         txId: '0x123',
         groupKey: 'groupKey',
+        txHash: '0x456',
+        timestamp: 0,
+        executor: '0x789',
       })
     })
 

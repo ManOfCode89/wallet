@@ -19,8 +19,9 @@ import type {
   SafeInfo,
   SettingsChange,
   Transaction,
+  TransactionDetails,
   TransactionInfo,
-  TransactionListItem,
+  TransactionListItem as OldTransactionListItem,
   TransactionSummary,
   Transfer,
   TransferInfo,
@@ -37,7 +38,6 @@ import {
 import { getSpendingLimitModuleAddress } from '@/services/contracts/spendingLimitContracts'
 import { sameAddress } from '@/utils/addresses'
 import type { NamedAddress } from '@/components/new-safe/create/types'
-import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
 export const isTxQueued = (value: TransactionStatus): boolean => {
   return [TransactionStatus.AWAITING_CONFIRMATIONS, TransactionStatus.AWAITING_EXECUTION].includes(value)
@@ -99,6 +99,8 @@ export const isOutgoingTransfer = (txInfo: TransactionInfo): boolean => {
   return isTransferTxInfo(txInfo) && txInfo.direction.toUpperCase() === TransferDirection.OUTGOING
 }
 
+export type TransactionListItem = OldTransactionListItem | DetailedTransaction
+
 // TransactionListItem type guards
 export const isLabelListItem = (value: TransactionListItem): value is Label => {
   return value.type === TransactionListItemType.LABEL
@@ -112,8 +114,16 @@ export const isDateLabel = (value: TransactionListItem): value is DateLabel => {
   return value.type === TransactionListItemType.DATE_LABEL
 }
 
-export const isTransactionListItem = (value: TransactionListItem): value is Transaction => {
-  return value.type === TransactionListItemType.TRANSACTION
+export const isTransactionListItem = (value: TransactionListItem | undefined): value is Transaction => {
+  return !!value && value.type === TransactionListItemType.TRANSACTION
+}
+
+export type DetailedTransaction = Transaction & {
+  details: TransactionDetails
+}
+
+export const isDetailedTransactionListItem = (value: TransactionListItem | undefined): value is DetailedTransaction => {
+  return !!value && value.type === TransactionListItemType.TRANSACTION && 'details' in value
 }
 
 // Narrows `Transaction`
@@ -204,10 +214,4 @@ export const isERC20Transfer = (value: TransferInfo): value is Erc20Transfer => 
 
 export const isERC721Transfer = (value: TransferInfo): value is Erc721Transfer => {
   return value.type === TransactionTokenType.ERC721
-}
-
-export const isDetailedTransactionListItem = (
-  value: TransactionListItem | DetailedTransactionListItem | undefined,
-): value is DetailedTransactionListItem => {
-  return (value as DetailedTransactionListItem)?.details !== undefined
 }

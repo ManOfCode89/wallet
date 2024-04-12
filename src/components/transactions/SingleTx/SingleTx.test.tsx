@@ -52,7 +52,7 @@ jest
 
 jest
   .spyOn(extractTxInfo, 'extractTxDetails')
-  .mockImplementation((safeAddress: string, safeTx: SafeTransaction, txId?: string) => {
+  .mockImplementation((safeAddress: string, safeTx: SafeTransaction, safe: SafeInfo, txId?: string) => {
     return Promise.resolve(txDetails)
   })
 
@@ -79,7 +79,7 @@ describe('SingleTx', () => {
   it('shows an error when the transaction has failed to load', async () => {
     jest
       .spyOn(extractTxInfo, 'extractTxDetails')
-      .mockImplementation((safeAddress: string, safeTx: SafeTransaction, txId?: string) => {
+      .mockImplementation((safeAddress: string, safeTx: SafeTransaction, safe: SafeInfo, txId?: string) => {
         return Promise.reject(new Error('Extract error'))
       })
 

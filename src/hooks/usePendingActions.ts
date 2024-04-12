@@ -1,5 +1,4 @@
-import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
-import { isTransactionListItem } from '@/utils/transaction-guards'
+import { isTransactionListItem, type TransactionListItem } from '@/utils/transaction-guards'
 import { isSignableBy } from '@/utils/transaction-guards'
 import { useMemo } from 'react'
 import useTxQueue from './useTxQueue'
@@ -10,7 +9,7 @@ type PendingActions = {
   totalToSign: string
 }
 
-const getSignableCount = (data: Array<DetailedTransactionListItem>, walletAddress: string): number => {
+const getSignableCount = (data: Array<TransactionListItem>, walletAddress: string): number => {
   return data.filter((tx) => isTransactionListItem(tx) && isSignableBy(tx.transaction, walletAddress)).length
 }
 

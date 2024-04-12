@@ -1,5 +1,5 @@
-import type { Transaction, TransactionListItem } from '@safe-global/safe-gateway-typescript-sdk'
-import { isMultisigExecutionInfo, isTransactionListItem } from '@/utils/transaction-guards'
+import type { Transaction } from '@safe-global/safe-gateway-typescript-sdk'
+import { isMultisigExecutionInfo, isTransactionListItem, type TransactionListItem } from '@/utils/transaction-guards'
 import { useMemo } from 'react'
 import useSafeInfo from '@/hooks/useSafeInfo'
 import { groupConflictingTxs } from '@/utils/tx-list'

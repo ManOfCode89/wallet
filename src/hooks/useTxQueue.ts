@@ -2,16 +2,19 @@ import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import { selectTxQueue, selectQueuedTransactionsByNonce } from '@/store/txQueueSlice'
 import useSafeInfo from './useSafeInfo'
-import { isDetailedTransactionListItem, isTransactionListItem } from '@/utils/transaction-guards'
+import {
+  type DetailedTransaction,
+  isDetailedTransactionListItem,
+  isTransactionListItem,
+} from '@/utils/transaction-guards'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { isEqual } from 'lodash'
-import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 import { makeTxFromDetails } from '@/utils/transactions'
 import { selectTxHistory } from '@/store/txHistorySlice'
 
 const useTxQueue = (): {
-  data?: Array<DetailedTransactionListItem>
+  data?: Array<DetailedTransaction>
   error?: string
   loading: boolean
 } => {
@@ -21,7 +24,7 @@ const useTxQueue = (): {
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
   const executedTransactions = useAppSelector((state) => selectTxHistory(state))
 
-  const [data, error, loading] = useAsync<Array<DetailedTransactionListItem>>(
+  const [data, error, loading] = useAsync<Array<DetailedTransaction>>(
     async () => {
       if (!transactions || !executedTransactions) {
         return []

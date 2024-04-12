@@ -1,16 +1,17 @@
 import { TransactionInfoType } from '@safe-global/safe-gateway-typescript-sdk'
-import type { Transaction, TransactionListItem } from '@safe-global/safe-gateway-typescript-sdk'
+import type { Transaction } from '@safe-global/safe-gateway-typescript-sdk'
 
 import {
+  type DetailedTransaction,
   isConflictHeaderListItem,
-  isDetailedTransactionListItem,
   isNoneConflictType,
   isTransactionListItem,
+  type TransactionListItem,
+  isDetailedTransactionListItem,
 } from '@/utils/transaction-guards'
 import { sameAddress } from './addresses'
-import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
-type GroupedTxs = Array<DetailedTransactionListItem | TransactionListItem | DetailedTransactionListItem[]>
+type GroupedTxs = Array<TransactionListItem | Array<DetailedTransaction>>
 
 /**
  * Group txs by conflict header

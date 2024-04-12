@@ -1,26 +1,16 @@
 import { type ReactElement, useEffect, useState } from 'react'
 import { Box } from '@mui/material'
 import TxList from '@/components/transactions/TxList'
-import type {
-  TransactionDetails,
-  TransactionListItem,
-  TransactionListItemType,
-} from '@safe-global/safe-gateway-typescript-sdk'
 import ErrorMessage from '@/components/tx/ErrorMessage'
 import type useTxHistory from '@/hooks/useTxHistory'
 import useTxQueue from '@/hooks/useTxQueue'
 import PagePlaceholder from '../PagePlaceholder'
 import SkeletonTxList from './SkeletonTxList'
 import { type TxFilter, useTxFilter } from '@/utils/tx-history-filter'
-import { isTransactionListItem } from '@/utils/transaction-guards'
+import { isTransactionListItem, type TransactionListItem } from '@/utils/transaction-guards'
 import NoTransactionsIcon from '@/public/images/transactions/no-transactions.svg'
 import { useHasPendingTxs } from '@/hooks/usePendingTxs'
 import useSafeInfo from '@/hooks/useSafeInfo'
-
-export type DetailedTransactionListItem = TransactionListItem & {
-  details: TransactionDetails
-  type: TransactionListItemType.TRANSACTION
-}
 
 const NoQueuedTxns = () => {
   return <PagePlaceholder img={<NoTransactionsIcon />} text="Queued transactions will appear here" />
@@ -60,7 +50,7 @@ const TxPage = ({
       {error && <ErrorMessage>Error loading transactions</ErrorMessage>}
 
       {/* No skeletons for pending as they are shown above the queue which has them */}
-      {loading && !hasPending && <SkeletonTxList />}
+      {loading && !hasPending && data?.length === 0 && <SkeletonTxList />}
     </>
   )
 }

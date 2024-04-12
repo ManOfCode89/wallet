@@ -1,7 +1,11 @@
 import { setSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import type Safe from '@safe-global/safe-core-sdk'
 import type { TransactionResult } from '@safe-global/safe-core-sdk-types'
-import { getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
+import {
+  type TransactionDetails,
+  TransactionInfoType,
+  TransactionStatus,
+} from '@safe-global/safe-gateway-typescript-sdk'
 import extractTxInfo from '../../extractTxInfo'
 import * as txEvents from '../../txEvents'
 import { createTx, createExistingTx, createRejectTx, dispatchTxExecution, dispatchTxSigning } from '..'
@@ -10,13 +14,25 @@ import { waitFor } from '@/tests/test-utils'
 
 import type { EIP1193Provider, OnboardAPI, WalletState, AppState } from '@web3-onboard/core'
 import { hexZeroPad } from 'ethers/lib/utils'
+import { addressEx } from '@/utils/addresses'
 
 // Mock getTransactionDetails
 jest.mock('@safe-global/safe-gateway-typescript-sdk', () => ({
-  getTransactionDetails: jest.fn(),
   postSafeGasEstimation: jest.fn(() => Promise.resolve({ safeTxGas: 60000, recommendedNonce: 17 })),
   Operation: {
     CALL: 0,
+  },
+  TransactionStatus: {
+    AWAITING_CONFIRMATIONS: 0,
+    AWAITING_EXECUTION: 1,
+    EXECUTED: 2,
+    FAILED: 3,
+    REVERTED: 4,
+    CANCELLED: 5,
+    SUCCESS: 6,
+  },
+  TransactionInfoType: {
+    CUSTOM: 0,
   },
 }))
 
@@ -73,6 +89,19 @@ const mockOnboard = {
     get: () => mockOnboardState,
   },
 } as unknown as OnboardAPI
+
+const mockTxDetails: TransactionDetails = {
+  safeAddress: '',
+  txId: '',
+  txStatus: TransactionStatus.AWAITING_CONFIRMATIONS,
+  txInfo: {
+    type: TransactionInfoType.CUSTOM,
+    to: addressEx('0x'),
+    dataSize: '0',
+    value: '0',
+    isCancellation: false,
+  },
+}
 
 // Mock Safe SDK
 const mockSafeSDK = {
@@ -152,9 +181,8 @@ describe('txSender', () => {
 
   describe('createExistingTx', () => {
     it('should create a tx from an existing proposal', async () => {
-      const tx = await createExistingTx('4', '0x123', '0x345')
+      const tx = await createExistingTx('4', mockTxDetails)
 
-      expect(getTransactionDetails).toHaveBeenCalledWith('4', '0x345')
       expect(extractTxInfo).toHaveBeenCalled()
       expect(mockSafeSDK.createTransaction).toHaveBeenCalled()
 

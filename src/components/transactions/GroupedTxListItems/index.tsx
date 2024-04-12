@@ -1,13 +1,12 @@
 import type { ReactElement } from 'react'
 import { useContext } from 'react'
 import { Box, Paper, Typography } from '@mui/material'
-import { isMultisigExecutionInfo } from '@/utils/transaction-guards'
+import { type DetailedTransaction, isMultisigExecutionInfo } from '@/utils/transaction-guards'
 import ExpandableTransactionItem from '@/components/transactions/TxListItem/ExpandableTransactionItem'
 import css from './styles.module.css'
 import { ReplaceTxHoverContext, ReplaceTxHoverProvider } from './ReplaceTxHoverProvider'
 import ExternalLink from '@/components/common/ExternalLink'
 import { HelpCenterArticle } from '@/config/constants'
-import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
 const Disclaimer = ({ nonce }: { nonce?: number }) => (
   <Box className={css.disclaimerContainer}>
@@ -26,7 +25,7 @@ const Disclaimer = ({ nonce }: { nonce?: number }) => (
   </Box>
 )
 
-const TxGroup = ({ groupedListItems }: { groupedListItems: DetailedTransactionListItem[] }): ReactElement => {
+const TxGroup = ({ groupedListItems }: { groupedListItems: Array<DetailedTransaction> }): ReactElement => {
   const nonce = isMultisigExecutionInfo(groupedListItems[0].transaction.executionInfo)
     ? groupedListItems[0].transaction.executionInfo.nonce
     : undefined
@@ -48,7 +47,7 @@ const TxGroup = ({ groupedListItems }: { groupedListItems: DetailedTransactionLi
 const GroupedTxListItems = ({
   groupedListItems,
 }: {
-  groupedListItems: DetailedTransactionListItem[]
+  groupedListItems: Array<DetailedTransaction>
 }): ReactElement | null => {
   if (groupedListItems.length === 0) return null
 

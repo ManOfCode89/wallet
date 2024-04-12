@@ -53,6 +53,7 @@ describe('SignOrExecute hooks', () => {
     } as unknown as Safe
 
     jest.spyOn(safeCoreSDK, 'getSafeSDK').mockReturnValue(mockSDK)
+    jest.spyOn(safeCoreSDK, 'useSafeSDK').mockReturnValue(mockSDK)
   })
 
   describe('useValidateNonce', () => {

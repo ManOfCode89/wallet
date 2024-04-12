@@ -1,15 +1,14 @@
 import { useMemo } from 'react'
-import { isMultisigExecutionInfo } from '@/utils/transaction-guards'
+import { isMultisigExecutionInfo, isTransactionListItem, type TransactionListItem } from '@/utils/transaction-guards'
 import uniqBy from 'lodash/uniqBy'
 import useTxQueue from '@/hooks/useTxQueue'
-import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 
-export const _getUniqueQueuedTxs = (data?: Array<DetailedTransactionListItem>) => {
+export const _getUniqueQueuedTxs = (data?: Array<TransactionListItem>) => {
   if (!data) {
     return []
   }
 
-  const txs = data.map((item) => item.transaction)
+  const txs = data.filter(isTransactionListItem).map((item) => item.transaction)
 
   return uniqBy(txs, (tx) => {
     return isMultisigExecutionInfo(tx.executionInfo) ? tx.executionInfo.nonce : ''

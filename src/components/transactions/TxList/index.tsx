@@ -5,10 +5,10 @@ import TxListItem from '../TxListItem'
 import GroupedTxListItems from '@/components/transactions/GroupedTxListItems'
 import { groupConflictingTxs } from '@/utils/tx-list'
 import css from './styles.module.css'
-import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
+import { type TransactionListItem } from '@/utils/transaction-guards'
 
 type TxListProps = {
-  items: Array<DetailedTransactionListItem>
+  items: Array<TransactionListItem>
 }
 
 export const TxListGrid = ({ children }: { children: ReactNode }): ReactElement => {

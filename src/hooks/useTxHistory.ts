@@ -6,14 +6,17 @@ import { useTxFilter } from '@/utils/tx-history-filter'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { isEqual } from 'lodash'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
-import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 import { selectTxHistory } from '@/store/txHistorySlice'
 import { makeTxFromDetails } from '@/utils/transactions'
-import { isDetailedTransactionListItem, isMultisigDetailedExecutionInfo } from '@/utils/transaction-guards'
+import {
+  type DetailedTransaction,
+  isDetailedTransactionListItem,
+  isMultisigDetailedExecutionInfo,
+} from '@/utils/transaction-guards'
 import { addressEx } from '@/utils/addresses'
 
 const useTxHistory = (): {
-  data?: Array<DetailedTransactionListItem>
+  data?: Array<DetailedTransaction>
   error?: string
   loading: boolean
 } => {
@@ -26,7 +29,7 @@ const useTxHistory = (): {
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
   const executedTransactions = useAppSelector((state) => selectTxHistory(state))
 
-  const [data, error, loading] = useAsync<Array<DetailedTransactionListItem>>(
+  const [data, error, loading] = useAsync<Array<DetailedTransaction>>(
     async () => {
       if (!transactions || !executedTransactions) {
         return []

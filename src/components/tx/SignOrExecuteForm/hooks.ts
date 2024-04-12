@@ -57,6 +57,8 @@ export const useTxActions = (): TxActions => {
       _origin?: string, // TODO(devanon): check if we need this
     ): Promise<TransactionDetails> => {
       const txKey = await addOrUpdateTx(safeTx)
+      if (!txKey) throw new Error('Failed to propose tx')
+
       const proposedTxId = `multisig_${safe.address.value}_${txKey}`
 
       // Dispatch a success event only if the tx is signed
