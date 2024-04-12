@@ -50,7 +50,7 @@ const TxPage = ({
       {error && <ErrorMessage>Error loading transactions</ErrorMessage>}
 
       {/* No skeletons for pending as they are shown above the queue which has them */}
-      {loading && !hasPending && data?.length === 0 && <SkeletonTxList />}
+      {loading && !hasPending && <SkeletonTxList />}
     </>
   )
 }

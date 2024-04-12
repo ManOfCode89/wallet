@@ -32,4 +32,5 @@
 
 - Custom contract interactions via built-in version of [tx-builder](https://github.com/safe-global/safe-react-apps/tree/development/apps/tx-builder)
 - Allow onchain message signing
+- Parse unknown onchain transactions
 - Dappnode package

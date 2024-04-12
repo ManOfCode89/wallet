@@ -11,7 +11,7 @@ import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { isEqual } from 'lodash'
 import { makeTxFromDetails } from '@/utils/transactions'
-import { selectTxHistory } from '@/store/txHistorySlice'
+import useExecutedTransactions from '@/hooks/useExecutedTransactions'
 
 const useTxQueue = (): {
   data?: Array<DetailedTransaction>
@@ -22,7 +22,7 @@ const useTxQueue = (): {
   const { chainId } = safe
 
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
-  const executedTransactions = useAppSelector((state) => selectTxHistory(state))
+  const executedTransactions = useExecutedTransactions()
 
   const [data, error, loading] = useAsync<Array<DetailedTransaction>>(
     async () => {
@@ -34,7 +34,8 @@ const useTxQueue = (): {
         Object.values(transactions).map(async (tx) => {
           const details = await extractTxDetails(safeAddress, tx, safe)
 
-          const executedTransaction = executedTransactions.data?.find((executedTx) => executedTx.txId === details.txId)
+          const executedTransaction =
+            executedTransactions.find((executedTx) => executedTx.txId === details.txId) ?? true
           if (executedTransaction) return
 
           const transaction = makeTxFromDetails(details)
@@ -48,8 +49,7 @@ const useTxQueue = (): {
 
       return results.filter(isDetailedTransactionListItem)
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [safe, safeAddress, transactions, executedTransactions.data],
+    [safe, safeAddress, transactions, executedTransactions],
     false,
   )
 

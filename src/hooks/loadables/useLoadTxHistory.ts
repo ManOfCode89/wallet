@@ -25,7 +25,6 @@ export const useLoadTxHistory = (): AsyncResult<Array<TxHistoryItem>> => {
   const { chainId } = safe
   const [pollCount, resetPolling] = useIntervalCounter(POLLING_INTERVAL)
 
-  // Re-fetch when chainId/address, or txHistoryTag change
   const [data, error, loading] = useAsync<Array<TxHistoryItem> | undefined>(
     async () => {
       if (!safeAddress || !provider || !sdk) return
