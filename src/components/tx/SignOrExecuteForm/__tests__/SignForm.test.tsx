@@ -67,11 +67,7 @@ describe('SignForm', () => {
     })
 
     const { getByText } = render(
-      <SignForm
-        {...defaultProps}
-        safeTx={safeTransaction}
-        txActions={{ signTx: mockSignTx, addToBatch: jest.fn(), executeTx: jest.fn() }}
-      />,
+      <SignForm {...defaultProps} safeTx={safeTransaction} txActions={{ signTx: mockSignTx, executeTx: jest.fn() }} />,
     )
 
     const button = getByText('Sign')
@@ -87,11 +83,7 @@ describe('SignForm', () => {
     const mockSignTx = jest.fn()
 
     const { getByText } = render(
-      <SignForm
-        {...defaultProps}
-        safeTx={safeTransaction}
-        txActions={{ signTx: mockSignTx, addToBatch: jest.fn(), executeTx: jest.fn() }}
-      />,
+      <SignForm {...defaultProps} safeTx={safeTransaction} txActions={{ signTx: mockSignTx, executeTx: jest.fn() }} />,
     )
 
     const button = getByText('Sign')
