@@ -2,12 +2,13 @@ import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import { selectTxQueue, selectQueuedTransactionsByNonce } from '@/store/txQueueSlice'
 import useSafeInfo from './useSafeInfo'
-import { isTransactionListItem } from '@/utils/transaction-guards'
+import { isDetailedTransactionListItem, isTransactionListItem } from '@/utils/transaction-guards'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { isEqual } from 'lodash'
 import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
 import { makeTxFromDetails } from '@/utils/transactions'
+import { selectTxHistory } from '@/store/txHistorySlice'
 
 const useTxQueue = (): {
   data?: Array<DetailedTransactionListItem>
@@ -18,16 +19,21 @@ const useTxQueue = (): {
   const { chainId } = safe
 
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
+  const executedTransactions = useAppSelector((state) => selectTxHistory(state))
 
   const [data, error, loading] = useAsync<Array<DetailedTransactionListItem>>(
     async () => {
-      if (!transactions) {
+      if (!transactions || !executedTransactions) {
         return []
       }
 
       const results = await Promise.all(
         Object.values(transactions).map(async (tx) => {
           const details = await extractTxDetails(safeAddress, tx, safe)
+
+          const executedTransaction = executedTransactions.data?.find((executedTx) => executedTx.txId === details.txId)
+          if (executedTransaction) return
+
           const transaction = makeTxFromDetails(details)
 
           return {
@@ -37,9 +43,10 @@ const useTxQueue = (): {
         }),
       )
 
-      return results
+      return results.filter(isDetailedTransactionListItem)
     },
-    [safe, safeAddress, transactions],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [safe, safeAddress, transactions, executedTransactions.data],
     false,
   )
 

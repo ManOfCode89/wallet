@@ -45,8 +45,6 @@ const TxPage = ({
   const isQueue = useTxns === useTxQueue
   const hasPending = useHasPendingTxs()
 
-  console.log({ data })
-
   return (
     <>
       {isFirstPage && filter && data && (

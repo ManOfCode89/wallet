@@ -207,7 +207,7 @@ export const isERC721Transfer = (value: TransferInfo): value is Erc721Transfer =
 }
 
 export const isDetailedTransactionListItem = (
-  value: TransactionListItem | DetailedTransactionListItem,
+  value: TransactionListItem | DetailedTransactionListItem | undefined,
 ): value is DetailedTransactionListItem => {
-  return (value as DetailedTransactionListItem).details !== undefined
+  return (value as DetailedTransactionListItem)?.details !== undefined
 }

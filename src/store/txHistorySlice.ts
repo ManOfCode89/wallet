@@ -1,11 +1,10 @@
 import type { listenerMiddlewareInstance } from '@/store'
-import type { TransactionListPage } from '@safe-global/safe-gateway-typescript-sdk'
-import { isTransactionListItem } from '@/utils/transaction-guards'
 import { txDispatch, TxEvent } from '@/services/tx/txEvents'
 import { selectPendingTxs } from './pendingTxsSlice'
 import { makeLoadableSlice } from './common'
+import type { TxHistoryItem } from '@/hooks/loadables/useLoadTxHistory'
 
-const { slice, selector } = makeLoadableSlice('txHistory', undefined as TransactionListPage | undefined)
+const { slice, selector } = makeLoadableSlice('txHistory', undefined as Array<TxHistoryItem> | undefined)
 
 export const txHistorySlice = slice
 export const selectTxHistory = selector
@@ -20,17 +19,11 @@ export const txHistoryListener = (listenerMiddleware: typeof listenerMiddlewareI
 
       const pendingTxs = selectPendingTxs(listenerApi.getState())
 
-      for (const result of action.payload.data.results) {
-        if (!isTransactionListItem(result)) {
-          continue
-        }
-
-        const txId = result.transaction.id
-
-        if (pendingTxs[txId]) {
+      for (const item of action.payload.data) {
+        if (pendingTxs[item.txId]) {
           txDispatch(TxEvent.SUCCESS, {
-            txId,
-            groupKey: pendingTxs[txId].groupKey,
+            ...item,
+            groupKey: pendingTxs[item.txId].groupKey,
           })
         }
       }

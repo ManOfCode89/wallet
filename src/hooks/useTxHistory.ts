@@ -1,4 +1,4 @@
-import { ConflictType, TransactionListItemType } from '@safe-global/safe-gateway-typescript-sdk'
+import { TransactionStatus } from '@safe-global/safe-gateway-typescript-sdk'
 import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import useSafeInfo from './useSafeInfo'
@@ -7,53 +7,60 @@ import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { isEqual } from 'lodash'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import type { DetailedTransactionListItem } from '@/components/common/PaginatedTxns'
+import { selectTxHistory } from '@/store/txHistorySlice'
+import { makeTxFromDetails } from '@/utils/transactions'
+import { isDetailedTransactionListItem, isMultisigDetailedExecutionInfo } from '@/utils/transaction-guards'
+import { addressEx } from '@/utils/addresses'
 
 const useTxHistory = (): {
   data?: Array<DetailedTransactionListItem>
   error?: string
   loading: boolean
 } => {
+  // TODO(devanon): use filter
   const [filter] = useTxFilter()
 
   const { safe, safeAddress } = useSafeInfo()
   const { chainId } = safe
 
-  // TOOD(devanon): Get from chain
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
+  const executedTransactions = useAppSelector((state) => selectTxHistory(state))
 
-  // If filter exists or pageUrl is passed, load a new history page from the API
   const [data, error, loading] = useAsync<Array<DetailedTransactionListItem>>(
     async () => {
-      if (!transactions) {
+      if (!transactions || !executedTransactions) {
         return []
       }
 
       const results = await Promise.all(
         Object.values(transactions).map(async (tx) => {
-          const txDetails = await extractTxDetails(safeAddress, tx, safe)
-          // TODO(devanon): at this point we have the full txDetails, but we only take some of them
-          // they are needed again inside TxDetails component
-          // we should pass them all the way down
+          const details = await extractTxDetails(safeAddress, tx, safe)
+
+          const executedTransaction = executedTransactions.data?.find((executedTx) => executedTx.txId === details.txId)
+
+          if (!executedTransaction) return
+
+          details.txStatus = TransactionStatus.SUCCESS
+          details.txHash = executedTransaction.txHash
+          details.executedAt = executedTransaction.timestamp
+
+          if (isMultisigDetailedExecutionInfo(details.detailedExecutionInfo)) {
+            details.detailedExecutionInfo.executor = addressEx(executedTransaction.executor)
+          }
+
+          const transaction = makeTxFromDetails(details)
 
           return {
-            transaction: {
-              id: txDetails.txId,
-              timestamp: txDetails.executedAt ?? 0,
-              txStatus: txDetails.txStatus,
-              txInfo: txDetails.txInfo,
-              executionInfo: txDetails.detailedExecutionInfo,
-              safeAppInfo: txDetails.safeAppInfo,
-            },
-            details: txDetails,
-            conflictType: ConflictType.NONE, // TODO(devanon): Implement conflict type
-            type: TransactionListItemType.TRANSACTION,
-          } as DetailedTransactionListItem
+            ...transaction,
+            details,
+          }
         }),
       )
 
-      return results
+      return results.filter(isDetailedTransactionListItem)
     },
-    [safe, safeAddress, transactions],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [safe, safeAddress, transactions, executedTransactions.data],
     false,
   )
 
