@@ -6,7 +6,7 @@ import { useTxFilter } from '@/utils/tx-history-filter'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { isEqual } from 'lodash'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
-import { makeTxFromDetails } from '@/utils/transactions'
+import { getTxKeyFromTxId, makeTxFromDetails } from '@/utils/transactions'
 import {
   type DetailedTransaction,
   isDetailedTransactionListItem,
@@ -36,19 +36,25 @@ const useTxHistory = (): {
       }
 
       const results = await Promise.all(
-        Object.values(transactions).map(async (tx) => {
+        executedTransactions.map(async (executedTx) => {
+          let txKey = getTxKeyFromTxId(executedTx.txId)
+          if (!txKey) return
+
+          const tx = transactions[txKey]
+
+          if (!tx) {
+            // TODO(devanon): return some empty tx box with the most we can, or in L2, return most info
+            return
+          }
+
           const details = await extractTxDetails(safeAddress, tx, safe)
 
-          const executedTransaction = executedTransactions.find((executedTx) => executedTx.txId === details.txId)
-
-          if (!executedTransaction) return
-
           details.txStatus = TransactionStatus.SUCCESS
-          details.txHash = executedTransaction.txHash
-          details.executedAt = executedTransaction.timestamp
+          details.txHash = executedTx.txHash
+          details.executedAt = executedTx.timestamp
 
           if (isMultisigDetailedExecutionInfo(details.detailedExecutionInfo)) {
-            details.detailedExecutionInfo.executor = addressEx(executedTransaction.executor)
+            details.detailedExecutionInfo.executor = addressEx(executedTx.executor)
           }
 
           const transaction = makeTxFromDetails(details)

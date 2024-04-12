@@ -297,3 +297,10 @@ export const isTrustedTx = (tx: TransactionSummary) => {
     Boolean(tx.txInfo.transferInfo.trusted)
   )
 }
+
+export const getTxKeyFromTxId = (txId: string) => {
+  let split = txId.split('_')
+  if (split.length !== 3) return
+
+  return split[2]
+}

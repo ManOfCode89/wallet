@@ -34,8 +34,7 @@ const useTxQueue = (): {
         Object.values(transactions).map(async (tx) => {
           const details = await extractTxDetails(safeAddress, tx, safe)
 
-          const executedTransaction =
-            executedTransactions.find((executedTx) => executedTx.txId === details.txId) ?? true
+          const executedTransaction = executedTransactions.find((executedTx) => executedTx.txId === details.txId)
           if (executedTransaction) return
 
           const transaction = makeTxFromDetails(details)
