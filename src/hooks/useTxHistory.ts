@@ -1,4 +1,3 @@
-import { TransactionStatus } from '@safe-global/safe-gateway-typescript-sdk'
 import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import useSafeInfo from './useSafeInfo'
@@ -6,13 +5,8 @@ import { useTxFilter } from '@/utils/tx-history-filter'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { isEqual } from 'lodash'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
-import { getTxKeyFromTxId, makeTxFromDetails } from '@/utils/transactions'
-import {
-  type DetailedTransaction,
-  isDetailedTransactionListItem,
-  isMultisigDetailedExecutionInfo,
-} from '@/utils/transaction-guards'
-import { addressEx } from '@/utils/addresses'
+import { enrichTransactionDetailsFromHistory, getTxKeyFromTxId, makeTxFromDetails } from '@/utils/transactions'
+import { type DetailedTransaction, isDetailedTransactionListItem } from '@/utils/transaction-guards'
 import useExecutedTransactions from '@/hooks/useExecutedTransactions'
 
 const useTxHistory = (): {
@@ -49,13 +43,7 @@ const useTxHistory = (): {
 
           const details = await extractTxDetails(safeAddress, tx, safe)
 
-          details.txStatus = TransactionStatus.SUCCESS
-          details.txHash = executedTx.txHash
-          details.executedAt = executedTx.timestamp
-
-          if (isMultisigDetailedExecutionInfo(details.detailedExecutionInfo)) {
-            details.detailedExecutionInfo.executor = addressEx(executedTx.executor)
-          }
+          enrichTransactionDetailsFromHistory(details, executedTx)
 
           const transaction = makeTxFromDetails(details)
 

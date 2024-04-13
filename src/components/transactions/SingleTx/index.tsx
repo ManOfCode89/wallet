@@ -4,7 +4,7 @@ import useSafeInfo from '@/hooks/useSafeInfo'
 import type { Label, Transaction, TransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
 import { LabelValue } from '@safe-global/safe-gateway-typescript-sdk'
 import { type ReactElement, useEffect, useState } from 'react'
-import { makeTxFromDetails } from '@/utils/transactions'
+import { enrichTransactionDetailsFromHistory, makeTxFromDetails } from '@/utils/transactions'
 import { TxListGrid } from '@/components/transactions/TxList'
 import ExpandableTransactionItem, {
   TransactionSkeleton,
@@ -15,6 +15,7 @@ import { useAppSelector } from '@/store'
 import { selectAddedTx } from '@/store/addedTxsSlice'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { useTransactionMagicLink } from '@/hooks/useMagicLink'
+import { useExecutedTransaction } from '@/hooks/useExecutedTransactions'
 
 const SingleTxGrid = ({ txDetails }: { txDetails: TransactionDetails }): ReactElement => {
   const tx: Transaction = makeTxFromDetails(txDetails)
@@ -44,14 +45,24 @@ const SingleTx = () => {
 
   const { safe, safeAddress } = useSafeInfo()
   const transaction = useAppSelector((state) => selectAddedTx(state, safe.chainId, safeAddress, transactionKey ?? ''))
+  const executedTx = useExecutedTransaction(transactionId)
 
   const [txDetails, setTxDetails] = useState<TransactionDetails | undefined>(undefined)
   const [txDetailsError, setTxDetailsError] = useState<Error | undefined>(undefined)
 
   useEffect(() => {
     if (!safeAddress || !transaction || !transactionId) return
-    extractTxDetails(safeAddress, transaction, safe, transactionId).then(setTxDetails).catch(setTxDetailsError)
-  }, [safeAddress, transaction, safe, transactionId])
+
+    extractTxDetails(safeAddress, transaction, safe, transactionId)
+      .then((details) => {
+        if (executedTx) {
+          enrichTransactionDetailsFromHistory(details, executedTx)
+        }
+        return details
+      })
+      .then(setTxDetails)
+      .catch(setTxDetailsError)
+  }, [safeAddress, transaction, safe, transactionId, executedTx])
 
   useEffect(() => {
     if (txKey && safeAddress && router) {

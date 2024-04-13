@@ -1,14 +1,15 @@
-import type {
-  ChainInfo,
-  ExecutionInfo,
-  MultisigExecutionDetails,
-  MultisigExecutionInfo,
-  SafeAppData,
-  SafeInfo,
-  Transaction,
-  TransactionDetails,
-  TransactionListPage,
-  TransactionSummary,
+import {
+  type ChainInfo,
+  type ExecutionInfo,
+  type MultisigExecutionDetails,
+  type MultisigExecutionInfo,
+  type SafeAppData,
+  type SafeInfo,
+  type Transaction,
+  type TransactionDetails,
+  type TransactionListPage,
+  TransactionStatus,
+  type TransactionSummary,
 } from '@safe-global/safe-gateway-typescript-sdk'
 import { ConflictType, getTransactionDetails, TransactionListItemType } from '@safe-global/safe-gateway-typescript-sdk'
 import {
@@ -34,6 +35,8 @@ import { ethers } from 'ethers'
 import { type BaseTransaction } from '@safe-global/safe-apps-sdk'
 import { id } from 'ethers/lib/utils'
 import { isEmptyHexData } from '@/utils/hex'
+import type { TxHistoryItem } from '@/hooks/loadables/useLoadTxHistory'
+import { addressEx } from '@/utils/addresses'
 
 export const makeTxFromDetails = (txDetails: TransactionDetails): Transaction => {
   const getMissingSigners = ({
@@ -303,4 +306,14 @@ export const getTxKeyFromTxId = (txId: string) => {
   if (split.length !== 3) return
 
   return split[2]
+}
+
+export const enrichTransactionDetailsFromHistory = (details: TransactionDetails, executedTx: TxHistoryItem) => {
+  details.txStatus = TransactionStatus.SUCCESS
+  details.txHash = executedTx.txHash
+  details.executedAt = executedTx.timestamp
+
+  if (isMultisigDetailedExecutionInfo(details.detailedExecutionInfo)) {
+    details.detailedExecutionInfo.executor = addressEx(executedTx.executor)
+  }
 }
