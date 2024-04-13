@@ -19,8 +19,9 @@ import type {
   SafeInfo,
   SettingsChange,
   Transaction,
+  TransactionDetails,
   TransactionInfo,
-  TransactionListItem,
+  TransactionListItem as OldTransactionListItem,
   TransactionSummary,
   Transfer,
   TransferInfo,
@@ -98,6 +99,8 @@ export const isOutgoingTransfer = (txInfo: TransactionInfo): boolean => {
   return isTransferTxInfo(txInfo) && txInfo.direction.toUpperCase() === TransferDirection.OUTGOING
 }
 
+export type TransactionListItem = OldTransactionListItem | DetailedTransaction
+
 // TransactionListItem type guards
 export const isLabelListItem = (value: TransactionListItem): value is Label => {
   return value.type === TransactionListItemType.LABEL
@@ -111,8 +114,16 @@ export const isDateLabel = (value: TransactionListItem): value is DateLabel => {
   return value.type === TransactionListItemType.DATE_LABEL
 }
 
-export const isTransactionListItem = (value: TransactionListItem): value is Transaction => {
-  return value.type === TransactionListItemType.TRANSACTION
+export const isTransactionListItem = (value: TransactionListItem | undefined): value is Transaction => {
+  return !!value && value.type === TransactionListItemType.TRANSACTION
+}
+
+export type DetailedTransaction = Transaction & {
+  details: TransactionDetails
+}
+
+export const isDetailedTransactionListItem = (value: TransactionListItem | undefined): value is DetailedTransaction => {
+  return !!value && value.type === TransactionListItemType.TRANSACTION && 'details' in value
 }
 
 // Narrows `Transaction`

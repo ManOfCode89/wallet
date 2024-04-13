@@ -1,32 +1,38 @@
 import { setSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import type Safe from '@safe-global/safe-core-sdk'
 import type { TransactionResult } from '@safe-global/safe-core-sdk-types'
-import { getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
-import extractTxInfo from '../../extractTxInfo'
-import proposeTx from '../../proposeTransaction'
-import * as txEvents from '../../txEvents'
 import {
-  createTx,
-  createExistingTx,
-  createRejectTx,
-  dispatchTxExecution,
-  dispatchTxProposal,
-  dispatchTxSigning,
-} from '..'
+  type TransactionDetails,
+  TransactionInfoType,
+  TransactionStatus,
+} from '@safe-global/safe-gateway-typescript-sdk'
+import extractTxInfo from '../../extractTxInfo'
+import * as txEvents from '../../txEvents'
+import { createTx, createExistingTx, createRejectTx, dispatchTxExecution, dispatchTxSigning } from '..'
 import { ErrorCode } from '@ethersproject/logger'
 import { waitFor } from '@/tests/test-utils'
 
 import type { EIP1193Provider, OnboardAPI, WalletState, AppState } from '@web3-onboard/core'
 import { hexZeroPad } from 'ethers/lib/utils'
-import { generatePreValidatedSignature } from '@safe-global/safe-core-sdk/dist/src/utils/signatures'
-import { createMockSafeTransaction } from '@/tests/transactions'
+import { addressEx } from '@/utils/addresses'
 
 // Mock getTransactionDetails
 jest.mock('@safe-global/safe-gateway-typescript-sdk', () => ({
-  getTransactionDetails: jest.fn(),
   postSafeGasEstimation: jest.fn(() => Promise.resolve({ safeTxGas: 60000, recommendedNonce: 17 })),
   Operation: {
     CALL: 0,
+  },
+  TransactionStatus: {
+    AWAITING_CONFIRMATIONS: 0,
+    AWAITING_EXECUTION: 1,
+    EXECUTED: 2,
+    FAILED: 3,
+    REVERTED: 4,
+    CANCELLED: 5,
+    SUCCESS: 6,
+  },
+  TransactionInfoType: {
+    CUSTOM: 0,
   },
 }))
 
@@ -37,12 +43,6 @@ jest.mock('../../extractTxInfo', () => ({
     txParams: {},
     signatures: [],
   })),
-}))
-
-// Mock proposeTx
-jest.mock('../../proposeTransaction', () => ({
-  __esModule: true,
-  default: jest.fn(() => Promise.resolve({ txId: '123' })),
 }))
 
 const mockProvider = {
@@ -89,6 +89,19 @@ const mockOnboard = {
     get: () => mockOnboardState,
   },
 } as unknown as OnboardAPI
+
+const mockTxDetails: TransactionDetails = {
+  safeAddress: '',
+  txId: '',
+  txStatus: TransactionStatus.AWAITING_CONFIRMATIONS,
+  txInfo: {
+    type: TransactionInfoType.CUSTOM,
+    to: addressEx('0x'),
+    dataSize: '0',
+    value: '0',
+    isCancellation: false,
+  },
+}
 
 // Mock Safe SDK
 const mockSafeSDK = {
@@ -168,9 +181,8 @@ describe('txSender', () => {
 
   describe('createExistingTx', () => {
     it('should create a tx from an existing proposal', async () => {
-      const tx = await createExistingTx('4', '0x123', '0x345')
+      const tx = await createExistingTx('4', mockTxDetails)
 
-      expect(getTransactionDetails).toHaveBeenCalledWith('4', '0x345')
       expect(extractTxInfo).toHaveBeenCalled()
       expect(mockSafeSDK.createTransaction).toHaveBeenCalled()
 
@@ -186,96 +198,6 @@ describe('txSender', () => {
       expect(mockSafeSDK.createRejectionTransaction).toHaveBeenCalledWith(1)
       expect(tx).toBeDefined()
       expect(tx.addSignature).toBeDefined()
-    })
-  })
-
-  describe('dispatchTxProposal', () => {
-    it('should NOT dispatch a tx proposal if tx is unsigned', async () => {
-      const tx = await createTx({
-        to: '0x123',
-        value: '1',
-        data: '0x0',
-      })
-
-      const proposedTx = await dispatchTxProposal({ chainId: '4', safeAddress: '0x123', sender: '0x456', safeTx: tx })
-
-      expect(proposeTx).toHaveBeenCalledWith('4', '0x123', '0x456', tx, '0x1234567890', undefined)
-      expect(proposedTx).toEqual({ txId: '123' })
-
-      expect(txEvents.txDispatch).not.toHaveBeenCalled()
-    })
-
-    it('should dispatch a PROPOSED event if tx is signed and has no id', async () => {
-      const tx = createMockSafeTransaction({
-        to: '0x123',
-        data: '0x0',
-      })
-      tx.addSignature(generatePreValidatedSignature('0x1234567890123456789012345678901234567890'))
-
-      const proposedTx = await dispatchTxProposal({ chainId: '4', safeAddress: '0x123', sender: '0x456', safeTx: tx })
-
-      expect(proposeTx).toHaveBeenCalledWith('4', '0x123', '0x456', tx, '0x1234567890', undefined)
-      expect(proposedTx).toEqual({ txId: '123' })
-
-      expect(txEvents.txDispatch).toHaveBeenCalledWith('PROPOSED', { txId: '123' })
-    })
-
-    it('should dispatch a SIGNATURE_PROPOSED event if tx has signatures and an id', async () => {
-      const tx = createMockSafeTransaction({
-        to: '0x123',
-        data: '0x0',
-      })
-      tx.addSignature(generatePreValidatedSignature('0x1234567890123456789012345678901234567890'))
-
-      const proposedTx = await dispatchTxProposal({
-        chainId: '4',
-        safeAddress: '0x123',
-        sender: '0x456',
-        safeTx: tx,
-        txId: '345',
-      })
-
-      expect(proposeTx).toHaveBeenCalledWith('4', '0x123', '0x456', tx, '0x1234567890', undefined)
-      expect(proposedTx).toEqual({ txId: '123' })
-
-      expect(txEvents.txDispatch).toHaveBeenCalledWith('SIGNATURE_PROPOSED', { txId: '123', signerAddress: '0x456' })
-    })
-
-    it('should fail to propose a signature', async () => {
-      ;(proposeTx as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('error')))
-
-      const tx = await createTx({
-        to: '0x123',
-        value: '1',
-        data: '0x0',
-      })
-
-      await expect(
-        dispatchTxProposal({ chainId: '4', safeAddress: '0x123', sender: '0x456', safeTx: tx, txId: '345' }),
-      ).rejects.toThrow('error')
-
-      expect(txEvents.txDispatch).toHaveBeenCalledWith('SIGNATURE_PROPOSE_FAILED', {
-        txId: '345',
-        error: new Error('error'),
-      })
-    })
-
-    it('should fail to propose a new tx', async () => {
-      ;(proposeTx as jest.Mock).mockImplementationOnce(() => Promise.reject(new Error('error')))
-
-      const tx = await createTx({
-        to: '0x123',
-        value: '1',
-        data: '0x0',
-      })
-
-      await expect(
-        dispatchTxProposal({ chainId: '4', safeAddress: '0x123', sender: '0x456', safeTx: tx }),
-      ).rejects.toThrow('error')
-
-      expect(txEvents.txDispatch).toHaveBeenCalledWith('PROPOSE_FAILED', {
-        error: new Error('error'),
-      })
     })
   })
 

@@ -69,7 +69,7 @@ export const cleanInputValue = (value: string): string => {
 }
 
 export const addressEx = (address: string): AddressEx => {
-  return { value: address }
+  return { value: checksumAddress(address) }
 }
 
 export const bytes32ToAddress = (bytes32: string): string => {

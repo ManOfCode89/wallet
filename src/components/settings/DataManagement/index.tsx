@@ -8,6 +8,8 @@ import { addressBookSlice, selectAllAddressBooks } from '@/store/addressBookSlic
 import { addedSafesSlice, selectAllAddedSafes } from '@/store/addedSafesSlice'
 import { safeAppsSlice, selectSafeApps } from '@/store/safeAppsSlice'
 import { selectSettings, settingsSlice } from '@/store/settingsSlice'
+import { addedTxsSlice } from '@/store/addedTxsSlice'
+import { customTokensSlice } from '@/store/customTokensSlice'
 import InfoIcon from '@/public/images/notifications/info.svg'
 import ExternalLink from '@/components/common/ExternalLink'
 import { ImportFileUpload } from '@/components/settings/DataManagement/ImportFileUpload'
@@ -29,6 +31,8 @@ export const exportAppData = () => {
     [addedSafesSlice.name]: addedSafes,
     [settingsSlice.name]: setting,
     [safeAppsSlice.name]: safeApps,
+    [addedTxsSlice.name]: addedTxs,
+    [customTokensSlice.name]: customTokens,
   } = getPersistedState()
 
   // Ensure they are under the same name as the slice
@@ -37,6 +41,8 @@ export const exportAppData = () => {
     [addedSafesSlice.name]: addedSafes,
     [settingsSlice.name]: setting,
     [safeAppsSlice.name]: safeApps,
+    [addedTxsSlice.name]: addedTxs,
+    [customTokensSlice.name]: customTokens,
   }
 
   const data = JSON.stringify({ version: SAFE_EXPORT_VERSION.V2, data: exportData })

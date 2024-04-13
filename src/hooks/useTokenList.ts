@@ -5,16 +5,13 @@ import { useCurrentChain } from '@/hooks/useChains'
 import { Errors, logError } from '@/services/exceptions'
 import { getAddress } from 'ethers/lib/utils'
 
-const safeTokenFromChain = (chainId: string): TokenInfo => {
-  return {
-    chainId: parseInt(chainId),
-    address: SAFE_TOKEN_ADDRESSES[chainId],
-    name: 'Safe Token',
-    symbol: 'SAFE',
-    decimals: 18,
-    // always use mainnet logo for Safe Token
-    logoURI: `https://safe-transaction-assets.safe.global/tokens/logos/${SAFE_TOKEN_ADDRESSES['1']}.png`,
-  }
+const safeToken = {
+  chainId: 1,
+  address: SAFE_TOKEN_ADDRESSES['1'],
+  name: 'Safe Token',
+  symbol: 'SAFE',
+  decimals: 18,
+  logoURI: `https://safe-transaction-assets.safe.global/tokens/logos/${SAFE_TOKEN_ADDRESSES['1']}.png`,
 }
 
 export function useTokenList(tokenListURI: string, isTokenListEnabled: boolean): Array<TokenInfo> | undefined {
@@ -28,7 +25,7 @@ export function useTokenList(tokenListURI: string, isTokenListEnabled: boolean):
       return
     }
 
-    const safeToken = safeTokenFromChain(chain.chainId)
+    const chainId = parseInt(chain.chainId)
 
     fetch(tokenListURI)
       .then(async (response) => {
@@ -37,7 +34,7 @@ export function useTokenList(tokenListURI: string, isTokenListEnabled: boolean):
 
           const tokenList = tokens
             .filter((token) => {
-              const sameChainId = token.chainId === parseInt(chain.chainId)
+              const sameChainId = token.chainId === chainId
               const isSafeToken = getAddress(token.address) === getAddress(safeToken.address)
               return sameChainId && !isSafeToken
             })
@@ -47,7 +44,8 @@ export function useTokenList(tokenListURI: string, isTokenListEnabled: boolean):
                 address: getAddress(token.address),
               }
             })
-          tokenList.push(safeToken)
+
+          if (chainId === 1) tokenList.push(safeToken)
 
           setTokenList(tokenList)
         } else {

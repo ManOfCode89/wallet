@@ -30,7 +30,7 @@ export const AppRoutes = {
   transactions: {
     tx: '/transactions/tx',
     queue: '/transactions/queue',
-    messages: '/transactions/messages',
+    messages: '/transactions/messages', // TODO(devanon): implement messages
     index: '/transactions',
     history: '/transactions/history',
   },

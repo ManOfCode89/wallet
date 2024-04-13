@@ -1,7 +1,29 @@
-import type { MultisigExecutionInfo, Transaction, TransactionListItem } from '@safe-global/safe-gateway-typescript-sdk'
+import {
+  type MultisigExecutionInfo,
+  type Transaction,
+  type TransactionDetails,
+  TransactionInfoType,
+  type TransactionListItem,
+  TransactionStatus,
+} from '@safe-global/safe-gateway-typescript-sdk'
 import { ConflictType, TransactionListItemType } from '@safe-global/safe-gateway-typescript-sdk'
 import { getBatchableTransactions } from '@/hooks/useBatchedTxs'
 import { defaultTx, getMockTx } from '@/tests/mocks/transactions'
+import type { DetailedTransaction } from '@/utils/transaction-guards'
+import { addressEx } from '@/utils/addresses'
+
+const mockTxDetails: TransactionDetails = {
+  safeAddress: '',
+  txId: '',
+  txStatus: TransactionStatus.AWAITING_CONFIRMATIONS,
+  txInfo: {
+    type: TransactionInfoType.CUSTOM,
+    to: addressEx('0x'),
+    dataSize: '0',
+    value: '0',
+    isCancellation: false,
+  },
+}
 
 describe('getBatchableTransactions', () => {
   it('should return an empty array if no transactions are passed', () => {
@@ -51,7 +73,7 @@ describe('getBatchableTransactions', () => {
   })
 
   it('should pick the newer tx of a group', () => {
-    const mockTx: Transaction = {
+    const mockTx: DetailedTransaction = {
       transaction: {
         ...defaultTx,
         executionInfo: {
@@ -63,6 +85,7 @@ describe('getBatchableTransactions', () => {
       },
       type: TransactionListItemType.TRANSACTION,
       conflictType: ConflictType.NONE,
+      details: mockTxDetails,
     }
 
     const mockConflict: TransactionListItem = {
@@ -70,7 +93,7 @@ describe('getBatchableTransactions', () => {
       nonce: 1,
     }
 
-    const mockTx1: Transaction = {
+    const mockTx1: DetailedTransaction = {
       transaction: {
         ...defaultTx,
         executionInfo: {
@@ -83,9 +106,10 @@ describe('getBatchableTransactions', () => {
       },
       type: TransactionListItemType.TRANSACTION,
       conflictType: ConflictType.HAS_NEXT,
+      details: mockTxDetails,
     }
 
-    const mockTx2: Transaction = {
+    const mockTx2: DetailedTransaction = {
       transaction: {
         ...defaultTx,
         executionInfo: {
@@ -98,6 +122,7 @@ describe('getBatchableTransactions', () => {
       },
       type: TransactionListItemType.TRANSACTION,
       conflictType: ConflictType.END,
+      details: mockTxDetails,
     }
 
     const result = getBatchableTransactions([mockTx, mockConflict, mockTx1, mockTx2], 0)

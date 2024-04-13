@@ -1,10 +1,10 @@
-import type { TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
+import type { TransactionDetails, TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
 import TxLayout from '@/components/tx-flow/common/TxLayout'
 import ConfirmProposedTx from './ConfirmProposedTx'
 import { useTransactionType } from '@/hooks/useTransactionType'
 import TxInfo from '@/components/transactions/TxInfo'
 
-const ConfirmTxFlow = ({ txSummary }: { txSummary: TransactionSummary }) => {
+const ConfirmTxFlow = ({ txSummary, txDetails }: { txSummary: TransactionSummary; txDetails: TransactionDetails }) => {
   const { text } = useTransactionType(txSummary)
 
   return (
@@ -19,7 +19,7 @@ const ConfirmTxFlow = ({ txSummary }: { txSummary: TransactionSummary }) => {
       step={0}
       txSummary={txSummary}
     >
-      <ConfirmProposedTx txSummary={txSummary} />
+      <ConfirmProposedTx txSummary={txSummary} txDetails={txDetails} />
     </TxLayout>
   )
 }

@@ -5,15 +5,11 @@ import TxSummary from '@/components/transactions/TxSummary'
 import TxDetails from '@/components/transactions/TxDetails'
 import CreateTxInfo from '@/components/transactions/SafeCreationTx'
 import { isCreationTxInfo } from '@/utils/transaction-guards'
-import { useContext } from 'react'
-import { BatchExecuteHoverContext } from '@/components/transactions/BatchExecuteButton/BatchExecuteHoverProvider'
-import css from './styles.module.css'
-import classNames from 'classnames'
 
 type ExpandableTransactionItemProps = {
   isGrouped?: boolean
   item: Transaction
-  txDetails?: TransactionDetails
+  txDetails: TransactionDetails
 }
 
 export const ExpandableTransactionItem = ({
@@ -22,10 +18,6 @@ export const ExpandableTransactionItem = ({
   txDetails,
   testId,
 }: ExpandableTransactionItemProps & { testId?: string }) => {
-  const hoverContext = useContext(BatchExecuteHoverContext)
-
-  const isBatched = hoverContext.activeHover.includes(item.transaction.id)
-
   return (
     <Accordion
       disableGutters
@@ -35,18 +27,17 @@ export const ExpandableTransactionItem = ({
       }}
       elevation={0}
       defaultExpanded={!!txDetails}
-      className={classNames({ [css.batched]: isBatched })}
       data-testid={testId}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ justifyContent: 'flex-start', overflowX: 'auto' }}>
-        <TxSummary item={item} isGrouped={isGrouped} />
+        <TxSummary item={item} isGrouped={isGrouped} txDetails={txDetails} />
       </AccordionSummary>
 
       <AccordionDetails data-testid="accordion-details" sx={{ padding: 0 }}>
         {isCreationTxInfo(item.transaction.txInfo) ? (
           <CreateTxInfo txSummary={item.transaction} />
         ) : (
-          <TxDetails txSummary={item.transaction} txDetails={txDetails} />
+          txDetails && <TxDetails txSummary={item.transaction} txDetails={txDetails} />
         )}
       </AccordionDetails>
     </Accordion>

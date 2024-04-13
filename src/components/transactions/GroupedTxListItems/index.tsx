@@ -1,8 +1,7 @@
 import type { ReactElement } from 'react'
 import { useContext } from 'react'
 import { Box, Paper, Typography } from '@mui/material'
-import type { Transaction } from '@safe-global/safe-gateway-typescript-sdk'
-import { isMultisigExecutionInfo } from '@/utils/transaction-guards'
+import { type DetailedTransaction, isMultisigExecutionInfo } from '@/utils/transaction-guards'
 import ExpandableTransactionItem from '@/components/transactions/TxListItem/ExpandableTransactionItem'
 import css from './styles.module.css'
 import { ReplaceTxHoverContext, ReplaceTxHoverProvider } from './ReplaceTxHoverProvider'
@@ -26,7 +25,7 @@ const Disclaimer = ({ nonce }: { nonce?: number }) => (
   </Box>
 )
 
-const TxGroup = ({ groupedListItems }: { groupedListItems: Transaction[] }): ReactElement => {
+const TxGroup = ({ groupedListItems }: { groupedListItems: Array<DetailedTransaction> }): ReactElement => {
   const nonce = isMultisigExecutionInfo(groupedListItems[0].transaction.executionInfo)
     ? groupedListItems[0].transaction.executionInfo.nonce
     : undefined
@@ -38,14 +37,18 @@ const TxGroup = ({ groupedListItems }: { groupedListItems: Transaction[] }): Rea
       <Disclaimer nonce={nonce} />
       {groupedListItems.map((tx) => (
         <div key={tx.transaction.id} className={replacedTxIds.includes(tx.transaction.id) ? css.willBeReplaced : ''}>
-          <ExpandableTransactionItem item={tx} isGrouped />
+          <ExpandableTransactionItem item={tx} txDetails={tx.details} isGrouped />
         </div>
       ))}
     </Paper>
   )
 }
 
-const GroupedTxListItems = ({ groupedListItems }: { groupedListItems: Transaction[] }): ReactElement | null => {
+const GroupedTxListItems = ({
+  groupedListItems,
+}: {
+  groupedListItems: Array<DetailedTransaction>
+}): ReactElement | null => {
   if (groupedListItems.length === 0) return null
 
   return (

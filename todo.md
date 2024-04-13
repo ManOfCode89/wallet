@@ -32,8 +32,5 @@
 
 - Custom contract interactions via built-in version of [tx-builder](https://github.com/safe-global/safe-react-apps/tree/development/apps/tx-builder)
 - Allow onchain message signing
+- Parse unknown onchain transactions
 - Dappnode package
-
-### Notes
-
-- Need to use the [`legacy-safe-core-sdk`](https://github.com/safe-global/safe-core-sdk/tree/legacy-safe-core-sdk) branch, as that's what the web app depended on at time of fork.

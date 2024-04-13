@@ -1,41 +1,62 @@
-import { getTransactionQueue, type TransactionListPage } from '@safe-global/safe-gateway-typescript-sdk'
 import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import { selectTxQueue, selectQueuedTransactionsByNonce } from '@/store/txQueueSlice'
 import useSafeInfo from './useSafeInfo'
-import { isTransactionListItem } from '@/utils/transaction-guards'
+import {
+  type DetailedTransaction,
+  isDetailedTransactionListItem,
+  isTransactionListItem,
+} from '@/utils/transaction-guards'
+import { selectAddedTxs } from '@/store/addedTxsSlice'
+import { extractTxDetails } from '@/services/tx/extractTxInfo'
+import { isEqual } from 'lodash'
+import { makeTxFromDetails } from '@/utils/transactions'
+import useExecutedTransactions from '@/hooks/useExecutedTransactions'
 
-const useTxQueue = (
-  pageUrl?: string,
-): {
-  page?: TransactionListPage
+const useTxQueue = (): {
+  data?: Array<DetailedTransaction>
   error?: string
   loading: boolean
 } => {
-  const { safe, safeAddress, safeLoaded } = useSafeInfo()
+  const { safe, safeAddress } = useSafeInfo()
   const { chainId } = safe
 
-  // If pageUrl is passed, load a new queue page from the API
-  const [page, error, loading] = useAsync<TransactionListPage>(() => {
-    if (!pageUrl || !safeLoaded) return
-    return getTransactionQueue(chainId, safeAddress, pageUrl)
-  }, [chainId, safeAddress, safeLoaded, pageUrl])
+  const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
+  const executedTransactions = useExecutedTransactions()
 
-  // The latest page of the queue is always in the store
-  const queueState = useAppSelector(selectTxQueue)
+  const [data, error, loading] = useAsync<Array<DetailedTransaction>>(
+    async () => {
+      if (!transactions || !executedTransactions) {
+        return []
+      }
 
-  // Return the new page or the stored page
-  return pageUrl
-    ? {
-        page,
-        error: error?.message,
-        loading: loading,
-      }
-    : {
-        page: queueState.data,
-        error: queueState.error,
-        loading: queueState.loading,
-      }
+      const results = await Promise.all(
+        Object.values(transactions).map(async (tx) => {
+          const details = await extractTxDetails(safeAddress, tx, safe)
+
+          const executedTransaction = executedTransactions.find((executedTx) => executedTx.txId === details.txId)
+          if (executedTransaction) return
+
+          const transaction = makeTxFromDetails(details)
+
+          return {
+            ...transaction,
+            details,
+          }
+        }),
+      )
+
+      return results.filter(isDetailedTransactionListItem)
+    },
+    [safe, safeAddress, transactions, executedTransactions],
+    false,
+  )
+
+  return {
+    data,
+    error: error?.message,
+    loading: loading,
+  }
 }
 
 // Get the size of the queue as a string with an optional '+' if there are more pages

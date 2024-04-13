@@ -1,13 +1,11 @@
 import React, { type ReactElement } from 'react'
 import type { TransactionDetails, TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
-import { getTransactionDetails, Operation } from '@safe-global/safe-gateway-typescript-sdk'
-import { Box, CircularProgress } from '@mui/material'
+import { Operation } from '@safe-global/safe-gateway-typescript-sdk'
+import { Box } from '@mui/material'
 
 import TxSigners from '@/components/transactions/TxSigners'
 import Summary from '@/components/transactions/TxDetails/Summary'
 import TxData from '@/components/transactions/TxDetails/TxData'
-import useChainId from '@/hooks/useChainId'
-import useAsync from '@/hooks/useAsync'
 import {
   isAwaitingExecution,
   isModuleExecutionInfo,
@@ -19,7 +17,6 @@ import {
 import { InfoDetails } from '@/components/transactions/InfoDetails'
 import EthHashInfo from '@/components/common/EthHashInfo'
 import css from './styles.module.css'
-import ErrorMessage from '@/components/tx/ErrorMessage'
 import TxShareLink from '../TxShareLink'
 import { ErrorBoundary } from '@sentry/react'
 import ExecuteTxButton from '@/components/transactions/ExecuteTxButton'
@@ -27,9 +24,9 @@ import SignTxButton from '@/components/transactions/SignTxButton'
 import RejectTxButton from '@/components/transactions/RejectTxButton'
 import { DelegateCallWarning, UnsignedWarning } from '@/components/transactions/Warning'
 import Multisend from '@/components/transactions/TxDetails/TxData/DecodedData/Multisend'
-import useSafeInfo from '@/hooks/useSafeInfo'
 import useIsPending from '@/hooks/useIsPending'
 import { isTrustedTx } from '@/utils/transactions'
+import { useSafeTransactionFromDetails } from '@/hooks/useConvertTx'
 
 export const NOT_AVAILABLE = 'n/a'
 
@@ -51,13 +48,17 @@ const TxDetailsBlock = ({ txSummary, txDetails }: TxDetailsProps): ReactElement 
 
   const isTrustedTransfer = isTrustedTx(txSummary)
 
+  const safeTx = useSafeTransactionFromDetails(txDetails)
+
   return (
     <>
       {/* /Details */}
       <div className={`${css.details} ${isUnsigned ? css.noSigners : ''}`}>
-        <div className={css.shareLink}>
-          <TxShareLink id={txSummary.id} />
-        </div>
+        {safeTx && (
+          <div className={css.shareLink}>
+            <TxShareLink safeTx={safeTx} />
+          </div>
+        )}
 
         <div className={css.txData}>
           <ErrorBoundary fallback={<div>Error parsing data</div>}>
@@ -106,7 +107,11 @@ const TxDetailsBlock = ({ txSummary, txDetails }: TxDetailsProps): ReactElement 
 
           {isQueue && (
             <Box display="flex" alignItems="center" justifyContent="center" gap={1} mt={2}>
-              {awaitingExecution ? <ExecuteTxButton txSummary={txSummary} /> : <SignTxButton txSummary={txSummary} />}
+              {awaitingExecution ? (
+                <ExecuteTxButton txSummary={txSummary} txDetails={txDetails} />
+              ) : (
+                <SignTxButton txSummary={txSummary} txDetails={txDetails} />
+              )}
               <RejectTxButton txSummary={txSummary} />
             </Box>
           )}
@@ -121,35 +126,11 @@ const TxDetails = ({
   txDetails,
 }: {
   txSummary: TransactionSummary
-  txDetails?: TransactionDetails // optional
+  txDetails: TransactionDetails
 }): ReactElement => {
-  const chainId = useChainId()
-  const { safe } = useSafeInfo()
-
-  const [txDetailsData, error, loading] = useAsync<TransactionDetails>(
-    async () => {
-      return txDetails || getTransactionDetails(chainId, txSummary.id)
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [txDetails, chainId, txSummary.id, safe.txQueuedTag],
-    false,
-  )
-
   return (
     <div className={css.container}>
-      {txDetailsData ? (
-        <TxDetailsBlock txSummary={txSummary} txDetails={txDetailsData} />
-      ) : loading ? (
-        <div className={css.loading}>
-          <CircularProgress />
-        </div>
-      ) : (
-        error && (
-          <div className={css.error}>
-            <ErrorMessage error={error}>Couldn&apos;t load the transaction details</ErrorMessage>
-          </div>
-        )
-      )}
+      <TxDetailsBlock txSummary={txSummary} txDetails={txDetails} />
     </div>
   )
 }

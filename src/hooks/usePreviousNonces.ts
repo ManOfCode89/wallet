@@ -1,15 +1,14 @@
 import { useMemo } from 'react'
-import { isMultisigExecutionInfo, isTransactionListItem } from '@/utils/transaction-guards'
+import { isMultisigExecutionInfo, isTransactionListItem, type TransactionListItem } from '@/utils/transaction-guards'
 import uniqBy from 'lodash/uniqBy'
 import useTxQueue from '@/hooks/useTxQueue'
-import { type TransactionListPage } from '@safe-global/safe-gateway-typescript-sdk'
 
-export const _getUniqueQueuedTxs = (page?: TransactionListPage) => {
-  if (!page) {
+export const _getUniqueQueuedTxs = (data?: Array<TransactionListItem>) => {
+  if (!data) {
     return []
   }
 
-  const txs = page.results.filter(isTransactionListItem).map((item) => item.transaction)
+  const txs = data.filter(isTransactionListItem).map((item) => item.transaction)
 
   return uniqBy(txs, (tx) => {
     return isMultisigExecutionInfo(tx.executionInfo) ? tx.executionInfo.nonce : ''
@@ -17,13 +16,13 @@ export const _getUniqueQueuedTxs = (page?: TransactionListPage) => {
 }
 
 const usePreviousNonces = () => {
-  const { page } = useTxQueue()
+  const { data } = useTxQueue()
 
   const previousNonces = useMemo(() => {
-    return _getUniqueQueuedTxs(page)
+    return _getUniqueQueuedTxs(data)
       .map((tx) => (isMultisigExecutionInfo(tx.executionInfo) ? tx.executionInfo.nonce : undefined))
       .filter((nonce): nonce is number => nonce !== undefined)
-  }, [page])
+  }, [data])
 
   return previousNonces
 }

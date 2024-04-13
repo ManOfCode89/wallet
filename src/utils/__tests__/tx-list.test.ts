@@ -15,6 +15,7 @@ describe('tx-list', () => {
             id: 1,
           },
           conflictType: 'HasNext',
+          details: {},
         },
         {
           type: 'TRANSACTION',
@@ -22,10 +23,13 @@ describe('tx-list', () => {
             id: 2,
           },
           conflictType: 'End',
+          details: {},
         },
       ]
 
       const result = groupConflictingTxs(list as TransactionListItem[])
+      console.log({ result })
+
       expect(result).toEqual([
         [
           {
@@ -34,6 +38,7 @@ describe('tx-list', () => {
               id: 1,
             },
             conflictType: 'HasNext',
+            details: {},
           },
           {
             type: 'TRANSACTION',
@@ -41,6 +46,7 @@ describe('tx-list', () => {
               id: 2,
             },
             conflictType: 'End',
+            details: {},
           },
         ],
       ])
@@ -56,6 +62,7 @@ describe('tx-list', () => {
             timestamp: 1,
           },
           conflictType: 'HasNext',
+          details: {},
         },
         {
           type: 'TRANSACTION',
@@ -64,6 +71,7 @@ describe('tx-list', () => {
             timestamp: 2,
           },
           conflictType: 'End',
+          details: {},
         },
       ]
 
@@ -77,6 +85,7 @@ describe('tx-list', () => {
               timestamp: 2,
             },
             conflictType: 'End',
+            details: {},
           },
           {
             type: 'TRANSACTION',
@@ -85,6 +94,7 @@ describe('tx-list', () => {
               timestamp: 1,
             },
             conflictType: 'HasNext',
+            details: {},
           },
         ],
       ])

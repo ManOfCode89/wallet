@@ -1,10 +1,17 @@
 import { TransactionInfoType } from '@safe-global/safe-gateway-typescript-sdk'
-import type { Transaction, TransactionListItem } from '@safe-global/safe-gateway-typescript-sdk'
+import type { Transaction } from '@safe-global/safe-gateway-typescript-sdk'
 
-import { isConflictHeaderListItem, isNoneConflictType, isTransactionListItem } from '@/utils/transaction-guards'
+import {
+  type DetailedTransaction,
+  isConflictHeaderListItem,
+  isNoneConflictType,
+  isTransactionListItem,
+  type TransactionListItem,
+  isDetailedTransactionListItem,
+} from '@/utils/transaction-guards'
 import { sameAddress } from './addresses'
 
-type GroupedTxs = Array<TransactionListItem | Transaction[]>
+type GroupedTxs = Array<TransactionListItem | Array<DetailedTransaction>>
 
 /**
  * Group txs by conflict header
@@ -17,7 +24,7 @@ export const groupConflictingTxs = (list: TransactionListItem[]): GroupedTxs => 
       }
 
       const prevItem = resultItems[resultItems.length - 1]
-      if (Array.isArray(prevItem) && isTransactionListItem(item) && !isNoneConflictType(item)) {
+      if (Array.isArray(prevItem) && isDetailedTransactionListItem(item) && !isNoneConflictType(item)) {
         prevItem.push(item)
         return resultItems
       }

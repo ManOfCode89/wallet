@@ -20,10 +20,6 @@ export const SignForm = ({
   txId,
   onSubmit,
   disableSubmit = false,
-  origin,
-  isBatch,
-  isBatchable,
-  isCreation,
   isOwner,
   txActions,
   txSecurity,
@@ -38,13 +34,13 @@ export const SignForm = ({
   const [submitError, setSubmitError] = useState<Error | undefined>()
 
   // Hooks
-  const { signTx, addToBatch } = txActions
+  const { signTx } = txActions
   const { setTxFlow } = useContext(TxModalContext)
   const { needsRiskConfirmation, isRiskConfirmed, setIsRiskIgnored } = txSecurity
   const hasSigned = useAlreadySigned(safeTx)
 
   // On modal submit
-  const handleSubmit = async (e: SyntheticEvent, isAddingToBatch = false) => {
+  const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
 
     if (needsRiskConfirmation && !isRiskConfirmed) {
@@ -59,7 +55,7 @@ export const SignForm = ({
 
     let resultTxId: string
     try {
-      resultTxId = await (isAddingToBatch ? addToBatch(safeTx, origin) : signTx(safeTx, txId, origin))
+      resultTxId = await signTx(safeTx, txId)
     } catch (_err) {
       const err = asError(_err)
       trackError(Errors._805, err)
@@ -69,15 +65,9 @@ export const SignForm = ({
     }
 
     // On successful sign
-    if (!isAddingToBatch) {
-      onSubmit?.(resultTxId)
-    }
+    onSubmit?.(resultTxId)
 
     setTxFlow(undefined)
-  }
-
-  const onBatchClick = (e: SyntheticEvent) => {
-    handleSubmit(e, true)
   }
 
   const cannotPropose = !isOwner
