@@ -22,7 +22,7 @@ export const useLoadSafeInfo = (): AsyncResult<SafeInfo> => {
   const [data, error, loading] = useAsync<SafeInfo | undefined>(async () => {
     if (!chainId || !address || !sdk || !implementation) return
 
-    let [nonce, threshold, owners, modules, guard, fallbackHandler, version] = await Promise.all([
+    const [nonce, threshold, owners, modules, guard, fallbackHandler, contractVersion] = await Promise.all([
       sdk.getNonce(),
       sdk.getThreshold(),
       sdk.getOwners(),
@@ -31,6 +31,11 @@ export const useLoadSafeInfo = (): AsyncResult<SafeInfo> => {
       sdk.getFallbackHandler(),
       sdk.getContractVersion(),
     ])
+
+    let version = contractVersion.toString()
+    if (!sdk.getContractManager().isL1SafeMasterCopy) {
+      version = version + '+L2'
+    }
 
     let info: SafeInfo = {
       address: { value: address },

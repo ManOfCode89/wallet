@@ -1,6 +1,6 @@
 import chains from '@/config/chains'
 import { getWeb3ReadOnly } from '@/hooks/wallets/web3'
-import { getSafeSingletonDeployment, getSafeL2SingletonDeployment } from '@safe-global/safe-deployments'
+import { _safeDeployments, _safeL2Deployments } from '@safe-global/safe-deployments'
 import ExternalStore from '@/services/ExternalStore'
 import { Gnosis_safe__factory } from '@/types/contracts'
 import { invariant } from '@/utils/helpers'
@@ -11,7 +11,6 @@ import EthersAdapter from '@safe-global/safe-ethers-lib'
 import type { SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import { ethers } from 'ethers'
 import semverSatisfies from 'semver/functions/satisfies'
-import { sameAddress } from '@/utils/addresses'
 
 export const isLegacyVersion = (safeVersion: string): boolean => {
   const LEGACY_VERSION = '<1.3.0'
@@ -67,16 +66,20 @@ export const initSafeSDK = async ({
 
   const masterCopy = implementation
 
-  const safeL1Deployment = getSafeSingletonDeployment({ network: chainId, version: safeVersion })
-  const safeL2Deployment = getSafeL2SingletonDeployment({ network: chainId, version: safeVersion })
-
-  isL1SafeMasterCopy = sameAddress(masterCopy, safeL1Deployment?.networkAddresses[chainId])
-  const isL2SafeMasterCopy = sameAddress(masterCopy, safeL2Deployment?.networkAddresses[chainId])
+  isL1SafeMasterCopy =
+    Object.values(
+      _safeDeployments.find((deployment) => deployment.version === safeVersion)?.networkAddresses ?? {},
+    ).find((networkAddresses) => networkAddresses === masterCopy) !== undefined
+  const isL2SafeMasterCopy =
+    Object.values(
+      _safeL2Deployments.find((deployment) => deployment.version === safeVersion)?.networkAddresses ?? {},
+    ).find((networkAddresses) => networkAddresses === masterCopy) !== undefined
 
   // Legacy Safe contracts
   if (isLegacyVersion(safeVersion)) {
     isL1SafeMasterCopy = true
   } else if (!isL1SafeMasterCopy && !isL2SafeMasterCopy) {
+    //TODO(devanon): Allow user to use it anyway
     throw new Error(`Unknown Safe implementation: ${masterCopy}`)
   }
 
