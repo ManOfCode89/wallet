@@ -1,7 +1,6 @@
 import {
   Operation,
   postSafeGasEstimation,
-  getNonces as fetchNonces,
   type SafeTransactionEstimation,
 } from '@safe-global/safe-gateway-typescript-sdk'
 import type { MetaTransactionData, SafeTransactionDataPartial } from '@safe-global/safe-core-sdk-types'
@@ -35,14 +34,6 @@ export const getSafeTxGas = async (
   try {
     const estimation = await fetchRecommendedParams(chainId, safeAddress, safeTxData)
     return Number(estimation.safeTxGas)
-  } catch (e) {
-    logError(Errors._616, e)
-  }
-}
-
-export const getNonces = async (chainId: string, safeAddress: string) => {
-  try {
-    return fetchNonces(chainId, safeAddress)
   } catch (e) {
     logError(Errors._616, e)
   }

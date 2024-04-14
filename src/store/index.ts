@@ -15,7 +15,6 @@ import { safeInfoSlice } from './safeInfoSlice'
 import { balancesSlice } from './balancesSlice'
 import { sessionSlice } from './sessionSlice'
 import { txHistoryListener, txHistorySlice } from './txHistorySlice'
-import { txQueueListener, txQueueSlice } from './txQueueSlice'
 import { addressBookSlice } from './addressBookSlice'
 import { notificationsSlice } from './notificationsSlice'
 import { getPreloadedState, persistState } from './persistStore'
@@ -36,7 +35,6 @@ const rootReducer = combineReducers({
   [balancesSlice.name]: balancesSlice.reducer,
   [sessionSlice.name]: sessionSlice.reducer,
   [txHistorySlice.name]: txHistorySlice.reducer,
-  [txQueueSlice.name]: txQueueSlice.reducer,
   [addressBookSlice.name]: addressBookSlice.reducer,
   [notificationsSlice.name]: notificationsSlice.reducer,
   [pendingTxsSlice.name]: pendingTxsSlice.reducer,
@@ -71,7 +69,7 @@ export const getPersistedState = () => {
 export const listenerMiddlewareInstance = createListenerMiddleware<RootState>()
 
 const middleware = [persistState(persistedSlices), listenerMiddlewareInstance.middleware]
-const listeners = [addedSafesListener, safeMessagesListener, txHistoryListener, txQueueListener]
+const listeners = [addedSafesListener, safeMessagesListener, txHistoryListener]
 
 export const _hydrationReducer: typeof rootReducer = (state, action) => {
   if (action.type === HYDRATE_ACTION) {

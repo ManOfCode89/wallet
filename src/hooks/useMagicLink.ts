@@ -103,10 +103,6 @@ export const useMagicLink = () => {
   }, [chainId, safeAddress, tx, txKey, dispatch])
 
   const addedTxs = useAppSelector(selectAllAddedTxs)
-
-  useEffect(() => {
-    console.log({ addedTxs })
-  }, [addedTxs])
 }
 
 export const useAddOrUpdateTx = () => {

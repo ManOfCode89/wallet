@@ -9,12 +9,14 @@ import { dispatchOnChainSigning, dispatchTxExecution, dispatchTxSigning } from '
 import { useHasPendingTxs } from '@/hooks/usePendingTxs'
 import type { ConnectedWallet } from '@/hooks/wallets/useOnboard'
 import type { OnboardAPI } from '@web3-onboard/core'
-import { getSafeTxGas, getNonces } from '@/services/tx/tx-sender/recommendedNonce'
+import { getSafeTxGas } from '@/services/tx/tx-sender/recommendedNonce'
 import useAsync from '@/hooks/useAsync'
 import { type TransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
 import { useAddOrUpdateTx } from '@/hooks/useMagicLink'
 import { txDispatch, TxEvent } from '@/services/tx/txEvents'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
+import { useSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
+import { useQueuedTxsLength } from '@/hooks/useTxQueue'
 
 type TxActions = {
   signTx: (safeTx?: SafeTransaction, txId?: string, origin?: string) => Promise<string>
@@ -131,18 +133,23 @@ export const useIsExecutionLoop = (): boolean => {
 }
 
 export const useRecommendedNonce = (): number | undefined => {
-  const { safeAddress, safe } = useSafeInfo()
+  const sdk = useSafeSDK()
+  const queuedTxLength = useQueuedTxsLength()
 
   const [recommendedNonce] = useAsync(
     async () => {
-      if (!safe.chainId || !safeAddress) return
+      if (!sdk || !queuedTxLength) return
 
-      const nonces = await getNonces(safe.chainId, safeAddress)
+      let recommendedNonce = await sdk.getNonce()
 
-      return nonces?.recommendedNonce
+      let queue = parseInt(queuedTxLength)
+      if (queue > 0) {
+        recommendedNonce += queue
+      }
+
+      return recommendedNonce
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [safeAddress, safe.chainId, safe.txQueuedTag], // update when tx queue changes
+    [sdk, queuedTxLength], // update when tx queue changes
     false, // keep old recommended nonce while refreshing to avoid skeleton
   )
 

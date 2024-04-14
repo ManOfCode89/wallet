@@ -36,7 +36,11 @@ export const useLoadBalances = (): AsyncResult<SafeBalanceResponse> => {
 
       const requests = tokens.map(async (token) => {
         let balance = await getERC20Balance(token.address, safeAddress)
-        if (balance === undefined || (balance.eq(0) && !token.extensions?.custom)) return
+
+        if (token.address !== constants.AddressZero && !token.extensions?.custom && (balance?.isZero() ?? true)) {
+          return
+        }
+
         return {
           tokenInfo: {
             type: token.address === constants.AddressZero ? TokenType.NATIVE_TOKEN : TokenType.ERC20,
@@ -46,7 +50,7 @@ export const useLoadBalances = (): AsyncResult<SafeBalanceResponse> => {
             name: token.name,
             symbol: token.symbol,
           },
-          balance: balance.toString(),
+          balance: balance?.toString() ?? '0',
           fiatBalance: '',
           fiatConversion: '',
           custom: token.extensions?.custom ?? false,

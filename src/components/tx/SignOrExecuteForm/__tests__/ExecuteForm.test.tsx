@@ -74,7 +74,7 @@ describe('ExecuteForm', () => {
       .mockReturnValue({ executionValidationError: new Error('Some error'), isValidExecutionLoading: false })
 
     const { getByText } = render(
-      <ExecuteForm {...defaultProps} txActions={{ signTx: jest.fn(), addToBatch: jest.fn(), executeTx: jest.fn() }} />,
+      <ExecuteForm {...defaultProps} txActions={{ signTx: jest.fn(), executeTx: jest.fn() }} />,
     )
 
     expect(
@@ -104,7 +104,7 @@ describe('ExecuteForm', () => {
         {...defaultProps}
         safeTx={safeTransaction}
         onSubmit={jest.fn()}
-        txActions={{ signTx: jest.fn(), addToBatch: jest.fn(), executeTx: mockExecuteTx }}
+        txActions={{ signTx: jest.fn(), executeTx: mockExecuteTx }}
       />,
     )
 
@@ -124,7 +124,7 @@ describe('ExecuteForm', () => {
       <ExecuteForm
         {...defaultProps}
         safeTx={safeTransaction}
-        txActions={{ signTx: jest.fn(), addToBatch: jest.fn(), executeTx: mockExecuteTx }}
+        txActions={{ signTx: jest.fn(), executeTx: mockExecuteTx }}
       />,
     )
 

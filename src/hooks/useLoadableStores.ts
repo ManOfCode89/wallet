@@ -8,7 +8,6 @@ import useLoadChains from './loadables/useLoadChains'
 import useLoadSafeInfo from './loadables/useLoadSafeInfo'
 import useLoadBalances from './loadables/useLoadBalances'
 import useLoadTxHistory from './loadables/useLoadTxHistory'
-import useLoadTxQueue from './loadables/useLoadTxQueue'
 import useLoadMessages from './loadables/useLoadSafeMessages'
 
 // Import all the loadable slices
@@ -16,7 +15,6 @@ import { chainsSlice } from '@/store/chainsSlice'
 import { safeInfoSlice } from '@/store/safeInfoSlice'
 import { balancesSlice } from '@/store/balancesSlice'
 import { txHistorySlice } from '@/store/txHistorySlice'
-import { txQueueSlice } from '@/store/txQueueSlice'
 import { spendingLimitSlice } from '@/store/spendingLimitsSlice'
 import useLoadSpendingLimits from '@/hooks/loadables/useLoadSpendingLimits'
 import { safeMessagesSlice } from '@/store/safeMessagesSlice'
@@ -43,7 +41,6 @@ const useLoadableStores = () => {
   useUpdateStore(safeInfoSlice, useLoadSafeInfo)
   useUpdateStore(balancesSlice, useLoadBalances)
   useUpdateStore(txHistorySlice, useLoadTxHistory)
-  useUpdateStore(txQueueSlice, useLoadTxQueue)
   useUpdateStore(safeMessagesSlice, useLoadMessages)
   useUpdateStore(spendingLimitSlice, useLoadSpendingLimits)
 }
