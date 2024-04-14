@@ -52,6 +52,7 @@ const AddToken = ({
   const chain = useCurrentChain()
 
   const [showAddToken, setShowAddToken] = useState<boolean>(false)
+  const [addTokenError, setAddTokenError] = useState<Error | undefined>()
 
   const handleClickAddToken = () => {
     setShowAddToken(!showAddToken)
@@ -65,21 +66,29 @@ const AddToken = ({
   const { handleSubmit, formState, watch, reset } = methods
 
   const submitCallback = handleSubmit((inputData: TokenEntry) => {
-    if (!chain) return // TODO(devanon): show an error message
+    try {
+      if (!chain) throw new Error('No chain selected')
 
-    const token = {
-      chainId: parseInt(chain.chainId),
-      address: getAddress(inputData.address),
-      name: inputData.name || data?.name || '',
-      symbol: inputData.symbol || data?.symbol || '',
-      decimals: inputData.decimals || data?.decimals || 18,
-      logoUri: '',
-      type: TokenType.ERC20,
+      const token = {
+        chainId: parseInt(chain.chainId),
+        address: getAddress(inputData.address),
+        name: inputData.name || data?.name || '',
+        symbol: inputData.symbol || data?.symbol || '',
+        decimals: inputData.decimals || data?.decimals || 18,
+        logoUri: '',
+        type: TokenType.ERC20,
+      }
+
+      dispatch(add([chain.chainId, token]))
+      reset()
+      setShowAddToken(false)
+    } catch (error) {
+      if (error instanceof Error) {
+        setAddTokenError(error)
+      } else {
+        setAddTokenError(new Error('Unknown error when adding token.'))
+      }
     }
-
-    dispatch(add([chain.chainId, token]))
-    reset()
-    setShowAddToken(false)
   })
 
   const onSubmit = (e: BaseSyntheticEvent) => {
@@ -165,9 +174,12 @@ const AddToken = ({
                 </DialogContent>
               </Collapse>
 
-              <Collapse in={!!error}>
+              <Collapse in={!!error || !!addTokenError}>
                 <DialogContent>
-                  <ErrorMessage>Error loading token information, please double check the address.</ErrorMessage>
+                  {error && (
+                    <ErrorMessage>Error loading token information, please double check the address.</ErrorMessage>
+                  )}
+                  {addTokenError && <ErrorMessage>{addTokenError.message}</ErrorMessage>}
                 </DialogContent>
               </Collapse>
 
