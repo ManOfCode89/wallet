@@ -54,7 +54,7 @@ const TxDetailsBlock = ({ txSummary, txDetails }: TxDetailsProps): ReactElement 
     <>
       {/* /Details */}
       <div className={`${css.details} ${isUnsigned ? css.noSigners : ''}`}>
-        {safeTx && (
+        {safeTx && txDetails.txData && (
           <div className={css.shareLink}>
             <TxShareLink safeTx={safeTx} />
           </div>

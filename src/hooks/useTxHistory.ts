@@ -5,7 +5,12 @@ import { useTxFilter } from '@/utils/tx-history-filter'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { isEqual } from 'lodash'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
-import { enrichTransactionDetailsFromHistory, getTxKeyFromTxId, makeTxFromDetails } from '@/utils/transactions'
+import {
+  emptyUnknownTransaction,
+  enrichTransactionDetailsFromHistory,
+  getTxKeyFromTxId,
+  makeTxFromDetails,
+} from '@/utils/transactions'
 import { type DetailedTransaction, isDetailedTransactionListItem } from '@/utils/transaction-guards'
 import useExecutedTransactions from '@/hooks/useExecutedTransactions'
 
@@ -21,24 +26,24 @@ const useTxHistory = (): {
   const { chainId } = safe
 
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
-  const executedTransactions = useExecutedTransactions()
+  const { data: executedTransactions, loading: executedTransactionsLoading } = useExecutedTransactions()
 
   const [data, error, loading] = useAsync<Array<DetailedTransaction>>(
     async () => {
-      if (!transactions || !executedTransactions) {
+      if (!executedTransactions) {
         return []
       }
 
-      const results = await Promise.all(
+      const results: Array<DetailedTransaction | undefined> = await Promise.all(
         executedTransactions.map(async (executedTx) => {
           let txKey = getTxKeyFromTxId(executedTx.txId)
           if (!txKey) return
 
-          const tx = transactions[txKey]
+          const tx = transactions?.[txKey]
 
           if (!tx) {
-            // TODO(devanon): return some empty tx box with the most we can, or in L2, return most info
-            return
+            // TODO(devanon): parse info from L2 contract
+            return emptyUnknownTransaction(executedTx, safeAddress)
           }
 
           const details = await extractTxDetails(safeAddress, tx, safe)
@@ -63,7 +68,7 @@ const useTxHistory = (): {
   return {
     data,
     error: error?.message,
-    loading: loading,
+    loading: loading || executedTransactionsLoading,
   }
 }
 

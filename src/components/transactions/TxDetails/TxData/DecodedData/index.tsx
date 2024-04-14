@@ -12,9 +12,13 @@ interface Props {
 }
 
 export const DecodedData = ({ txData, txInfo }: Props): ReactElement | null => {
-  // nothing to render
+  // unknown tx
   if (!txData) {
-    return null
+    return (
+      <InfoDetails title="Unknown transaction:">
+        Full details for this transaction must be recovered through the magic link from a signer.
+      </InfoDetails>
+    )
   }
 
   let decodedData = <></>

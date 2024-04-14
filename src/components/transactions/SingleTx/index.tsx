@@ -45,7 +45,7 @@ const SingleTx = () => {
 
   const { safe, safeAddress } = useSafeInfo()
   const transaction = useAppSelector((state) => selectAddedTx(state, safe.chainId, safeAddress, transactionKey ?? ''))
-  const executedTx = useExecutedTransaction(transactionId)
+  const { data: executedTx } = useExecutedTransaction(transactionId)
 
   const [txDetails, setTxDetails] = useState<TransactionDetails | undefined>(undefined)
   const [txDetailsError, setTxDetailsError] = useState<Error | undefined>(undefined)

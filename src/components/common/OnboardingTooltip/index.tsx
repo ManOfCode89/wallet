@@ -8,11 +8,13 @@ import { useDarkMode } from '@/hooks/useDarkMode'
 /**
  * The OnboardingTooltip renders a sticky Tooltip with an arrow pointing towards the wrapped component.
  * This Tooltip contains a button to hide it. This decision will be stored in the local storage such that the OnboardingTooltip will only popup until clicked away once.
+ * Also allows a post tooltip to be shown after the initial tooltip is hidden.
  */
 export const OnboardingTooltip = ({
   children,
   widgetLocalStorageId,
   text,
+  postText,
   initiallyShown = true,
   className,
   placement,
@@ -20,6 +22,7 @@ export const OnboardingTooltip = ({
   children: ReactElement // NB: this has to be an actual HTML element, otherwise the Tooltip will not work
   widgetLocalStorageId: string
   text: string | ReactElement
+  postText?: string | ReactElement
   initiallyShown?: boolean
   className?: string
   placement?: TooltipProps['placement']
@@ -27,10 +30,29 @@ export const OnboardingTooltip = ({
   const [widgetHidden = !initiallyShown, setWidgetHidden] = useLocalStorage<boolean>(widgetLocalStorageId)
   const isDarkMode = useDarkMode()
 
-  return widgetHidden || !text ? (
-    children
-  ) : (
+  if (widgetHidden && postText) {
+    return (
+      <Tooltip
+        key="postTooltip"
+        PopperProps={{
+          className,
+        }}
+        title={postText}
+        disableInteractive
+        placement="top"
+      >
+        {children}
+      </Tooltip>
+    )
+  }
+
+  if (widgetHidden || !text) {
+    return children
+  }
+
+  return (
     <Tooltip
+      key="onboardingTooltip"
       PopperProps={{
         className,
       }}

@@ -83,6 +83,13 @@ export const getTransactionType = (tx: TransactionSummary, addressBook: AddressB
         }
       }
 
+      if (tx.txInfo.to.value === '0x') {
+        return {
+          icon: toAddress?.logoUri || '/images/transactions/custom.svg',
+          text: 'Unknown contract interaction',
+        }
+      }
+
       return {
         icon: toAddress?.logoUri || '/images/transactions/custom.svg',
         text: addressBookName || toAddress?.name || 'Contract interaction',

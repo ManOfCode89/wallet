@@ -22,11 +22,11 @@ const useTxQueue = (): {
   const { chainId } = safe
 
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
-  const executedTransactions = useExecutedTransactions()
+  const { data: executedTransactions, loading: executedTransactionsLoading } = useExecutedTransactions()
 
   const [data, error, loading] = useAsync<Array<DetailedTransaction>>(
     async () => {
-      if (!transactions || !executedTransactions) {
+      if (!transactions) {
         return []
       }
 
@@ -34,7 +34,7 @@ const useTxQueue = (): {
         Object.values(transactions).map(async (tx) => {
           const details = await extractTxDetails(safeAddress, tx, safe)
 
-          const executedTransaction = executedTransactions.find((executedTx) => executedTx.txId === details.txId)
+          const executedTransaction = executedTransactions?.find((executedTx) => executedTx.txId === details.txId)
           if (executedTransaction) return
 
           const transaction = makeTxFromDetails(details)
@@ -55,7 +55,7 @@ const useTxQueue = (): {
   return {
     data,
     error: error?.message,
-    loading: loading,
+    loading: loading || executedTransactionsLoading,
   }
 }
 

@@ -155,7 +155,7 @@ const AssetsTable = (): ReactElement => {
                     <SendButton tokenInfo={item.tokenInfo} onClick={() => onSendClick(item.tokenInfo.address)} />
 
                     {item.custom && (
-                      <Tooltip title="Hide asset" arrow disableInteractive>
+                      <Tooltip title="Hide asset (you will have to re-add it)" arrow disableInteractive>
                         <IconButton
                           disabled={removingToken !== undefined}
                           size="medium"
@@ -177,6 +177,7 @@ const AssetsTable = (): ReactElement => {
     <>
       <div className={css.container}>
         <EnhancedTable rows={rows} headCells={headCells}>
+          {/* TODO(devanon): Test on mobile */}
           <AddToken columns={headCells.length} />
         </EnhancedTable>
       </div>

@@ -26,7 +26,7 @@ export const ExpandableTransactionItem = ({
         unmountOnExit: false,
       }}
       elevation={0}
-      defaultExpanded={!!txDetails}
+      defaultExpanded={!!txDetails && !!txDetails.txData}
       data-testid={testId}
     >
       <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ justifyContent: 'flex-start', overflowX: 'auto' }}>

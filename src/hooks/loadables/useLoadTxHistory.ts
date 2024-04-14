@@ -40,21 +40,23 @@ export const useLoadTxHistory = (): AsyncResult<Array<TxHistoryItem>> => {
 
       const logs = await safeContract.queryFilter(safeContract.filters.ExecutionSuccess(), 0, 'latest')
 
-      return await Promise.all(
-        logs.map(async (log) => {
-          const [timestamp, executor] = await Promise.all([
-            provider.getBlock(log.blockNumber).then((block) => block.timestamp * 1000),
-            provider.getTransaction(log.transactionHash).then((tx) => tx.from),
-          ])
+      return (
+        await Promise.all(
+          logs.map(async (log) => {
+            const [timestamp, executor] = await Promise.all([
+              provider.getBlock(log.blockNumber).then((block) => block.timestamp * 1000),
+              provider.getTransaction(log.transactionHash).then((tx) => tx.from),
+            ])
 
-          return {
-            txId: `multisig_${safeAddress}_${log.args.txHash}`,
-            txHash: log.transactionHash,
-            timestamp,
-            executor,
-          }
-        }),
-      )
+            return {
+              txId: `multisig_${safeAddress}_${log.args.txHash}`,
+              txHash: log.transactionHash,
+              timestamp,
+              executor,
+            }
+          }),
+        )
+      ).reverse()
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [safeAddress, provider, pollCount, sdk],

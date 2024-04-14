@@ -4,19 +4,19 @@ import { selectTxHistory } from '@/store/txHistorySlice'
 import { useMemo } from 'react'
 
 export const useExecutedTransaction = (txId?: string) => {
-  const { data } = useAppSelector((state) => selectTxHistory(state), isEqual)
+  const { data, loading } = useAppSelector((state) => selectTxHistory(state), isEqual)
 
   return useMemo(() => {
-    return data?.find((tx) => tx.txId === txId)
-  }, [data, txId])
+    return { data: data?.find((tx) => tx.txId === txId), loading }
+  }, [data, txId, loading])
 }
 
 const useExecutedTransactions = () => {
-  const { data } = useAppSelector((state) => selectTxHistory(state), isEqual)
+  const { data, loading } = useAppSelector((state) => selectTxHistory(state), isEqual)
 
   return useMemo(() => {
-    return data
-  }, [data])
+    return { data, loading }
+  }, [data, loading])
 }
 
 export default useExecutedTransactions

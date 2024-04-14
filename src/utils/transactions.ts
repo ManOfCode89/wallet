@@ -10,9 +10,11 @@ import {
   type TransactionListPage,
   TransactionStatus,
   type TransactionSummary,
+  TransactionInfoType,
 } from '@safe-global/safe-gateway-typescript-sdk'
 import { ConflictType, getTransactionDetails, TransactionListItemType } from '@safe-global/safe-gateway-typescript-sdk'
 import {
+  type DetailedTransaction,
   isERC20Transfer,
   isModuleDetailedExecutionInfo,
   isMultisigDetailedExecutionInfo,
@@ -315,5 +317,38 @@ export const enrichTransactionDetailsFromHistory = (details: TransactionDetails,
 
   if (isMultisigDetailedExecutionInfo(details.detailedExecutionInfo)) {
     details.detailedExecutionInfo.executor = addressEx(executedTx.executor)
+  }
+}
+
+export const emptyUnknownTransaction = (executedTx: TxHistoryItem, safeAddress: string): DetailedTransaction => {
+  return {
+    type: TransactionListItemType.TRANSACTION,
+    conflictType: ConflictType.NONE,
+    transaction: {
+      id: executedTx.txId,
+      timestamp: executedTx.timestamp,
+      txStatus: TransactionStatus.SUCCESS,
+      txInfo: {
+        type: TransactionInfoType.CUSTOM,
+        to: addressEx('0x'),
+        dataSize: '',
+        value: '',
+        isCancellation: false,
+      },
+    },
+    details: {
+      safeAddress: safeAddress,
+      txId: executedTx.txId,
+      executedAt: executedTx.timestamp,
+      txStatus: TransactionStatus.SUCCESS,
+      txHash: executedTx.txHash,
+      txInfo: {
+        type: TransactionInfoType.CUSTOM,
+        to: addressEx('0x'),
+        dataSize: '',
+        value: '',
+        isCancellation: false,
+      },
+    },
   }
 }
