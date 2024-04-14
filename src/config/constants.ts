@@ -96,7 +96,7 @@ export const REDEFINE_API = process.env.NEXT_PUBLIC_REDEFINE_API
 export const REDEFINE_ARTICLE = 'https://safe.mirror.xyz/rInLWZwD_sf7enjoFerj6FIzCYmVMGrrV8Nhg4THdwI'
 
 // Eternal Safe
-export const REPO_URL = 'https://github.com/devanoneth/eternal-safe'
+export const REPO_URL = 'https://github.com/eternalsafe/wallet'
 export const DEFAULT_IPFS_GATEWAY = 'https://cloudflare-ipfs.com'
 export const DEFAULT_TOKENLIST_IPNS = 'ipns/tokens.uniswap.org'
 export const DEFAULT_TOKENLIST_INFO =

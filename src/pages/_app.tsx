@@ -6,11 +6,9 @@ import Head from 'next/head'
 import CssBaseline from '@mui/material/CssBaseline'
 import type { Theme } from '@mui/material/styles'
 import { ThemeProvider } from '@mui/material/styles'
-import { setBaseUrl as setGatewayBaseUrl } from '@safe-global/safe-gateway-typescript-sdk'
 import { CacheProvider, type EmotionCache } from '@emotion/react'
 import SafeThemeProvider from '@/components/theme/SafeThemeProvider'
 import '@/styles/globals.css'
-import { IS_PRODUCTION, GATEWAY_URL_STAGING, GATEWAY_URL_PRODUCTION } from '@/config/constants'
 import { StoreHydrator } from '@/store'
 import PageLayout from '@/components/common/PageLayout'
 import useLoadableStores from '@/hooks/useLoadableStores'
@@ -23,7 +21,6 @@ import useTxPendingStatuses from '@/hooks/useTxPendingStatuses'
 import { useInitSession } from '@/hooks/useInitSession'
 import Notifications from '@/components/common/Notifications'
 import { useDarkMode } from '@/hooks/useDarkMode'
-import { cgwDebugStorage } from '@/components/sidebar/DebugToggle'
 import ErrorBoundary from '@/components/common/ErrorBoundary'
 import createEmotionCache from '@/utils/createEmotionCache'
 import MetaTags from '@/components/common/MetaTags'
@@ -35,11 +32,7 @@ import { TxModalProvider } from '@/components/tx-flow'
 import WalletProvider from '@/components/common/WalletProvider'
 import { useMagicLink } from '@/hooks/useMagicLink'
 
-// TODO(devanon): Remove Gateway completely
-const GATEWAY_URL = IS_PRODUCTION || cgwDebugStorage.get() ? GATEWAY_URL_PRODUCTION : GATEWAY_URL_STAGING
-
 const InitApp = (): null => {
-  setGatewayBaseUrl(GATEWAY_URL)
   useAdjustUrl()
   useInitSession()
   useLoadableStores()
@@ -94,7 +87,7 @@ const WebCoreApp = ({
     <StoreHydrator>
       <Head>
         <title key="default-title">{'Eternal Safe'}</title>
-        <MetaTags prefetchUrl={GATEWAY_URL} />
+        <MetaTags />
       </Head>
 
       <CacheProvider value={emotionCache}>

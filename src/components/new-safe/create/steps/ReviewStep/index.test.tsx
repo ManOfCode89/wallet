@@ -18,7 +18,7 @@ describe('NetworkFee', () => {
   it('should display the total fee if not social login', () => {
     jest.spyOn(useWallet, 'default').mockReturnValue({ label: 'MetaMask' } as unknown as ConnectedWallet)
     const mockTotalFee = '0.0123'
-    const result = render(<NetworkFee totalFee={mockTotalFee} chain={mockChainInfo} willRelay={true} />)
+    const result = render(<NetworkFee totalFee={mockTotalFee} chain={mockChainInfo} />)
 
     expect(result.getByText(`≈ ${mockTotalFee} ${mockChainInfo.nativeCurrency.symbol}`)).toBeInTheDocument()
   })

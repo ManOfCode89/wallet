@@ -18,10 +18,9 @@ import { useCurrentChain } from '@/hooks/useChains'
 import { usePendingSafe } from './usePendingSafe'
 import useSyncSafeCreationStep from '../../useSyncSafeCreationStep'
 
-export const getInitialCreationStatus = (willRelay: boolean): SafeCreationStatus =>
-  willRelay ? SafeCreationStatus.PROCESSING : SafeCreationStatus.AWAITING
+export const getInitialCreationStatus = (): SafeCreationStatus => SafeCreationStatus.AWAITING
 
-export const CreateSafeStatus = ({ data, setProgressColor, setStep }: StepRenderProps<NewSafeFormData>) => {
+export const CreateSafeStatus = ({ setProgressColor, setStep }: StepRenderProps<NewSafeFormData>) => {
   const router = useRouter()
   const chainInfo = useCurrentChain()
   const chainPrefix = chainInfo?.shortName || ''
@@ -31,12 +30,10 @@ export const CreateSafeStatus = ({ data, setProgressColor, setStep }: StepRender
   const [pendingSafe, setPendingSafe] = usePendingSafe()
   useSyncSafeCreationStep(setStep)
 
-  // The willRelay flag can come from the previous step or from local storage
-  const willRelay = !!(data.willRelay || pendingSafe?.willRelay)
-  const initialStatus = getInitialCreationStatus(willRelay)
+  const initialStatus = getInitialCreationStatus()
   const [status, setStatus] = useState<SafeCreationStatus>(initialStatus)
 
-  const { handleCreateSafe } = useSafeCreation(status, setStatus, willRelay)
+  const { handleCreateSafe } = useSafeCreation(status, setStatus)
 
   useSafeCreationEffects({
     status,

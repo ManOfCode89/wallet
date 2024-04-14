@@ -4,11 +4,12 @@
 - [ ] Rip out Safe creation
 - [ ] Replace Safe branded assets in public/
 - [ ] Update terms and other imprint
-- [ ] Remove Safe Gateway SDK completely
+- [ ] Remove all uses of Safe Gateway SDK, leaving only type usage
 - [ ] Update env variables
 
 ### Done ✓
 
+- [x] Remove relaying
 - [x] Remove push notifications
 - [x] Implement magic link with signatures
 - [x] Query transactions from chain
@@ -35,6 +36,7 @@
 - Custom contract interactions via built-in version of [tx-builder](https://github.com/safe-global/safe-react-apps/tree/development/apps/tx-builder)
 - Allow onchain message signing
 - Parse unknown onchain transactions
+- Safe creation
 - Dappnode package
 - Support NFT assets
 - Support L2 events

@@ -52,7 +52,7 @@ export const useLoadSafeInfo = (): AsyncResult<SafeInfo> => {
       fallbackHandler: addressEx(fallbackHandler),
       version,
 
-      // TODO(devanon): these tags are used to force a hook reload, probably not needed here but should check: https://github.com/safe-global/safe-client-gateway/blob/main/src/routes/safes/safes.service.ts#L103
+      // these tags are used to force hook reloads, not needed in Eternal Safe
       collectiblesTag: '',
       txQueuedTag: '',
       txHistoryTag: '',

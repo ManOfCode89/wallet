@@ -27,7 +27,6 @@ import { backOff } from 'exponential-backoff'
 import { LATEST_SAFE_VERSION } from '@/config/constants'
 import { EMPTY_DATA, ZERO_ADDRESS } from '@safe-global/safe-core-sdk/dist/src/utils/constants'
 import { formatError } from '@/utils/formatters'
-import { sponsoredCall } from '@/services/tx/relaying'
 
 export type SafeCreationProps = {
   owners: string[]
@@ -260,49 +259,4 @@ export const getRedirect = (
   const hasQueryParams = redirectUrl.includes('?')
   const appendChar = hasQueryParams ? '&' : '?'
   return redirectUrl + `${appendChar}safe=${address}`
-}
-
-export const relaySafeCreation = async (chain: ChainInfo, owners: string[], threshold: number, saltNonce: number) => {
-  const readOnlyProxyFactoryContract = getReadOnlyProxyFactoryContract(chain.chainId, LATEST_SAFE_VERSION)
-  const proxyFactoryAddress = readOnlyProxyFactoryContract.getAddress()
-  const readOnlyFallbackHandlerContract = getReadOnlyFallbackHandlerContract(chain.chainId, LATEST_SAFE_VERSION)
-  const fallbackHandlerAddress = readOnlyFallbackHandlerContract.getAddress()
-  const readOnlySafeContract = getReadOnlyGnosisSafeContract(chain)
-  const safeContractAddress = readOnlySafeContract.getAddress()
-
-  const callData = {
-    owners,
-    threshold,
-    to: ZERO_ADDRESS,
-    data: EMPTY_DATA,
-    fallbackHandler: fallbackHandlerAddress,
-    paymentToken: ZERO_ADDRESS,
-    payment: 0,
-    paymentReceiver: ZERO_ADDRESS,
-  }
-
-  const initializer = readOnlySafeContract.encode('setup', [
-    callData.owners,
-    callData.threshold,
-    callData.to,
-    callData.data,
-    callData.fallbackHandler,
-    callData.paymentToken,
-    callData.payment,
-    callData.paymentReceiver,
-  ])
-
-  const createProxyWithNonceCallData = readOnlyProxyFactoryContract.encode('createProxyWithNonce', [
-    safeContractAddress,
-    initializer,
-    saltNonce,
-  ])
-
-  const relayResponse = await sponsoredCall({
-    chainId: chain.chainId,
-    to: proxyFactoryAddress,
-    data: createProxyWithNonceCallData,
-  })
-
-  return relayResponse.taskId
 }

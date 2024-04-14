@@ -6,7 +6,7 @@ import darkPalette from '@/components/theme/darkPalette'
 const descriptionText = 'Eternal Safe is a decentralized fork of Safe{Wallet}.'
 const titleText = 'Eternal Safe'
 
-const MetaTags = ({ prefetchUrl }: { prefetchUrl: string }) => (
+const MetaTags = () => (
   <>
     <meta name="description" content={descriptionText} />
 
@@ -23,10 +23,6 @@ const MetaTags = ({ prefetchUrl }: { prefetchUrl: string }) => (
     {/* CSP */}
     <meta httpEquiv="Content-Security-Policy" content={ContentSecurityPolicy} />
     {IS_PRODUCTION && <meta httpEquiv="Strict-Transport-Security" content={StrictTransportSecurity} />}
-
-    {/* Prefetch the backend domain */}
-    <link rel="dns-prefetch" href={prefetchUrl} />
-    <link rel="preconnect" href={prefetchUrl} crossOrigin="" />
 
     {/* Mobile tags */}
     <meta name="viewport" content="width=device-width" />

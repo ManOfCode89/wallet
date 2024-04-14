@@ -14,7 +14,6 @@ import {
   handleSafeCreationError,
   SAFE_CREATION_ERROR_KEY,
   showSafeCreationError,
-  relaySafeCreation,
   estimateSafeCreationGas,
 } from '@/components/new-safe/create/logic'
 import { useAppDispatch } from '@/store'
@@ -40,7 +39,6 @@ export enum SafeCreationStatus {
 export const useSafeCreation = (
   status: SafeCreationStatus,
   setStatus: Dispatch<SetStateAction<SafeCreationStatus>>,
-  willRelay: boolean,
 ) => {
   const [isCreating, setIsCreating] = useState(false)
   const [isWatching, setIsWatching] = useState(false)
@@ -73,46 +71,33 @@ export const useSafeCreation = (
     dispatch(closeByGroupKey({ groupKey: SAFE_CREATION_ERROR_KEY }))
 
     const { owners, threshold, saltNonce } = pendingSafe
-    const ownersAddresses = owners.map((owner) => owner.address)
 
     try {
-      if (willRelay) {
-        const taskId = await relaySafeCreation(chain, ownersAddresses, threshold, saltNonce)
+      const tx = await getSafeCreationTxInfo(provider, owners, threshold, saltNonce, chain, wallet)
 
-        setPendingSafe(pendingSafe ? { ...pendingSafe, taskId } : undefined)
-        setStatus(SafeCreationStatus.PROCESSING)
-        waitForCreateSafeTx(taskId, setStatus)
-      } else {
-        const tx = await getSafeCreationTxInfo(provider, owners, threshold, saltNonce, chain, wallet)
-
-        const safeParams = {
-          threshold,
-          owners: owners.map((owner) => owner.address),
-          saltNonce,
-        }
-
-        const safeDeployProps = getSafeDeployProps(
-          safeParams,
-          (txHash) => createSafeCallback(txHash, tx),
-          chain.chainId,
-        )
-
-        const gasLimit = await estimateSafeCreationGas(chain, provider, tx.from, safeParams)
-
-        const options: DeploySafeProps['options'] = isEIP1559
-          ? {
-              maxFeePerGas: maxFeePerGas?.toString(),
-              maxPriorityFeePerGas: maxPriorityFeePerGas?.toString(),
-              gasLimit: gasLimit.toString(),
-            }
-          : { gasPrice: maxFeePerGas?.toString(), gasLimit: gasLimit.toString() }
-
-        await createNewSafe(provider, {
-          ...safeDeployProps,
-          options,
-        })
-        setStatus(SafeCreationStatus.SUCCESS)
+      const safeParams = {
+        threshold,
+        owners: owners.map((owner) => owner.address),
+        saltNonce,
       }
+
+      const safeDeployProps = getSafeDeployProps(safeParams, (txHash) => createSafeCallback(txHash, tx), chain.chainId)
+
+      const gasLimit = await estimateSafeCreationGas(chain, provider, tx.from, safeParams)
+
+      const options: DeploySafeProps['options'] = isEIP1559
+        ? {
+            maxFeePerGas: maxFeePerGas?.toString(),
+            maxPriorityFeePerGas: maxPriorityFeePerGas?.toString(),
+            gasLimit: gasLimit.toString(),
+          }
+        : { gasPrice: maxFeePerGas?.toString(), gasLimit: gasLimit.toString() }
+
+      await createNewSafe(provider, {
+        ...safeDeployProps,
+        options,
+      })
+      setStatus(SafeCreationStatus.SUCCESS)
     } catch (err) {
       const _err = err as EthersError
       const status = handleSafeCreationError(_err)
@@ -136,10 +121,8 @@ export const useSafeCreation = (
     maxPriorityFeePerGas,
     pendingSafe,
     provider,
-    setPendingSafe,
     setStatus,
     wallet,
-    willRelay,
   ])
 
   const watchSafeTx = useCallback(async () => {
@@ -155,7 +138,7 @@ export const useSafeCreation = (
 
   // Create or monitor Safe creation
   useEffect(() => {
-    if (status !== getInitialCreationStatus(willRelay)) return
+    if (status !== getInitialCreationStatus()) return
 
     if (pendingSafe?.txHash && !isCreating) {
       void watchSafeTx()
@@ -168,16 +151,7 @@ export const useSafeCreation = (
     }
 
     void handleCreateSafe()
-  }, [
-    handleCreateSafe,
-    isCreating,
-    pendingSafe?.taskId,
-    pendingSafe?.txHash,
-    setStatus,
-    status,
-    watchSafeTx,
-    willRelay,
-  ])
+  }, [handleCreateSafe, isCreating, pendingSafe?.taskId, pendingSafe?.txHash, setStatus, status, watchSafeTx])
 
   return {
     handleCreateSafe,
