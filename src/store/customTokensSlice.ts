@@ -12,6 +12,9 @@ export const customTokensSlice = createSlice({
   name: 'customTokens',
   initialState,
   reducers: {
+    setCustomTokens(_, action: PayloadAction<CustomTokensState>) {
+      return action.payload
+    },
     add: (state, action: PayloadAction<[string, TokenInfo]>) => {
       const [chainId, token] = action.payload
 

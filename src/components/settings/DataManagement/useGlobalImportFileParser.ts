@@ -5,6 +5,8 @@ import { migrateAddressBook } from '@/services/ls-migration/addressBook'
 import { isChecksummedAddress } from '@/utils/addresses'
 import type { AddressBook, AddressBookState } from '@/store/addressBookSlice'
 import type { AddedSafesState } from '@/store/addedSafesSlice'
+import type { CustomTokensState } from '@/store/customTokensSlice'
+import type { AddedTxsState } from '@/store/addedTxsSlice'
 import type { SafeAppsState } from '@/store/safeAppsSlice'
 import type { SettingsState } from '@/store/settingsSlice'
 
@@ -65,6 +67,8 @@ export const _filterValidAbEntries = (ab?: AddressBookState): AddressBookState |
 type Data = {
   addedSafes?: AddedSafesState
   addressBook?: AddressBookState
+  customTokens?: CustomTokensState
+  addedTxs?: AddedTxsState
   settings?: SettingsState
   safeApps?: SafeAppsState
   error?: ImportErrors
@@ -79,6 +83,8 @@ export const useGlobalImportJsonParser = (jsonData: string | undefined): Data =>
       addedSafesCount: 0,
       addressBook: undefined,
       addedSafes: undefined,
+      customTokens: undefined,
+      addedTxs: undefined,
       settings: undefined,
       safeApps: undefined,
     }
@@ -114,6 +120,8 @@ export const useGlobalImportJsonParser = (jsonData: string | undefined): Data =>
       case SAFE_EXPORT_VERSION.V2: {
         data.addressBook = _filterValidAbEntries(parsedFile.data.addressBook)
         data.addedSafes = parsedFile.data.addedSafes
+        data.customTokens = parsedFile.data.customTokens
+        data.addedTxs = parsedFile.data.addedTxs
         data.settings = parsedFile.data.settings
         data.safeApps = parsedFile.data.safeApps
 

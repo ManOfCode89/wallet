@@ -14,6 +14,8 @@ import { ImportFileUpload } from '@/components/settings/DataManagement/ImportFil
 import { showNotification } from '@/store/notificationsSlice'
 
 import css from './styles.module.css'
+import { customTokensSlice } from '@/store/customTokensSlice'
+import { addedTxsSlice } from '@/store/addedTxsSlice'
 
 export const ImportDialog = ({
   onClose,
@@ -29,8 +31,17 @@ export const ImportDialog = ({
   setJsonData: Dispatch<SetStateAction<string | undefined>>
 }): ReactElement => {
   const dispatch = useAppDispatch()
-  const { addedSafes, addedSafesCount, addressBook, addressBookEntriesCount, settings, safeApps, error } =
-    useGlobalImportJsonParser(jsonData)
+  const {
+    addedSafes,
+    addedSafesCount,
+    addressBook,
+    addressBookEntriesCount,
+    customTokens,
+    addedTxs,
+    settings,
+    safeApps,
+    error,
+  } = useGlobalImportJsonParser(jsonData)
 
   const isDisabled = (!addedSafes && !addressBook && !settings && !safeApps) || !!error
 
@@ -44,8 +55,17 @@ export const ImportDialog = ({
     if (addressBook) {
       dispatch(addressBookSlice.actions.setAddressBook(addressBook))
     }
+
     if (addedSafes) {
       dispatch(addedSafesSlice.actions.setAddedSafes(addedSafes))
+    }
+
+    if (customTokens) {
+      dispatch(customTokensSlice.actions.setCustomTokens(customTokens))
+    }
+
+    if (addedTxs) {
+      dispatch(addedTxsSlice.actions.setAddedTxs(addedTxs))
     }
 
     if (settings) {
@@ -91,6 +111,8 @@ export const ImportDialog = ({
               className={css.header}
               addedSafes={addedSafes}
               addressBook={addressBook}
+              customTokens={customTokens}
+              addedTxs={addedTxs}
               settings={settings}
               safeApps={safeApps}
               error={error}

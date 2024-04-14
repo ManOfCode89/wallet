@@ -28,6 +28,9 @@ export const addedTxsSlice = createSlice({
   name: 'addedTxs',
   initialState,
   reducers: {
+    setAddedTxs(_, action: PayloadAction<AddedTxsState>) {
+      return action.payload
+    },
     addOrUpdateTx: (
       state,
       { payload }: PayloadAction<{ chainId: string; safeAddress: string; tx: SafeTransaction; txKey: string }>,

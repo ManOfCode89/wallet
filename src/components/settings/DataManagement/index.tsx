@@ -8,10 +8,9 @@ import { addressBookSlice, selectAllAddressBooks } from '@/store/addressBookSlic
 import { addedSafesSlice, selectAllAddedSafes } from '@/store/addedSafesSlice'
 import { safeAppsSlice, selectSafeApps } from '@/store/safeAppsSlice'
 import { selectSettings, settingsSlice } from '@/store/settingsSlice'
-import { addedTxsSlice } from '@/store/addedTxsSlice'
-import { customTokensSlice } from '@/store/customTokensSlice'
+import { addedTxsSlice, selectAllAddedTxs } from '@/store/addedTxsSlice'
+import { customTokensSlice, selectCustomTokens } from '@/store/customTokensSlice'
 import InfoIcon from '@/public/images/notifications/info.svg'
-import ExternalLink from '@/components/common/ExternalLink'
 import { ImportFileUpload } from '@/components/settings/DataManagement/ImportFileUpload'
 import { ImportDialog } from '@/components/settings/DataManagement/ImportDialog'
 import { SAFE_EXPORT_VERSION } from '@/components/settings/DataManagement/useGlobalImportFileParser'
@@ -65,6 +64,8 @@ const DataManagement = () => {
   const addressBook = useAppSelector(selectAllAddressBooks)
   const settings = useAppSelector(selectSettings)
   const safeApps = useAppSelector(selectSafeApps)
+  const customTokens = useAppSelector(selectCustomTokens)
+  const addedTransactions = useAppSelector(selectAllAddedTxs)
 
   useEffect(() => {
     // Prevent hydration errors
@@ -82,7 +83,10 @@ const DataManagement = () => {
           </Grid>
 
           <Grid item container xs>
-            <Typography>Download your local data with your added Safe Accounts, address book and settings.</Typography>
+            <Typography>
+              Download your local data with your added Safe Accounts, address book, assets, transaction details and
+              settings.
+            </Typography>
 
             <FileListCard
               avatar={
@@ -98,6 +102,8 @@ const DataManagement = () => {
               }
               addedSafes={addedSafes}
               addressBook={addressBook}
+              customTokens={customTokens}
+              addedTxs={addedTransactions}
               settings={settings}
               safeApps={safeApps}
             />
@@ -112,8 +118,8 @@ const DataManagement = () => {
                   mr: 0.5,
                 }}
               />
-              You can also export your data from the{' '}
-              <ExternalLink href="https://gnosis-safe.io/app/export">old app</ExternalLink>
+              Because Eternal Safe does not rely on any backend, it is even more important to keep a backup of this
+              data. If you ever switch to a new browser or onboard another signer, this is the best way to get setup.
             </Typography>
           </Grid>
         </Grid>

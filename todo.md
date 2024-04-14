@@ -1,16 +1,17 @@
 ### Todo
 
-- [ ] Query transactions from chain
-- [ ] Implement magic link with signatures
 - [ ] Ask for RPC URL in Safe Loading flow
 - [ ] Rip out Safe creation
 - [ ] Replace Safe branded assets in public/
 - [ ] Update terms and other imprint
-- [ ] Remove Safe Gateway SDK
+- [ ] Remove Safe Gateway SDK completely
 - [ ] Update env variables
 
 ### Done ✓
 
+- [x] Implement magic link with signatures
+- [x] Query transactions from chain
+- [x] Update data export/import for transactions and assets
 - [x] Query balances from chain
 - [x] Change favicon
 - [x] Remove cypress
@@ -34,3 +35,5 @@
 - Allow onchain message signing
 - Parse unknown onchain transactions
 - Dappnode package
+- Support NFT assets
+- Support L2 events

@@ -52,7 +52,7 @@ export const ImportFileUpload = ({
 
   return (
     <>
-      <Typography>Import {'Safe{Wallet}'} data by uploading a file in the area below.</Typography>
+      <Typography>Import Eternal Safe data by uploading a file in the area below.</Typography>
 
       <FileUpload
         fileType={FileTypes.JSON}

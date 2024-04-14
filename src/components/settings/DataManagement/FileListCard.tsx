@@ -8,6 +8,8 @@ import useChains from '@/hooks/useChains'
 import { ImportErrors } from '@/components/settings/DataManagement/useGlobalImportFileParser'
 import type { AddedSafesState } from '@/store/addedSafesSlice'
 import type { AddressBookState } from '@/store/addressBookSlice'
+import type { CustomTokensState } from '@/store/customTokensSlice'
+import type { AddedTxsState } from '@/store/addedTxsSlice'
 import type { SafeAppsState } from '@/store/safeAppsSlice'
 import type { SettingsState } from '@/store/settingsSlice'
 import type { ChainInfo } from '@safe-global/safe-gateway-typescript-sdk'
@@ -16,7 +18,7 @@ import css from './styles.module.css'
 
 const getItemSecondaryText = (
   chains: ChainInfo[],
-  data: AddedSafesState | AddressBookState = {},
+  data: AddedSafesState | AddressBookState | CustomTokensState | AddedTxsState = {},
   singular: string,
   plural: string,
 ): ReactElement => {
@@ -49,6 +51,8 @@ const getItemSecondaryText = (
 type Data = {
   addedSafes?: AddedSafesState
   addressBook?: AddressBookState
+  customTokens?: CustomTokensState
+  addedTxs?: AddedTxsState
   settings?: SettingsState
   safeApps?: SafeAppsState
   error?: string
@@ -63,6 +67,8 @@ type ItemProps = ListProps & { chains: ChainInfo[] }
 const getItems = ({
   addedSafes,
   addressBook,
+  customTokens,
+  addedTxs,
   settings,
   safeApps,
   error,
@@ -75,6 +81,8 @@ const getItems = ({
 
   const addedSafeChainAmount = Object.keys(addedSafes || {}).length
   const addressBookChainAmount = Object.keys(addressBook || {}).length
+  const customTokensChainAmount = Object.keys(customTokens || {}).length
+  const addedTxsChainAmount = Object.keys(addedTxs || {}).length
 
   const items: Array<ListItemTextProps> = []
 
@@ -102,6 +110,33 @@ const getItems = ({
     }
 
     items.push(addressBookPreview)
+  }
+
+  if (customTokens) {
+    const customTokensPreview: ListItemTextProps = {
+      primary: (
+        <>
+          <b>Token assets</b> for {customTokensChainAmount} {customTokensChainAmount === 1 ? 'chain' : 'chains'}
+        </>
+      ),
+      secondary: showPreview ? getItemSecondaryText(chains, customTokens, 'token', 'tokens') : undefined,
+    }
+
+    items.push(customTokensPreview)
+  }
+
+  if (addedTxs) {
+    const addedTransactionsPreview: ListItemTextProps = {
+      primary: (
+        <>
+          <b>Transactions with full details</b> for {addedTxsChainAmount}{' '}
+          {addedTxsChainAmount === 1 ? 'chain' : 'chains'}
+        </>
+      ),
+      secondary: showPreview ? getItemSecondaryText(chains, addedTxs, 'transaction', 'transactions') : undefined,
+    }
+
+    items.push(addedTransactionsPreview)
   }
 
   if (settings) {
@@ -141,6 +176,8 @@ type Props = ListProps & CardHeaderProps
 export const FileListCard = ({
   addedSafes,
   addressBook,
+  customTokens,
+  addedTxs,
   settings,
   safeApps,
   error,
@@ -148,7 +185,17 @@ export const FileListCard = ({
   ...cardHeaderProps
 }: Props): ReactElement => {
   const chains = useChains()
-  const items = getItems({ addedSafes, addressBook, settings, safeApps, error, chains: chains.configs, showPreview })
+  const items = getItems({
+    addedSafes,
+    addressBook,
+    customTokens,
+    addedTxs,
+    settings,
+    safeApps,
+    error,
+    chains: chains.configs,
+    showPreview,
+  })
 
   return (
     <Card className={css.card}>
