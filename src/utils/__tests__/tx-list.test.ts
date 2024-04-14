@@ -28,7 +28,6 @@ describe('tx-list', () => {
       ]
 
       const result = groupConflictingTxs(list as TransactionListItem[])
-      console.log({ result })
 
       expect(result).toEqual([
         [

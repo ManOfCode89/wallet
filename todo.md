@@ -9,6 +9,7 @@
 
 ### Done ✓
 
+- [x] Remove push notifications
 - [x] Implement magic link with signatures
 - [x] Query transactions from chain
 - [x] Update data export/import for transactions and assets
