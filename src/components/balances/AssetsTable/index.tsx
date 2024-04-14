@@ -177,7 +177,6 @@ const AssetsTable = (): ReactElement => {
     <>
       <div className={css.container}>
         <EnhancedTable rows={rows} headCells={headCells}>
-          {/* TODO(devanon): Test on mobile */}
           <AddToken columns={headCells.length} />
         </EnhancedTable>
       </div>

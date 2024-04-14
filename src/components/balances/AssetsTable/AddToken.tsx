@@ -27,6 +27,7 @@ import { add } from '@/store/customTokensSlice'
 import { TokenType } from '@safe-global/safe-apps-sdk'
 import { useCurrentChain } from '@/hooks/useChains'
 import { getAddress } from 'ethers/lib/utils'
+import ErrorMessage from '@/components/tx/ErrorMessage'
 
 export type TokenEntry = {
   address: string
@@ -86,12 +87,12 @@ const AddToken = ({
     submitCallback(e)
   }
 
-  const [data, , loading] = useToken(watch('address'))
+  const [data, error, loading] = useToken(watch('address'))
 
   return (
     <TableRow>
-      <TableCell colSpan={columns}>
-        <div className={css['add-token']} onClick={handleClickAddToken}>
+      <TableCell colSpan={columns - 1}>
+        <div className={css.addToken} onClick={handleClickAddToken}>
           <SvgIcon component={PlusIcon} inheritViewBox fontSize="small" sx={{ ml: 1 }} />
 
           <Typography>Add Token</Typography>
@@ -164,8 +165,14 @@ const AddToken = ({
                 </DialogContent>
               </Collapse>
 
+              <Collapse in={!!error}>
+                <DialogContent>
+                  <ErrorMessage>Error loading token information, please double check the address.</ErrorMessage>
+                </DialogContent>
+              </Collapse>
+
               <DialogActions>
-                <Button type="submit" variant="contained" disabled={!formState.isValid} disableElevation>
+                <Button type="submit" variant="contained" disabled={!formState.isValid || !data} disableElevation>
                   Add
                 </Button>
               </DialogActions>
@@ -173,6 +180,7 @@ const AddToken = ({
           </FormProvider>
         </Collapse>
       </TableCell>
+      <TableCell />
     </TableRow>
   )
 }
