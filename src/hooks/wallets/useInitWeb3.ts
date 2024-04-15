@@ -10,13 +10,17 @@ import {
   setWeb3,
   setWeb3ReadOnly,
 } from '@/hooks/wallets/web3'
-import { useAppSelector } from '@/store'
+import { useAppDispatch, useAppSelector } from '@/store'
 import { selectRpc } from '@/store/settingsSlice'
+import { useRouter } from 'next/router'
+import { AppRoutes } from '@/config/routes'
+import { showNotification } from '@/store/notificationsSlice'
 
 export const useInitWeb3 = () => {
+  const dispatch = useAppDispatch()
+  const router = useRouter()
   const chain = useCurrentChain()
   const chainId = chain?.chainId
-  const rpcUri = chain?.rpcUri
   const wallet = useWallet()
   const customRpc = useAppSelector(selectRpc)
   const customRpcUrl = chain ? customRpc?.[chain.chainId] : undefined
@@ -31,15 +35,26 @@ export const useInitWeb3 = () => {
   }, [wallet, chainId])
 
   useEffect(() => {
-    if (!rpcUri) {
+    if (!customRpcUrl) {
       setWeb3ReadOnly(undefined)
       setMultiWeb3ReadOnly(undefined)
+
+      if (chain && router.pathname !== AppRoutes.welcome.index) {
+        dispatch(
+          showNotification({
+            message: `No RPC URL saved for ${chain.chainName ?? 'this'} network. You must provide one to continue.`,
+            groupKey: 'custom-rpc-url-error',
+            variant: 'error',
+          }),
+        )
+        router.push({ pathname: AppRoutes.welcome.index, query: { chain: chain.shortName } })
+      }
       return
     }
-    const web3ReadOnly = createWeb3ReadOnly(rpcUri, customRpcUrl)
+    const web3ReadOnly = createWeb3ReadOnly(customRpcUrl)
     setWeb3ReadOnly(web3ReadOnly)
 
     const multiWeb3ReadOnly = createMultiWeb3ReadOnly(web3ReadOnly)
     setMultiWeb3ReadOnly(multiWeb3ReadOnly)
-  }, [rpcUri, customRpcUrl])
+  }, [customRpcUrl, chain, router, dispatch])
 }

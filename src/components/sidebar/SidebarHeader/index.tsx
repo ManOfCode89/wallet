@@ -20,7 +20,6 @@ import { getBlockExplorerLink } from '@/utils/chains'
 import EthHashInfo from '@/components/common/EthHashInfo'
 import QrCodeButton from '../QrCodeButton'
 import { SvgIcon } from '@mui/material'
-import EnvHintButton from '@/components/settings/EnvironmentVariables/EnvHintButton'
 import useSafeAddress from '@/hooks/useSafeAddress'
 import ExplorerButton from '@/components/common/ExplorerButton'
 import CopyTooltip from '@/components/common/CopyTooltip'
@@ -76,8 +75,6 @@ const SafeHeader = (): ReactElement => {
           </CopyTooltip>
 
           <ExplorerButton {...blockExplorerLink} className={css.iconButton} icon={LinkIconBold} />
-
-          <EnvHintButton />
         </div>
       </div>
 

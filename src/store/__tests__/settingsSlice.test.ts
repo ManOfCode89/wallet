@@ -1,4 +1,4 @@
-import { settingsSlice, isEnvInitialState, initialState } from '../settingsSlice'
+import { settingsSlice, initialState } from '../settingsSlice'
 import type { SettingsState } from '../settingsSlice'
 import type { RootState } from '..'
 
@@ -62,63 +62,6 @@ describe('settingsSlice', () => {
         url: '',
         accessToken: '',
       })
-    })
-  })
-
-  describe('isEnvInitialState', () => {
-    it('should return true if the env is the initial state', () => {
-      const state = {
-        settings: {
-          env: {
-            rpc: {},
-            tenderly: { url: '', accessToken: '' },
-          },
-        },
-      } as unknown as RootState
-
-      expect(isEnvInitialState(state, '5')).toEqual(true)
-    })
-
-    it('should return true if the env does not have a custom RPC set on the current chain', () => {
-      const state = {
-        settings: {
-          env: {
-            rpc: { ['1']: 'https://example.com' },
-            tenderly: { url: '', accessToken: '' },
-          },
-        },
-      } as unknown as RootState
-
-      expect(isEnvInitialState(state, '5')).toEqual(true)
-    })
-
-    it('should return false if the env is has a custom RPC set on the current chain', () => {
-      const state = {
-        settings: {
-          env: {
-            rpc: { ['5']: 'https://other-example.com' },
-            tenderly: { url: '', accessToken: '' },
-          },
-        },
-      } as unknown as RootState
-
-      expect(isEnvInitialState(state, '5')).toEqual(false)
-    })
-
-    it('should return false if the env is has a custom Tenderly set', () => {
-      const state = {
-        settings: {
-          env: {
-            rpc: {},
-            tenderly: {
-              url: 'https://example.com',
-              accessToken: 'test123',
-            },
-          },
-        },
-      } as unknown as RootState
-
-      expect(isEnvInitialState(state, '5')).toEqual(false)
     })
   })
 })

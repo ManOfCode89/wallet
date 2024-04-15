@@ -70,7 +70,8 @@ export const useInitSafeCoreSDK = () => {
         const e = asError(_e)
         dispatch(
           showNotification({
-            message: 'Please try connecting your Safe again, ensure the address and chain are correct.',
+            message:
+              'Please try connecting your Safe again. Ensure the address, chain and RPC URL are correct. If you see this error often, please consider using a more stable RPC URL.',
             groupKey: 'core-sdk-init-error',
             variant: 'error',
             detailedMessage: e.message,

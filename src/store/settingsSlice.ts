@@ -3,7 +3,6 @@ import { createSelector, createSlice } from '@reduxjs/toolkit'
 import merge from 'lodash/merge'
 
 import type { RootState } from '@/store'
-import isEqual from 'lodash/isEqual'
 
 export type EnvState = {
   tenderly: {
@@ -137,9 +136,5 @@ export const selectTokenList = (state: RootState): SettingsState['tokenList'] =>
 export const selectRpc = createSelector(selectSettings, (settings) => settings.env.rpc)
 
 export const selectTenderly = createSelector(selectSettings, (settings) => settings.env.tenderly)
-
-export const isEnvInitialState = createSelector([selectSettings, (_, chainId) => chainId], (settings, chainId) => {
-  return isEqual(settings.env.tenderly, initialState.env.tenderly) && !settings.env.rpc[chainId]
-})
 
 export const selectOnChainSigning = createSelector(selectSettings, (settings) => settings.signing.onChainSigning)

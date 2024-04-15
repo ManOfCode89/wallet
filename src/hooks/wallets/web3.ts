@@ -22,10 +22,8 @@ export const getRpcServiceUrl = (rpcUri: RpcUri): string => {
   return formatRpcServiceUrl(rpcUri, INFURA_TOKEN)
 }
 
-export const createWeb3ReadOnly = (rpcUri: RpcUri, customRpc?: string): JsonRpcProvider | undefined => {
-  const url = customRpc || getRpcServiceUrl(rpcUri)
-  if (!url) return
-  return new JsonRpcProvider({ url, timeout: 10_000 })
+export const createWeb3ReadOnly = (customRpc: string): JsonRpcProvider | undefined => {
+  return new JsonRpcProvider({ url: customRpc, timeout: 10_000 })
 }
 
 export const createMultiWeb3ReadOnly = (provider: JsonRpcProvider | undefined): MulticallProvider | undefined => {

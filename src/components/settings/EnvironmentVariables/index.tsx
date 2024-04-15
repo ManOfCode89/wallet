@@ -31,13 +31,13 @@ const EnvironmentVariables = () => {
   const formMethods = useForm<EnvVariablesFormData>({
     mode: 'onChange',
     values: {
-      [EnvVariablesField.rpc]: settings.env?.rpc[chainId] ?? '',
+      [EnvVariablesField.rpc]: settings.env?.rpc[chainId] ?? chain?.publicRpcUri.value ?? '',
       [EnvVariablesField.tenderlyURL]: settings.env?.tenderly.url ?? '',
       [EnvVariablesField.tenderlyToken]: settings.env?.tenderly.accessToken ?? '',
     },
   })
 
-  const { register, handleSubmit, setValue, watch } = formMethods
+  const { register, handleSubmit, formState, setValue, watch } = formMethods
 
   const rpc = watch(EnvVariablesField.rpc)
   const tenderlyURL = watch(EnvVariablesField.tenderlyURL)
@@ -101,24 +101,35 @@ const EnvironmentVariables = () => {
               </Typography>
 
               <TextField
-                {...register(EnvVariablesField.rpc)}
+                {...register(EnvVariablesField.rpc, { required: true })}
                 variant="outlined"
                 type="url"
-                placeholder={chain?.rpcUri.value}
                 InputProps={{
-                  endAdornment: rpc ? (
+                  endAdornment: rpc ? null : (
                     <InputAdornment position="end">
                       <Tooltip title="Reset to default value">
-                        <IconButton onClick={() => onReset(EnvVariablesField.rpc)} size="small" color="primary">
+                        <IconButton
+                          onClick={() =>
+                            setValue(
+                              EnvVariablesField.rpc,
+                              settings.env?.rpc[chainId] ?? chain?.publicRpcUri.value ?? '',
+                              { shouldValidate: true },
+                            )
+                          }
+                          size="small"
+                          color="primary"
+                        >
                           <RotateLeftIcon />
                         </IconButton>
                       </Tooltip>
                     </InputAdornment>
-                  ) : null,
+                  ),
                 }}
                 fullWidth
+                required
               />
 
+              {/* TODO(devanon): Consider tenderly */}
               <Typography fontWeight={700} mb={2} mt={3}>
                 Tenderly
                 <Tooltip
@@ -206,7 +217,7 @@ const EnvironmentVariables = () => {
                 </Grid>
               </Grid>
 
-              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
+              <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }} disabled={!formState.isValid}>
                 Save
               </Button>
             </form>

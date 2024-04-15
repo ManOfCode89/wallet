@@ -1,6 +1,5 @@
 ### Todo
 
-- [ ] Ask for RPC URL in Safe Loading flow
 - [ ] Rip out Safe creation
 - [ ] Replace Safe branded assets in public/
 - [ ] Update terms and other imprint
@@ -9,6 +8,7 @@
 
 ### Done ✓
 
+- [x] Ask for RPC URL in Safe Loading flow
 - [x] Remove relaying
 - [x] Remove push notifications
 - [x] Implement magic link with signatures
