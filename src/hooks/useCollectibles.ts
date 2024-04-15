@@ -9,6 +9,7 @@ export const useCollectibles = (pageUrl?: string): AsyncResult<SafeCollectiblesP
 
   const [data, error, loading] = useAsync<SafeCollectiblesPage>(() => {
     if (!safeAddress) return
+    //TODO(devanon): Remove or replace CGW usage
     return getCollectiblesPage(safe.chainId, safeAddress, undefined, pageUrl)
   }, [safeAddress, safe.chainId, pageUrl])
 

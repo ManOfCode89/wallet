@@ -49,6 +49,7 @@ export class RecipientAddressModule
     }
 
     try {
+      // TODO(devanon): Remove or replace CGW usage
       await getSafeInfo(MAINNET_CHAIN_ID, address)
       return true
     } catch {

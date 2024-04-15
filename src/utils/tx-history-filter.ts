@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useRouter } from 'next/router'
+//TODO(devanon): Replace or remove CGW usage
 import {
   getIncomingTransfers,
   getModuleTransactions,

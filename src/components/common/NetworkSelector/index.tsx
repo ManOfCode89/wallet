@@ -13,7 +13,7 @@ import { type ReactElement, useMemo } from 'react'
 import { useCallback } from 'react'
 import { AppRoutes } from '@/config/routes'
 
-const keepPathRoutes = [AppRoutes.welcome.index, AppRoutes.newSafe.create, AppRoutes.newSafe.load]
+const keepPathRoutes = [AppRoutes.welcome.index, AppRoutes.newSafe.load]
 
 const testNets = ['gor', 'sep']
 const isTestnet = (shortName: string) => {

@@ -10,6 +10,7 @@ import { getTransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
  */
 export const getTxDetails = memoize(
   (chainId: string, id: string) => {
+    //TODO(devanon): Remove or replace CGW usage
     return getTransactionDetails(chainId, id)
   },
   (id: string, chainId: string) => `${chainId}-${id}`,

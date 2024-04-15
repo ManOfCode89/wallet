@@ -14,6 +14,7 @@ const useDelegates = () => {
   } = useSafeInfo()
   const [delegates] = useAsync(() => {
     if (!chainId || !safeAddress) return
+    // TODO(devanon): Replace or remove CGW usage
     return getDelegates(chainId, { safe: safeAddress })
   }, [chainId, safeAddress])
   return delegates

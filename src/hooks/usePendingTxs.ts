@@ -44,6 +44,7 @@ export const usePendingTxsQueue = (): {
   const [untrustedQueue, error, loading] = useAsync<TransactionListPage>(
     () => {
       if (!hasPending) return
+      //TODO(devanon): Remove or replace CGW usage
       return getTransactionQueue(chainId, safeAddress, undefined, false)
     },
     [chainId, safeAddress, hasPending],

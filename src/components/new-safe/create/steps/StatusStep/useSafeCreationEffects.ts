@@ -6,6 +6,7 @@ import { updateAddressBook } from '@/components/new-safe/create/logic/address-bo
 import { useAppDispatch } from '@/store'
 import useChainId from '@/hooks/useChainId'
 import { usePendingSafe } from './usePendingSafe'
+import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
 
 const useSafeCreationEffects = ({
   status,
@@ -17,15 +18,16 @@ const useSafeCreationEffects = ({
   const dispatch = useAppDispatch()
   const chainId = useChainId()
   const [pendingSafe, setPendingSafe] = usePendingSafe()
+  const web3ReadOnly = useMultiWeb3ReadOnly()
 
   // Asynchronously wait for Safe creation
   useEffect(() => {
-    if (status === SafeCreationStatus.SUCCESS && pendingSafe?.safeAddress) {
-      pollSafeInfo(chainId, pendingSafe.safeAddress)
+    if (status === SafeCreationStatus.SUCCESS && pendingSafe?.safeAddress && web3ReadOnly) {
+      pollSafeInfo(web3ReadOnly, chainId, pendingSafe.safeAddress)
         .then(() => setStatus(SafeCreationStatus.INDEXED))
         .catch(() => setStatus(SafeCreationStatus.INDEX_FAILED))
     }
-  }, [chainId, pendingSafe?.safeAddress, status, setStatus])
+  }, [chainId, pendingSafe?.safeAddress, web3ReadOnly, status, setStatus])
 
   // Warn about leaving the page before Safe creation
   useEffect(() => {

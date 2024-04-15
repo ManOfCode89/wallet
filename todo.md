@@ -1,6 +1,6 @@
 ### Todo
 
-- [ ] Rip out Safe creation
+- [ ] Query / send NFTs
 - [ ] Replace Safe branded assets in public/
 - [ ] Update terms and other imprint
 - [ ] Remove all uses of Safe Gateway SDK, leaving only type usage
@@ -8,6 +8,7 @@
 
 ### Done ✓
 
+- [x] Hide Safe creation
 - [x] Ask for RPC URL in Safe Loading flow
 - [x] Remove relaying
 - [x] Remove push notifications
@@ -38,6 +39,5 @@
 - Parse unknown onchain transactions
 - Safe creation
 - Dappnode package
-- Support NFT assets
 - Support L2 events
 - Support custom chains in UI

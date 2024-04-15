@@ -17,6 +17,7 @@ const HIDE_DELAY = 3000
 const fetchSafeMessage = async (safeMessageHash: string, chainId: string) => {
   let message: SafeMessage | undefined
   try {
+    // TODO(devanon): Remove or replace CGW usage
     // fetchedMessage does not have a type because it is explicitly a message
     const fetchedMessage = await getSafeMessage(chainId, safeMessageHash)
     message = { ...fetchedMessage, type: SafeMessageListItemType.MESSAGE }

@@ -1,5 +1,5 @@
 import type { Web3Provider, JsonRpcProvider } from '@ethersproject/providers'
-import { getSafeInfo, type SafeInfo, type ChainInfo } from '@safe-global/safe-gateway-typescript-sdk'
+import { type SafeInfo, type ChainInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import {
   getReadOnlyFallbackHandlerContract,
   getReadOnlyGnosisSafeContract,
@@ -27,6 +27,9 @@ import { backOff } from 'exponential-backoff'
 import { LATEST_SAFE_VERSION } from '@/config/constants'
 import { EMPTY_DATA, ZERO_ADDRESS } from '@safe-global/safe-core-sdk/dist/src/utils/constants'
 import { formatError } from '@/utils/formatters'
+import { getSafeSDKAndImplementation } from '@/hooks/coreSDK/useInitSafeCoreSDK'
+import type { Provider } from '@ethersproject/providers'
+import { getSafeInfo } from '@/hooks/loadables/useLoadSafeInfo'
 
 export type SafeCreationProps = {
   owners: string[]
@@ -151,17 +154,23 @@ export const estimateSafeCreationGas = async (
   })
 }
 
-export const pollSafeInfo = async (chainId: string, safeAddress: string): Promise<SafeInfo> => {
+export const pollSafeInfo = async (web3: Provider, chainId: string, safeAddress: string): Promise<SafeInfo> => {
   // exponential delay between attempts for around 4 min
-  return backOff(() => getSafeInfo(chainId, safeAddress), {
-    startingDelay: 750,
-    maxDelay: 20000,
-    numOfAttempts: 19,
-    retry: (e) => {
-      console.info('waiting for client-gateway to provide safe information', e)
-      return true
+  return backOff(
+    async () => {
+      let [sdk, implementation] = await getSafeSDKAndImplementation(web3, safeAddress, chainId)
+      return await getSafeInfo(sdk, implementation)
     },
-  })
+    {
+      startingDelay: 750,
+      maxDelay: 20000,
+      numOfAttempts: 19,
+      retry: (e) => {
+        console.info('waiting for client-gateway to provide safe information', e)
+        return true
+      },
+    },
+  )
 }
 
 export const handleSafeCreationError = (error: EthersError) => {

@@ -15,6 +15,7 @@ export const useLoadSafeMessages = (): AsyncResult<SafeMessageListPage> => {
       if (!safeLoaded) {
         return
       }
+      //TODO(devanon): Remove or replace CGW usage
       return getSafeMessages(safe.chainId, safeAddress)
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
