@@ -10,6 +10,8 @@ import {
   Gnosis_safe_l2__factory,
   Gnosis_safe__factory,
 } from '@/types/contracts/factories/@safe-global/safe-deployments/dist/assets/v1.3.0'
+import { useAppDispatch } from '@/store'
+import { showNotification } from '@/store/notificationsSlice'
 
 export type TxHistoryItem = {
   txId: string
@@ -19,6 +21,7 @@ export type TxHistoryItem = {
 }
 
 export const useLoadTxHistory = (): AsyncResult<Array<TxHistoryItem>> => {
+  const dispatch = useAppDispatch()
   const sdk = useSafeSDK()
   const provider = useMultiWeb3ReadOnly()
   const { safe, safeAddress } = useSafeInfo()
@@ -66,8 +69,17 @@ export const useLoadTxHistory = (): AsyncResult<Array<TxHistoryItem>> => {
   // Log errors
   useEffect(() => {
     if (!error) return
+    dispatch(
+      showNotification({
+        message:
+          'Error fetching transaction history. If you see this error often, please consider using a more stable RPC URL.',
+        groupKey: 'fetch-tx-history-error',
+        variant: 'error',
+        detailedMessage: error.message,
+      }),
+    )
     logError(Errors._602, error.message)
-  }, [error])
+  }, [error, dispatch])
 
   // Reset the counter when safe address/chainId changes
   useEffect(() => {

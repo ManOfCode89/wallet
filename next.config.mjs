@@ -2,8 +2,6 @@ import path from 'path'
 import withBundleAnalyzer from '@next/bundle-analyzer'
 import withPWAInit from '@ducanh2912/next-pwa'
 
-const SERVICE_WORKERS_PATH = './src/service-workers'
-
 const withPWA = withPWAInit({
   dest: 'public',
   workboxOptions: {
@@ -13,9 +11,6 @@ const withPWA = withPWAInit({
   /* Do not precache anything */
   publicExcludes: ['**/*'],
   buildExcludes: [/./],
-  customWorkerSrc: SERVICE_WORKERS_PATH,
-  // Prefer InjectManifest for Web Push
-  swSrc: `${SERVICE_WORKERS_PATH}/index.ts`,
 })
 
 /** @type {import('next').NextConfig} */
@@ -32,7 +27,14 @@ const nextConfig = {
     dirs: ['src'],
   },
   experimental: {
-    optimizePackageImports: ['@mui/material', '@mui/icons-material', 'lodash', 'date-fns', '@sentry/react', '@gnosis.pm/zodiac'],
+    optimizePackageImports: [
+      '@mui/material',
+      '@mui/icons-material',
+      'lodash',
+      'date-fns',
+      '@sentry/react',
+      '@gnosis.pm/zodiac',
+    ],
   },
   webpack(config) {
     config.module.rules.push({
