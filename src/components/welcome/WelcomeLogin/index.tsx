@@ -26,7 +26,7 @@ const WelcomeLogin = () => {
   return (
     <Paper className={css.loginCard} data-testid="welcome-login">
       <Box className={css.loginContent}>
-        <Typography variant="h3" mt={customRpcUrl && !forceShowRpcInput ? 'auto' : '3'} fontWeight={700}>
+        <Typography variant="h3" mt="auto" pt={5} fontWeight={700}>
           Eternal Safe
         </Typography>
         {customRpcUrl && !forceShowRpcInput ? (
@@ -38,9 +38,7 @@ const WelcomeLogin = () => {
           </>
         ) : chain ? (
           <>
-            <Typography mb={2} textAlign="center">
-              Welcome! <br />
-              <br />
+            <Typography textAlign="center">
               To get started you must provide a RPC URL for the {chain.chainName} network.
               <br />
               <br />
@@ -60,13 +58,14 @@ const WelcomeLogin = () => {
             Please select a network from the dropdown above to get started.
           </Typography>
         )}
-        {customRpcUrl && (
-          <Typography variant="subtitle2" textAlign="center" mt="auto">
+
+        <Typography variant="subtitle2" textAlign="center" mt="auto" pt={3}>
+          {customRpcUrl && (
             <Link type="button" component="button" onClick={toggleShowRpcInput} color="primary">
               {forceShowRpcInput ? 'Close' : 'Open'} RPC URL input
             </Link>
-          </Typography>
-        )}
+          )}
+        </Typography>
       </Box>
     </Paper>
   )

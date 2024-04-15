@@ -40,3 +40,4 @@
 - Dappnode package
 - Support NFT assets
 - Support L2 events
+- Support custom chains in UI
