@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
-import { getSafeInfo, type SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
+import { type SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import { FormProvider, useFieldArray, useForm } from 'react-hook-form'
-import { Box, Button, Divider } from '@mui/material'
+import { Box, Button, Divider, Skeleton } from '@mui/material'
 
 import type { StepRenderProps } from '@/components/new-safe/CardStepper/useCardStepper'
 import type { LoadSafeFormData } from '@/components/new-safe/load'
@@ -11,6 +11,10 @@ import type { NamedAddress } from '@/components/new-safe/create/types'
 import layoutCss from '@/components/new-safe/create/styles.module.css'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import { OwnerRow } from '@/components/new-safe/OwnerRow'
+import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
+import { getSafeSDKAndImplementation } from '@/hooks/coreSDK/useInitSafeCoreSDK'
+import { getSafeInfo } from '@/hooks/loadables/useLoadSafeInfo'
+import ErrorMessage from '@/components/tx/ErrorMessage'
 
 enum Field {
   owners = 'owners',
@@ -41,11 +45,18 @@ const SafeOwnerStep = ({ data, onSubmit, onBack }: StepRenderProps<LoadSafeFormD
     name: Field.owners,
   })
 
-  const [safeInfo] = useAsync<SafeInfo>(() => {
-    if (data.address) {
-      return getSafeInfo(chainId, data.address)
+  const web3ReadOnly = useMultiWeb3ReadOnly()
+
+  const [safeInfo, error, loading] = useAsync<SafeInfo | undefined>(async () => {
+    if (!web3ReadOnly) {
+      throw new Error('Web3 not available, please check your RPC URL.')
     }
-  }, [chainId, data.address])
+
+    if (data.address) {
+      let [sdk, implementation] = await getSafeSDKAndImplementation(web3ReadOnly, data.address, chainId)
+      return await getSafeInfo(sdk, implementation)
+    }
+  }, [chainId, data.address, web3ReadOnly])
 
   useEffect(() => {
     if (!safeInfo) return
@@ -65,26 +76,42 @@ const SafeOwnerStep = ({ data, onSubmit, onBack }: StepRenderProps<LoadSafeFormD
   }
 
   return (
-    <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Box className={layoutCss.row}>
-          {fields.map((field, index) => (
-            <OwnerRow key={field.id} index={index} groupName="owners" readOnly />
-          ))}
-        </Box>
-        <Divider />
-        <Box className={layoutCss.row}>
-          <Box display="flex" flexDirection="row" justifyContent="space-between" gap={3}>
-            <Button variant="outlined" size="small" onClick={handleBack} startIcon={<ArrowBackIcon fontSize="small" />}>
-              Back
-            </Button>
-            <Button type="submit" variant="contained" size="stretched" disabled={!isValid}>
-              Next
-            </Button>
+    <>
+      <FormProvider {...formMethods}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Box className={layoutCss.row}>
+            {loading ? (
+              <>
+                <Skeleton variant="text" height={80} />
+                <Skeleton variant="text" height={80} />
+              </>
+            ) : error ? (
+              <>
+                <ErrorMessage>Error loading Safe owners, please try again or change your RPC URL.</ErrorMessage>
+              </>
+            ) : (
+              fields.map((field, index) => <OwnerRow key={field.id} index={index} groupName="owners" readOnly />)
+            )}
           </Box>
-        </Box>
-      </form>
-    </FormProvider>
+          <Divider />
+          <Box className={layoutCss.row}>
+            <Box display="flex" flexDirection="row" justifyContent="space-between" gap={3}>
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={handleBack}
+                startIcon={<ArrowBackIcon fontSize="small" />}
+              >
+                Back
+              </Button>
+              <Button type="submit" variant="contained" size="stretched" disabled={!isValid}>
+                Next
+              </Button>
+            </Box>
+          </Box>
+        </form>
+      </FormProvider>
+    </>
   )
 }
 

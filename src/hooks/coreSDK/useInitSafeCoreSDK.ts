@@ -4,16 +4,61 @@ import { trackError } from '@/services/exceptions'
 import ErrorCodes from '@/services/exceptions/ErrorCodes'
 import { useAppDispatch } from '@/store'
 import { showNotification } from '@/store/notificationsSlice'
-import { useWeb3ReadOnly } from '@/hooks/wallets/web3'
+import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
 import { asError } from '@/services/exceptions/utils'
 import { useUrlChainId } from '@/hooks/useChainId'
 import useSafeAddress from '@/hooks/useSafeAddress'
 import { bytes32ToAddress } from '@/utils/addresses'
+import type Safe from '@safe-global/safe-core-sdk'
+import type { Provider } from '@ethersproject/providers'
 import { ethers } from 'ethers'
+
+export const getSafeImplementation = async (web3: Provider, safeAddress: string, chainId: string) => {
+  return web3
+    .getNetwork()
+    .then((network) => {
+      if (network.chainId === Number(chainId)) {
+        return web3.getCode(safeAddress)
+      } else {
+        throw {
+          skip: true,
+        }
+      }
+    })
+    .then((code) => {
+      if (code !== '0x') {
+        // get implementation address
+        return web3.getStorageAt(safeAddress, 0)
+      } else {
+        throw new Error(`No Safe found at address ${safeAddress} on chain with ID ${chainId}.`)
+      }
+    })
+}
+
+export const getSafeSDKAndImplementation = async (
+  web3: Provider,
+  safeAddress: string,
+  chainId: string,
+): Promise<[Safe, string]> => {
+  const implementation = await getSafeImplementation(web3, safeAddress, chainId)
+  if (!implementation || implementation === ethers.constants.HashZero) {
+    throw new Error(`Nothing set on storage slot 0 in ${safeAddress}.`)
+  }
+
+  let implementationAddress = bytes32ToAddress(implementation)
+  let sdk = await initSafeSDK({
+    provider: web3,
+    chainId,
+    address: safeAddress,
+    implementation: implementationAddress,
+  })
+
+  return [sdk, implementationAddress]
+}
 
 export const useInitSafeCoreSDK = () => {
   const dispatch = useAppDispatch()
-  const web3ReadOnly = useWeb3ReadOnly()
+  const web3ReadOnly = useMultiWeb3ReadOnly()
   const address = useSafeAddress()
   const chainId = useUrlChainId()
 
@@ -25,25 +70,7 @@ export const useInitSafeCoreSDK = () => {
       return
     }
 
-    web3ReadOnly
-      .getNetwork()
-      .then((network) => {
-        if (network.chainId === Number(chainId)) {
-          return web3ReadOnly.getCode(address)
-        } else {
-          throw {
-            skip: true,
-          }
-        }
-      })
-      .then((code) => {
-        if (code !== '0x') {
-          // get implementation address
-          return web3ReadOnly.getStorageAt(address, 0)
-        } else {
-          throw new Error(`No Safe found at address ${address} on chain with ID ${chainId}.`)
-        }
-      })
+    getSafeImplementation(web3ReadOnly, address, chainId)
       .then((impl) => {
         if (!impl || impl === ethers.constants.HashZero) {
           throw new Error(`Nothing set on storage slot 0 in ${address}.`)

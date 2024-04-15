@@ -6,23 +6,30 @@ import { useAppSelector } from '@/store'
 import { selectRpc } from '@/store/settingsSlice'
 import LoadRPCUrl from '@/components/welcome/WelcomeLogin/LoadRPCUrl'
 import { CHAINLIST_CHAIN_URL } from '@/config/constants'
+import { useState } from 'react'
 
 const WelcomeLogin = () => {
   const chain = useCurrentChain()
   const customRpc = useAppSelector(selectRpc)
   const customRpcUrl = chain ? customRpc?.[chain.chainId] : undefined
 
+  const [forceShowRpcInput, setForceShowRpcInput] = useState(false)
+
   const providedPublic = chain?.publicRpcUri.value
     ? ` We have detected and prefilled a public RPC URL for ${chain.chainName}. More public URLs can be found on `
     : ` If you don't have one, you can find a public RPC URL on `
 
+  const toggleShowRpcInput = () => {
+    setForceShowRpcInput(!forceShowRpcInput)
+  }
+
   return (
     <Paper className={css.loginCard} data-testid="welcome-login">
       <Box className={css.loginContent}>
-        <Typography variant="h3" mt={6} fontWeight={700}>
+        <Typography variant="h3" mt={customRpcUrl && !forceShowRpcInput ? 'auto' : '3'} fontWeight={700}>
           Eternal Safe
         </Typography>
-        {customRpcUrl ? (
+        {customRpcUrl && !forceShowRpcInput ? (
           <>
             <Typography mb={2} textAlign="center">
               Eternal Safe does not yet support creating a Safe, you must have one already created.
@@ -46,11 +53,18 @@ const WelcomeLogin = () => {
               <br />
               You can change this later in the settings.
             </Typography>
-            <LoadRPCUrl />
+            <LoadRPCUrl hideRpcInput={() => setForceShowRpcInput(false)} />
           </>
         ) : (
           <Typography mb={2} textAlign="center">
             Please select a network from the dropdown above to get started.
+          </Typography>
+        )}
+        {customRpcUrl && (
+          <Typography variant="subtitle2" textAlign="center" mt="auto">
+            <Link type="button" component="button" onClick={toggleShowRpcInput} color="primary">
+              {forceShowRpcInput ? 'Close' : 'Open'} RPC URL input
+            </Link>
           </Typography>
         )}
       </Box>

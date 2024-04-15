@@ -15,7 +15,11 @@ export type LoadRPCFormData = {
   [LoadRPCVariablesField.rpc]: string
 }
 
-const LoadRPCUrl = () => {
+type LoadRPCUrlProps = {
+  hideRpcInput: () => void
+}
+
+const LoadRPCUrl = ({ hideRpcInput }: LoadRPCUrlProps) => {
   const chainId = useChainId()
   const chain = useCurrentChain()
   const settings = useAppSelector(selectSettings)
@@ -39,6 +43,7 @@ const LoadRPCUrl = () => {
         rpc: data[LoadRPCVariablesField.rpc],
       }),
     )
+    hideRpcInput()
   })
 
   return (
@@ -64,7 +69,7 @@ const LoadRPCUrl = () => {
         </Typography>
 
         <TextField
-          {...register(LoadRPCVariablesField.rpc)}
+          {...register(LoadRPCVariablesField.rpc, { required: true })}
           variant="outlined"
           type="url"
           InputProps={{

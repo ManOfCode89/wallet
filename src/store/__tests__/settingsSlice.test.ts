@@ -1,6 +1,5 @@
 import { settingsSlice, initialState } from '../settingsSlice'
 import type { SettingsState } from '../settingsSlice'
-import type { RootState } from '..'
 
 describe('settingsSlice', () => {
   describe('setRpc', () => {

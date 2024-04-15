@@ -7,15 +7,15 @@ import * as useChainId from '@/hooks/useChainId'
 import * as coreSDK from '@/hooks/coreSDK/safeCoreSDK'
 import { waitFor } from '@testing-library/react'
 import type Safe from '@safe-global/safe-core-sdk'
-import type { JsonRpcProvider } from '@ethersproject/providers'
 import { ethers } from 'ethers'
+import type { MulticallProvider } from 'ethers-multicall-provider'
 
 describe('useInitSafeCoreSDK hook', () => {
   const mockSafeAddress = '0x0000000000000000000000000000000000005AFE'
   const mockChainId = '5'
   const mockImplementation = '0xd9Db270c1B5E3Bd161E8c8503c55cEABeE709552'
 
-  let mockProvider: JsonRpcProvider
+  let mockProvider: MulticallProvider
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -27,9 +27,9 @@ describe('useInitSafeCoreSDK hook', () => {
         getStorageAt: jest.fn().mockResolvedValue(ethers.utils.hexZeroPad(mockImplementation, 32)),
         getCode: jest.fn().mockResolvedValue('0x01'),
       }
-    })() as unknown as JsonRpcProvider
+    })() as unknown as MulticallProvider
 
-    jest.spyOn(web3, 'useWeb3ReadOnly').mockReturnValue(mockProvider)
+    jest.spyOn(web3, 'useMultiWeb3ReadOnly').mockReturnValue(mockProvider)
     jest.spyOn(useSafeAddress, 'default').mockReturnValue(mockSafeAddress)
     jest.spyOn(useChainId, 'useUrlChainId').mockReturnValue(mockChainId)
     jest
@@ -60,7 +60,7 @@ describe('useInitSafeCoreSDK hook', () => {
     const initMock = jest.spyOn(coreSDK, 'initSafeSDK')
     const setSDKMock = jest.spyOn(coreSDK, 'setSafeSDK')
 
-    jest.spyOn(web3, 'useWeb3ReadOnly').mockReturnValueOnce(undefined)
+    jest.spyOn(web3, 'useMultiWeb3ReadOnly').mockReturnValueOnce(undefined)
 
     renderHook(() => useInitSafeCoreSDK())
 

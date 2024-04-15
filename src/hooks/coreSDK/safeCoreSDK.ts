@@ -1,14 +1,15 @@
 import chains from '@/config/chains'
-import { getWeb3ReadOnly } from '@/hooks/wallets/web3'
+import { getMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
 import { _safeDeployments, _safeL2Deployments } from '@safe-global/safe-deployments'
 import ExternalStore from '@/services/ExternalStore'
 import { Gnosis_safe__factory } from '@/types/contracts'
 import { invariant } from '@/utils/helpers'
-import type { JsonRpcProvider, Web3Provider } from '@ethersproject/providers'
+import type { Web3Provider } from '@ethersproject/providers'
 import Safe from '@safe-global/safe-core-sdk'
 import type { SafeVersion } from '@safe-global/safe-core-sdk-types'
 import EthersAdapter from '@safe-global/safe-ethers-lib'
 import type { SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
+import type { Provider } from '@ethersproject/providers'
 import { ethers } from 'ethers'
 import semverSatisfies from 'semver/functions/satisfies'
 
@@ -35,7 +36,7 @@ export const createEthersAdapter = (provider: Web3Provider) => {
   })
 }
 
-export const createReadOnlyEthersAdapter = (provider = getWeb3ReadOnly()) => {
+export const createReadOnlyEthersAdapter = (provider: Provider | undefined = getMultiWeb3ReadOnly()) => {
   if (!provider) {
     throw new Error('Unable to create `EthersAdapter` without a provider')
   }
@@ -47,19 +48,14 @@ export const createReadOnlyEthersAdapter = (provider = getWeb3ReadOnly()) => {
 }
 
 type SafeCoreSDKProps = {
-  provider: JsonRpcProvider
+  provider: Provider
   chainId: SafeInfo['chainId']
   address: SafeInfo['address']['value']
   implementation: SafeInfo['implementation']['value']
 }
 
 // Safe Core SDK
-export const initSafeSDK = async ({
-  provider,
-  chainId,
-  address,
-  implementation,
-}: SafeCoreSDKProps): Promise<Safe | undefined> => {
+export const initSafeSDK = async ({ provider, chainId, address, implementation }: SafeCoreSDKProps): Promise<Safe> => {
   const safeVersion = await Gnosis_safe__factory.connect(address, provider).VERSION()
 
   let isL1SafeMasterCopy = chainId === chains.eth
@@ -79,7 +75,7 @@ export const initSafeSDK = async ({
   if (isLegacyVersion(safeVersion)) {
     isL1SafeMasterCopy = true
   } else if (!isL1SafeMasterCopy && !isL2SafeMasterCopy) {
-    //TODO(devanon): Allow user to use it anyway
+    //TODO(devanon): Allow user to use it anyway, but show a notification
     throw new Error(`Unknown Safe implementation: ${masterCopy}`)
   }
 
