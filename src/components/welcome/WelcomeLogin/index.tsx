@@ -5,7 +5,7 @@ import { useCurrentChain } from '@/hooks/useChains'
 import { useAppSelector } from '@/store'
 import { selectRpc } from '@/store/settingsSlice'
 import LoadRPCUrl from '@/components/welcome/WelcomeLogin/LoadRPCUrl'
-import { CHAINLIST_CHAIN_URL } from '@/config/constants'
+import { CHAINLIST_URL } from '@/config/constants'
 import { useState } from 'react'
 
 const WelcomeLogin = () => {
@@ -43,7 +43,7 @@ const WelcomeLogin = () => {
               <br />
               <br />
               {providedPublic}
-              <Link href={`${CHAINLIST_CHAIN_URL}${chain.chainId}`} color="primary" target="_blank" rel="noreferrer">
+              <Link href={`${CHAINLIST_URL}chain/${chain.chainId}`} color="primary" target="_blank" rel="noreferrer">
                 Chainlist
               </Link>
               .

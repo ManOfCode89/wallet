@@ -101,4 +101,4 @@ export const DEFAULT_IPFS_GATEWAY = 'https://cloudflare-ipfs.com'
 export const DEFAULT_TOKENLIST_IPNS = 'ipns/tokens.uniswap.org'
 export const DEFAULT_TOKENLIST_INFO =
   'https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org'
-export const CHAINLIST_CHAIN_URL = 'https://chainlist.org/chain/'
+export const CHAINLIST_URL = 'https://chainlist.org/'

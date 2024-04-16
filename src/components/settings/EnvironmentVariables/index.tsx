@@ -1,10 +1,10 @@
 import { useForm, FormProvider } from 'react-hook-form'
-import { Paper, Grid, Typography, TextField, Button, Tooltip, IconButton, SvgIcon } from '@mui/material'
+import { Paper, Grid, Typography, TextField, Button, Tooltip, IconButton, SvgIcon, Link, Box } from '@mui/material'
 import InputAdornment from '@mui/material/InputAdornment'
 import RotateLeftIcon from '@mui/icons-material/RotateLeft'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { selectSettings, setRpc, setTenderly } from '@/store/settingsSlice'
-import { TENDERLY_SIMULATE_ENDPOINT_URL } from '@/config/constants'
+import { CHAINLIST_URL, TENDERLY_SIMULATE_ENDPOINT_URL } from '@/config/constants'
 import useChainId from '@/hooks/useChainId'
 import { useCurrentChain } from '@/hooks/useChains'
 import InfoIcon from '@/public/images/notifications/info.svg'
@@ -75,9 +75,7 @@ const EnvironmentVariables = () => {
         </Grid>
 
         <Grid item xs>
-          <Typography mb={3}>
-            You can override some of our default APIs here in case you need to. Proceed at your own risk.
-          </Typography>
+          <Typography mb={3}>You can configure some of the default URLs here in case you need to.</Typography>
 
           <FormProvider {...formMethods}>
             <form onSubmit={onSubmit}>
@@ -86,7 +84,25 @@ const EnvironmentVariables = () => {
                 <Tooltip
                   placement="top"
                   arrow
-                  title="Any provider that implements the Ethereum JSON-RPC standard can be used."
+                  title={
+                    <Box alignItems="center" gap={1} padding={1}>
+                      <span>Any provider that implements the Ethereum JSON-RPC standard can be used.</span>
+                      <br />
+                      <br />
+                      <span>
+                        Public URLs can be found on{' '}
+                        <Link
+                          href={`${CHAINLIST_URL}${chain ? `chain/${chain.chainId}` : ''}`}
+                          color="primary"
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Chainlist
+                        </Link>
+                        .
+                      </span>
+                    </Box>
+                  }
                 >
                   <span>
                     <SvgIcon
