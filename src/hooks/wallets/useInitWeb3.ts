@@ -52,9 +52,16 @@ export const useInitWeb3 = () => {
       return
     }
     const web3ReadOnly = createWeb3ReadOnly(customRpcUrl)
-    setWeb3ReadOnly(web3ReadOnly)
+    web3ReadOnly._networkPromise.then((network) => {
+      if (network.chainId === Number(chainId)) {
+        setWeb3ReadOnly(web3ReadOnly)
+      }
 
-    const multiWeb3ReadOnly = createMultiWeb3ReadOnly(web3ReadOnly)
-    setMultiWeb3ReadOnly(multiWeb3ReadOnly)
+      const multiWeb3ReadOnly = createMultiWeb3ReadOnly(customRpcUrl, network)
+      setMultiWeb3ReadOnly(multiWeb3ReadOnly)
+      multiWeb3ReadOnly.getNetwork().then((network) => {
+        if (network.chainId === Number(chainId)) setMultiWeb3ReadOnly(multiWeb3ReadOnly)
+      })
+    })
   }, [customRpcUrl, chain, router, dispatch])
 }

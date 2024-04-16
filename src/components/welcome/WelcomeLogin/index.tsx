@@ -35,6 +35,7 @@ const WelcomeLogin = () => {
               Eternal Safe does not yet support creating a Safe, you must have one already created.
             </Typography>
             <LoadSafe />
+            {/* TODO(devanon): Allow import of data here */}
           </>
         ) : chain ? (
           <>

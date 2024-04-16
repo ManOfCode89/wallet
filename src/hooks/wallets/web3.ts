@@ -1,7 +1,7 @@
 import { RPC_AUTHENTICATION, type RpcUri } from '@safe-global/safe-gateway-typescript-sdk'
 import { INFURA_TOKEN, SAFE_APPS_INFURA_TOKEN } from '@/config/constants'
 import { type EIP1193Provider } from '@web3-onboard/core'
-import { JsonRpcProvider, Web3Provider } from '@ethersproject/providers'
+import { JsonRpcProvider, Web3Provider, Network } from '@ethersproject/providers'
 import ExternalStore from '@/services/ExternalStore'
 import { EMPTY_DATA } from '@safe-global/safe-core-sdk/dist/src/utils/constants'
 import { type MulticallProvider, MulticallWrapper } from 'ethers-multicall-provider'
@@ -22,13 +22,12 @@ export const getRpcServiceUrl = (rpcUri: RpcUri): string => {
   return formatRpcServiceUrl(rpcUri, INFURA_TOKEN)
 }
 
-export const createWeb3ReadOnly = (customRpc: string): JsonRpcProvider | undefined => {
+export const createWeb3ReadOnly = (customRpc: string): JsonRpcProvider => {
   return new JsonRpcProvider({ url: customRpc, timeout: 10_000 })
 }
 
-export const createMultiWeb3ReadOnly = (provider: JsonRpcProvider | undefined): MulticallProvider | undefined => {
-  if (!provider) return
-  return MulticallWrapper.wrap(provider)
+export const createMultiWeb3ReadOnly = (customRpc: string, network: Network): MulticallProvider => {
+  return MulticallWrapper.wrap(new JsonRpcProvider(customRpc, network), 50)
 }
 
 export const createWeb3 = (walletProvider: EIP1193Provider): Web3Provider => {

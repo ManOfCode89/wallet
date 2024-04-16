@@ -29,7 +29,7 @@ import { AppRoutes } from '@/config/routes'
 import MUILink from '@mui/material/Link'
 import Link from 'next/link'
 import { getSafeSDKAndImplementation } from '@/hooks/coreSDK/useInitSafeCoreSDK'
-import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
+import { useWeb3ReadOnly } from '@/hooks/wallets/web3'
 
 enum Field {
   name = 'name',
@@ -64,7 +64,7 @@ const SetAddressStep = ({ data, onSubmit, onBack }: StepRenderProps<LoadSafeForm
   const randomName = useMnemonicSafeName()
   const { ens, name, resolving } = useAddressResolver(safeAddress)
 
-  const web3ReadOnly = useMultiWeb3ReadOnly()
+  const web3ReadOnly = useWeb3ReadOnly()
 
   // Address book, ENS, mnemonic
   const fallbackName = name || ens || randomName
@@ -81,7 +81,6 @@ const SetAddressStep = ({ data, onSubmit, onBack }: StepRenderProps<LoadSafeForm
     try {
       await getSafeSDKAndImplementation(web3ReadOnly, address, currentChainId)
     } catch (error: any) {
-      if (error?.skip) return
       return 'Address given is not a valid Safe Account address'
     }
   }
