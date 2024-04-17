@@ -16,7 +16,7 @@ export const DecodedData = ({ txData, txInfo }: Props): ReactElement | null => {
   if (!txData) {
     return (
       <InfoDetails title="Unknown transaction:">
-        Full details for this transaction must be recovered through the magic link from a signer.
+        Full details for this transaction must be recovered through the magic link or data export from another signer.
       </InfoDetails>
     )
   }

@@ -6,7 +6,7 @@ import { useAppSelector } from '@/store'
 import { selectRpc } from '@/store/settingsSlice'
 import LoadRPCUrl from '@/components/welcome/WelcomeLogin/LoadRPCUrl'
 import { CHAINLIST_URL } from '@/config/constants'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const WelcomeLogin = () => {
   const chain = useCurrentChain()
@@ -22,6 +22,10 @@ const WelcomeLogin = () => {
   const toggleShowRpcInput = () => {
     setForceShowRpcInput(!forceShowRpcInput)
   }
+
+  useEffect(() => {
+    setForceShowRpcInput(false)
+  }, [chain])
 
   return (
     <Paper className={css.loginCard} data-testid="welcome-login">

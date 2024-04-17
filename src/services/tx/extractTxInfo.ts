@@ -1,14 +1,17 @@
 import type { OperationType, SafeTransaction } from '@safe-global/safe-core-sdk-types'
 import { type SafeTransactionData } from '@safe-global/safe-core-sdk-types'
 import {
-  type TransactionDetails,
   TransactionStatus,
   TransactionInfoType,
   DetailedExecutionInfoType,
   type SafeInfo,
 } from '@safe-global/safe-gateway-typescript-sdk'
 import { Operation } from '@safe-global/safe-gateway-typescript-sdk'
-import { isMultisigDetailedExecutionInfo, isNativeTokenTransfer } from '@/utils/transaction-guards'
+import {
+  isMultisigDetailedExecutionInfo,
+  isNativeTokenTransfer,
+  type TransactionDetails,
+} from '@/utils/transaction-guards'
 import { transactionKey } from './txMagicLink'
 import { addressEx } from '@/utils/addresses'
 import type { Custom, MultisigExecutionDetails, TransactionData } from '@safe-global/safe-apps-sdk'

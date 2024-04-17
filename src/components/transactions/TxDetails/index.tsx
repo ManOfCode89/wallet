@@ -1,5 +1,5 @@
 import React, { type ReactElement } from 'react'
-import type { TransactionDetails, TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
+import type { TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
 import { Operation } from '@safe-global/safe-gateway-typescript-sdk'
 import { Box } from '@mui/material'
 
@@ -13,6 +13,7 @@ import {
   isMultisigDetailedExecutionInfo,
   isMultisigExecutionInfo,
   isTxQueued,
+  type TransactionDetails,
 } from '@/utils/transaction-guards'
 import { InfoDetails } from '@/components/transactions/InfoDetails'
 import EthHashInfo from '@/components/common/EthHashInfo'

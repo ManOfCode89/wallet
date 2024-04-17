@@ -12,7 +12,7 @@ import useChains from './useChains'
 const defaultChainId = IS_PRODUCTION ? chains.eth : chains.sep
 
 // Use the location object directly because Next.js's router.query is available only on mount
-const getLocationQuery = (): ParsedUrlQuery => {
+export const getLocationQuery = (): ParsedUrlQuery => {
   if (typeof location === 'undefined') return {}
 
   const query = parse(location.search.slice(1))

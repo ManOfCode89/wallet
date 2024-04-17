@@ -6,15 +6,16 @@ import {
   type SafeAppData,
   type SafeInfo,
   type Transaction,
-  type TransactionDetails,
   type TransactionListPage,
   TransactionStatus,
   type TransactionSummary,
   TransactionInfoType,
+  DetailedExecutionInfoType,
 } from '@safe-global/safe-gateway-typescript-sdk'
 import { ConflictType, getTransactionDetails, TransactionListItemType } from '@safe-global/safe-gateway-typescript-sdk'
 import {
   type DetailedTransaction,
+  type TransactionDetails,
   isERC20Transfer,
   isModuleDetailedExecutionInfo,
   isMultisigDetailedExecutionInfo,
@@ -146,6 +147,7 @@ export const getMultiSendTxs = (
 export const getTxsWithDetails = (txs: Transaction[], chainId: string) => {
   return Promise.all(
     txs.map(async (tx) => {
+      // TODO(devanon): Replace or remove CGW usage
       return await getTransactionDetails(chainId, tx.transaction.id)
     }),
   )
@@ -314,10 +316,8 @@ export const enrichTransactionDetailsFromHistory = (details: TransactionDetails,
   details.txStatus = TransactionStatus.SUCCESS
   details.txHash = executedTx.txHash
   details.executedAt = executedTx.timestamp
-
-  if (isMultisigDetailedExecutionInfo(details.detailedExecutionInfo)) {
-    details.detailedExecutionInfo.executor = addressEx(executedTx.executor)
-  }
+  details.detailedExecutionInfo.safeTxHash = executedTx.safeTxHash
+  details.detailedExecutionInfo.executor = addressEx(executedTx.executor)
 }
 
 export const emptyUnknownTransaction = (executedTx: TxHistoryItem, safeAddress: string): DetailedTransaction => {
@@ -348,6 +348,22 @@ export const emptyUnknownTransaction = (executedTx: TxHistoryItem, safeAddress: 
         dataSize: '',
         value: '',
         isCancellation: false,
+      },
+      detailedExecutionInfo: {
+        type: DetailedExecutionInfoType.MULTISIG,
+        submittedAt: 0,
+        nonce: 0,
+        safeTxGas: '',
+        baseGas: '',
+        gasPrice: '',
+        gasToken: '',
+        refundReceiver: addressEx('0x'),
+        safeTxHash: executedTx.safeTxHash,
+        signers: [],
+        confirmationsRequired: 0,
+        confirmations: [],
+        trusted: true,
+        executor: addressEx(executedTx.executor),
       },
     },
   }

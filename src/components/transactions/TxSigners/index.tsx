@@ -130,6 +130,7 @@ export const TxSigners = ({ txDetails, txSummary }: TxSignersProps): ReactElemen
   const canExecute = wallet?.address ? isExecutable(txSummary, wallet.address, safe) : false
   const confirmationsNeeded = confirmationsRequired - confirmations.length
   const isConfirmed = confirmationsNeeded <= 0 || canExecute
+  const showConfirmationCount = confirmationsRequired > 0
 
   return (
     <>
@@ -158,10 +159,16 @@ export const TxSigners = ({ txDetails, txSummary }: TxSignersProps): ReactElemen
           <StyledListItemIcon $state={isConfirmed ? StepState.CONFIRMED : StepState.ACTIVE}>
             {isConfirmed ? <Check /> : <MissingConfirmation />}
           </StyledListItemIcon>
-          <ListItemText data-testid="confirmation-action" primaryTypographyProps={{ fontWeight: 700 }}>
-            Confirmations{' '}
-            <Box className={css.confirmationsTotal}>({`${confirmationsCount} of ${confirmationsRequired}`})</Box>
-          </ListItemText>
+          {showConfirmationCount ? (
+            <ListItemText data-testid="confirmation-action" primaryTypographyProps={{ fontWeight: 700 }}>
+              Confirmations{' '}
+              <Box className={css.confirmationsTotal}>({`${confirmationsCount} of ${confirmationsRequired}`})</Box>
+            </ListItemText>
+          ) : (
+            <ListItemText data-testid="confirmation-action" primaryTypographyProps={{ fontWeight: 700 }}>
+              Confirmed
+            </ListItemText>
+          )}
         </ListItem>
         {!hideConfirmations &&
           confirmations.map(({ signer }) => (

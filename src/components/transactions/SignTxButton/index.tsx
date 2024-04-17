@@ -1,8 +1,8 @@
 import { useContext, type ReactElement, type SyntheticEvent } from 'react'
-import type { TransactionDetails, TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
+import type { TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
 import { Button, Tooltip } from '@mui/material'
 
-import { isSignableBy } from '@/utils/transaction-guards'
+import { isSignableBy, type TransactionDetails } from '@/utils/transaction-guards'
 import useWallet from '@/hooks/wallets/useWallet'
 import useIsPending from '@/hooks/useIsPending'
 import IconButton from '@mui/material/IconButton'

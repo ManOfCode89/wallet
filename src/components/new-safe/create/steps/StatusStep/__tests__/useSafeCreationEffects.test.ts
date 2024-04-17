@@ -9,6 +9,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import useSafeCreationEffects from '@/components/new-safe/create/steps/StatusStep/useSafeCreationEffects'
 import type { PendingSafeData } from '@/components/new-safe/create/types'
 import { hexZeroPad } from 'ethers/lib/utils'
+import { MulticallWrapper } from 'ethers-multicall-provider'
 
 describe('useSafeCreationEffects', () => {
   beforeEach(() => {
@@ -18,6 +19,7 @@ describe('useSafeCreationEffects', () => {
 
     const mockProvider: Web3Provider = new Web3Provider(jest.fn())
     jest.spyOn(web3, 'useWeb3').mockImplementation(() => mockProvider)
+    jest.spyOn(web3, 'useMultiWeb3ReadOnly').mockImplementation(() => MulticallWrapper.wrap(mockProvider))
   })
 
   it('should clear the tx hash if it exists on ERROR or REVERTED', () => {

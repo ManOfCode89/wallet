@@ -12,7 +12,7 @@ import {
   makeTxFromDetails,
 } from '@/utils/transactions'
 import { type DetailedTransaction, isDetailedTransactionListItem } from '@/utils/transaction-guards'
-import useExecutedTransactions from '@/hooks/useExecutedTransactions'
+import { selectTxHistory } from '@/store/txHistorySlice'
 
 const useTxHistory = (): {
   data?: Array<DetailedTransaction>
@@ -26,7 +26,10 @@ const useTxHistory = (): {
   const { chainId } = safe
 
   const transactions = useAppSelector((state) => selectAddedTxs(state, chainId, safeAddress), isEqual)
-  const { data: executedTransactions, loading: executedTransactionsLoading } = useExecutedTransactions()
+  const { data: executedTransactions, loading: executedTransactionsLoading } = useAppSelector(
+    (state) => selectTxHistory(state),
+    isEqual,
+  )
 
   const [data, error, loading] = useAsync<Array<DetailedTransaction>>(
     async () => {
@@ -35,7 +38,7 @@ const useTxHistory = (): {
       }
 
       const results: Array<DetailedTransaction | undefined> = await Promise.all(
-        executedTransactions.map(async (executedTx) => {
+        Object.values(executedTransactions).map(async (executedTx) => {
           let txKey = getTxKeyFromTxId(executedTx.txId)
           if (!txKey) return
 

@@ -16,11 +16,16 @@ import { showNotification } from '@/store/notificationsSlice'
 export type TxHistoryItem = {
   txId: string
   txHash: string
+  safeTxHash: string
   timestamp: number
   executor: string
 }
 
-export const useLoadTxHistory = (): AsyncResult<Array<TxHistoryItem>> => {
+export type TxHistory = {
+  [txId: string]: TxHistoryItem
+}
+
+export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
   const dispatch = useAppDispatch()
   const sdk = useSafeSDK()
   const provider = useMultiWeb3ReadOnly()
@@ -28,7 +33,7 @@ export const useLoadTxHistory = (): AsyncResult<Array<TxHistoryItem>> => {
   const { chainId } = safe
   const [pollCount, resetPolling] = useIntervalCounter(POLLING_INTERVAL)
 
-  const [data, error, loading] = useAsync<Array<TxHistoryItem> | undefined>(
+  const [data, error, loading] = useAsync<TxHistory | undefined>(
     async () => {
       if (!safeAddress || !provider || !sdk) return
 
@@ -43,23 +48,27 @@ export const useLoadTxHistory = (): AsyncResult<Array<TxHistoryItem>> => {
 
       const logs = await safeContract.queryFilter(safeContract.filters.ExecutionSuccess(), 0, 'latest')
 
-      return (
-        await Promise.all(
-          logs.map(async (log) => {
-            const [timestamp, executor] = await Promise.all([
-              provider.getBlock(log.blockNumber).then((block) => block.timestamp * 1000),
-              provider.getTransaction(log.transactionHash).then((tx) => tx.from),
-            ])
+      let txs = await Promise.all(
+        logs.map(async (log) => {
+          const [timestamp, executor] = await Promise.all([
+            provider.getBlock(log.blockNumber).then((block) => block.timestamp * 1000),
+            provider.getTransaction(log.transactionHash).then((tx) => tx.from),
+          ])
 
-            return {
-              txId: `multisig_${safeAddress}_${log.args.txHash}`,
-              txHash: log.transactionHash,
-              timestamp,
-              executor,
-            }
-          }),
-        )
-      ).reverse()
+          return {
+            txId: `multisig_${safeAddress}_${log.args.txHash}`,
+            txHash: log.transactionHash,
+            safeTxHash: log.args.txHash,
+            timestamp,
+            executor,
+          }
+        }),
+      )
+
+      return txs.reduce((acc, tx) => {
+        acc[tx.txId] = tx
+        return acc
+      }, {} as TxHistory)
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [safeAddress, provider, pollCount, sdk],

@@ -19,7 +19,7 @@ import type {
   SafeInfo,
   SettingsChange,
   Transaction,
-  TransactionDetails,
+  TransactionDetails as OldTransactionDetails,
   TransactionInfo,
   TransactionListItem as OldTransactionListItem,
   TransactionSummary,
@@ -116,6 +116,10 @@ export const isDateLabel = (value: TransactionListItem): value is DateLabel => {
 
 export const isTransactionListItem = (value: TransactionListItem | undefined): value is Transaction => {
   return !!value && value.type === TransactionListItemType.TRANSACTION
+}
+
+export type TransactionDetails = Omit<OldTransactionDetails, 'detailedExecutionInfo'> & {
+  detailedExecutionInfo: MultisigExecutionDetails
 }
 
 export type DetailedTransaction = Transaction & {

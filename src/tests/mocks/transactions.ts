@@ -1,5 +1,5 @@
 import { addressEx } from '@/utils/addresses'
-import type { DetailedTransaction } from '@/utils/transaction-guards'
+import type { DetailedTransaction, TransactionDetails } from '@/utils/transaction-guards'
 import {
   type AddressEx,
   ConflictType,
@@ -14,7 +14,6 @@ import {
   TransactionTokenType,
   TransferDirection,
   type TransferInfo,
-  type TransactionDetails,
 } from '@safe-global/safe-gateway-typescript-sdk'
 
 const mockAddressEx: AddressEx = {
@@ -46,6 +45,21 @@ const mockTxDetails: TransactionDetails = {
     dataSize: '0',
     value: '0',
     isCancellation: false,
+  },
+  detailedExecutionInfo: {
+    type: DetailedExecutionInfoType.MULTISIG,
+    submittedAt: 0,
+    nonce: 0,
+    safeTxGas: '',
+    baseGas: '',
+    gasPrice: '',
+    gasToken: '',
+    refundReceiver: addressEx('0x'),
+    safeTxHash: '',
+    signers: [],
+    confirmationsRequired: 0,
+    confirmations: [],
+    trusted: true,
   },
 }
 

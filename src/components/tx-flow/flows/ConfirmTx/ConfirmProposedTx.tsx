@@ -1,9 +1,14 @@
 import { type ReactElement, useContext, useEffect } from 'react'
-import type { TransactionDetails, TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
+import type { TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
 import useSafeInfo from '@/hooks/useSafeInfo'
 import useWallet from '@/hooks/wallets/useWallet'
 import SignOrExecuteForm from '@/components/tx/SignOrExecuteForm'
-import { isExecutable, isMultisigExecutionInfo, isSignableBy } from '@/utils/transaction-guards'
+import {
+  isExecutable,
+  isMultisigExecutionInfo,
+  isSignableBy,
+  type TransactionDetails,
+} from '@/utils/transaction-guards'
 import { Typography } from '@mui/material'
 import { createExistingTx } from '@/services/tx/tx-sender'
 import { SafeTxContext } from '../../SafeTxProvider'

@@ -6,21 +6,32 @@ import { useAppDispatch } from '@/store'
 import { showNotification } from '@/store/notificationsSlice'
 import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
 import { asError } from '@/services/exceptions/utils'
-import { useUrlChainId } from '@/hooks/useChainId'
 import useSafeAddress from '@/hooks/useSafeAddress'
 import { bytes32ToAddress } from '@/utils/addresses'
 import type Safe from '@safe-global/safe-core-sdk'
 import type { Provider } from '@ethersproject/providers'
 import { ethers } from 'ethers'
+import useChainId from '@/hooks/useChainId'
 
 export const getSafeImplementation = async (web3: Provider, safeAddress: string, chainId: string) => {
-  return web3.getCode(safeAddress).then((code) => {
-    if (code !== '0x') {
-      return web3.getStorageAt(safeAddress, 0)
-    } else {
-      throw new Error(`No Safe found at address ${safeAddress} on chain with ID ${chainId}.`)
-    }
-  })
+  return web3
+    .getNetwork()
+    .then((network) => {
+      if (network.chainId == Number(chainId)) {
+        return web3.getCode(safeAddress)
+      } else {
+        throw {
+          skip: true,
+        }
+      }
+    })
+    .then((code) => {
+      if (code !== '0x') {
+        return web3.getStorageAt(safeAddress, 0)
+      } else {
+        throw new Error(`No Safe found at address ${safeAddress} on chain with ID ${chainId}.`)
+      }
+    })
 }
 
 export const getSafeSDKAndImplementation = async (
@@ -48,7 +59,7 @@ export const useInitSafeCoreSDK = () => {
   const dispatch = useAppDispatch()
   const web3ReadOnly = useMultiWeb3ReadOnly()
   const address = useSafeAddress()
-  const chainId = useUrlChainId()
+  const chainId = useChainId()
 
   useEffect(() => {
     if (!web3ReadOnly || !address || !chainId) {
@@ -77,6 +88,8 @@ export const useInitSafeCoreSDK = () => {
       })
       .then(setSafeSDK)
       .catch((_e) => {
+        if (_e.skip) return
+
         setSafeImplementation(undefined)
         setSafeSDK(undefined)
 

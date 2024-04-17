@@ -88,7 +88,7 @@ export const settingsSlice = createSlice({
     setTokenList: (state, { payload }: PayloadAction<SettingsState['tokenList']>) => {
       state.tokenList = payload
     },
-    setRpc: (state, { payload }: PayloadAction<{ chainId: string; rpc: string }>) => {
+    setRpc: (state, { payload }: PayloadAction<{ chainId: string; rpc?: string }>) => {
       const { chainId, rpc } = payload
       if (rpc) {
         state.env.rpc[chainId] = rpc

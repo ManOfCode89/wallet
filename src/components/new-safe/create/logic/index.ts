@@ -159,6 +159,9 @@ export const pollSafeInfo = async (web3: Provider, chainId: string, safeAddress:
   return backOff(
     async () => {
       let [sdk, implementation] = await getSafeSDKAndImplementation(web3, safeAddress, chainId)
+      if (!sdk) {
+        throw new Error('Safe SDK not available')
+      }
       return await getSafeInfo(sdk, implementation)
     },
     {
@@ -166,7 +169,7 @@ export const pollSafeInfo = async (web3: Provider, chainId: string, safeAddress:
       maxDelay: 20000,
       numOfAttempts: 19,
       retry: (e) => {
-        console.info('waiting for client-gateway to provide safe information', e)
+        console.info('waiting for Safe SDK to provide safe information', e)
         return true
       },
     },

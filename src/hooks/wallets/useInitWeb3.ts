@@ -11,10 +11,12 @@ import {
   setWeb3ReadOnly,
 } from '@/hooks/wallets/web3'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { selectRpc } from '@/store/settingsSlice'
+import { selectRpc, setRpc } from '@/store/settingsSlice'
 import { useRouter } from 'next/router'
 import { AppRoutes } from '@/config/routes'
-import { showNotification } from '@/store/notificationsSlice'
+import { closeByGroupKey, showNotification } from '@/store/notificationsSlice'
+
+const RPC_URL_ERROR_KEY = 'rpc-url-error'
 
 export const useInitWeb3 = () => {
   const dispatch = useAppDispatch()
@@ -35,7 +37,7 @@ export const useInitWeb3 = () => {
   }, [wallet, chainId])
 
   useEffect(() => {
-    if (!customRpcUrl) {
+    if (!customRpcUrl || !chainId) {
       setWeb3ReadOnly(undefined)
       setMultiWeb3ReadOnly(undefined)
 
@@ -43,7 +45,7 @@ export const useInitWeb3 = () => {
         dispatch(
           showNotification({
             message: `No RPC URL saved for ${chain.chainName ?? 'this'} network. You must provide one to continue.`,
-            groupKey: 'custom-rpc-url-error',
+            groupKey: RPC_URL_ERROR_KEY,
             variant: 'error',
           }),
         )
@@ -51,17 +53,35 @@ export const useInitWeb3 = () => {
       }
       return
     }
-    const web3ReadOnly = createWeb3ReadOnly(customRpcUrl)
-    web3ReadOnly._networkPromise.then((network) => {
-      if (network.chainId === Number(chainId)) {
-        setWeb3ReadOnly(web3ReadOnly)
-      }
 
-      const multiWeb3ReadOnly = createMultiWeb3ReadOnly(customRpcUrl, network)
-      setMultiWeb3ReadOnly(multiWeb3ReadOnly)
-      multiWeb3ReadOnly.getNetwork().then((network) => {
-        if (network.chainId === Number(chainId)) setMultiWeb3ReadOnly(multiWeb3ReadOnly)
+    const web3ReadOnly = createWeb3ReadOnly(customRpcUrl)
+
+    web3ReadOnly._networkPromise
+      .then((network) => {
+        setWeb3ReadOnly(web3ReadOnly)
+        dispatch(closeByGroupKey({ groupKey: RPC_URL_ERROR_KEY }))
+
+        const multiWeb3ReadOnly = createMultiWeb3ReadOnly(customRpcUrl, network)
+        setMultiWeb3ReadOnly(multiWeb3ReadOnly)
       })
-    })
+      .catch((error) => {
+        dispatch(
+          setRpc({
+            chainId,
+          }),
+        )
+        dispatch(
+          showNotification({
+            message: `Cannot connect to the provided RPC URL for  ${
+              chain?.chainName ?? 'this'
+            } network, please provide a new one.`,
+            groupKey: RPC_URL_ERROR_KEY,
+            variant: 'error',
+            detailedMessage: error.message,
+          }),
+        )
+        router.push({ pathname: AppRoutes.welcome.index, query: { chain: chain.shortName } })
+      })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customRpcUrl, chain, router, dispatch])
 }

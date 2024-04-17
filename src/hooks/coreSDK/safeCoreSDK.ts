@@ -1,4 +1,3 @@
-import chains from '@/config/chains'
 import { getMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
 import { _safeDeployments, _safeL2Deployments } from '@safe-global/safe-deployments'
 import ExternalStore from '@/services/ExternalStore'
@@ -55,14 +54,12 @@ type SafeCoreSDKProps = {
 }
 
 // Safe Core SDK
-export const initSafeSDK = async ({ provider, chainId, address, implementation }: SafeCoreSDKProps): Promise<Safe> => {
+export const initSafeSDK = async ({ provider, address, implementation }: SafeCoreSDKProps): Promise<Safe> => {
   const safeVersion = await Gnosis_safe__factory.connect(address, provider).VERSION()
-
-  let isL1SafeMasterCopy = chainId === chains.eth
 
   const masterCopy = implementation
 
-  isL1SafeMasterCopy =
+  let isL1SafeMasterCopy =
     Object.values(
       _safeDeployments.find((deployment) => deployment.version === safeVersion)?.networkAddresses ?? {},
     ).find((networkAddresses) => networkAddresses === masterCopy) !== undefined

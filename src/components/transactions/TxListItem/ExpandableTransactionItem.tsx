@@ -1,10 +1,10 @@
-import { type Transaction, type TransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
+import { type Transaction } from '@safe-global/safe-gateway-typescript-sdk'
 import { Accordion, AccordionDetails, AccordionSummary, Box, Skeleton } from '@mui/material'
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore'
 import TxSummary from '@/components/transactions/TxSummary'
 import TxDetails from '@/components/transactions/TxDetails'
 import CreateTxInfo from '@/components/transactions/SafeCreationTx'
-import { isCreationTxInfo } from '@/utils/transaction-guards'
+import { isCreationTxInfo, type TransactionDetails } from '@/utils/transaction-guards'
 
 type ExpandableTransactionItemProps = {
   isGrouped?: boolean

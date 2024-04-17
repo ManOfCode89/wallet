@@ -1,10 +1,10 @@
 import type { SyntheticEvent } from 'react'
 import { type ReactElement, useContext } from 'react'
-import type { TransactionDetails, TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
+import type { TransactionSummary } from '@safe-global/safe-gateway-typescript-sdk'
 import { Button, Tooltip, SvgIcon } from '@mui/material'
 
 import useSafeInfo from '@/hooks/useSafeInfo'
-import { isMultisigExecutionInfo } from '@/utils/transaction-guards'
+import { isMultisigExecutionInfo, type TransactionDetails } from '@/utils/transaction-guards'
 import useIsPending from '@/hooks/useIsPending'
 import RocketIcon from '@/public/images/transactions/rocket.svg'
 import IconButton from '@mui/material/IconButton'

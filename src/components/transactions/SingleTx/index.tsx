@@ -1,7 +1,7 @@
 import ErrorMessage from '@/components/tx/ErrorMessage'
 import { useRouter } from 'next/router'
 import useSafeInfo from '@/hooks/useSafeInfo'
-import type { Label, Transaction, TransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
+import type { Label, Transaction } from '@safe-global/safe-gateway-typescript-sdk'
 import { LabelValue } from '@safe-global/safe-gateway-typescript-sdk'
 import { type ReactElement, useEffect, useState } from 'react'
 import { enrichTransactionDetailsFromHistory, makeTxFromDetails } from '@/utils/transactions'
@@ -10,12 +10,12 @@ import ExpandableTransactionItem, {
   TransactionSkeleton,
 } from '@/components/transactions/TxListItem/ExpandableTransactionItem'
 import GroupLabel from '../GroupLabel'
-import { isMultisigDetailedExecutionInfo } from '@/utils/transaction-guards'
+import { isMultisigDetailedExecutionInfo, type TransactionDetails } from '@/utils/transaction-guards'
 import { useAppSelector } from '@/store'
 import { selectAddedTx } from '@/store/addedTxsSlice'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { useTransactionMagicLink } from '@/hooks/useMagicLink'
-import { useExecutedTransaction } from '@/hooks/useExecutedTransactions'
+import { selectTxFromHistory } from '@/store/txHistorySlice'
 
 const SingleTxGrid = ({ txDetails }: { txDetails: TransactionDetails }): ReactElement => {
   const tx: Transaction = makeTxFromDetails(txDetails)
@@ -45,7 +45,7 @@ const SingleTx = () => {
 
   const { safe, safeAddress } = useSafeInfo()
   const transaction = useAppSelector((state) => selectAddedTx(state, safe.chainId, safeAddress, transactionKey ?? ''))
-  const { data: executedTx } = useExecutedTransaction(transactionId)
+  const executedTx = useAppSelector((state) => selectTxFromHistory(state, transactionId))
 
   const [txDetails, setTxDetails] = useState<TransactionDetails | undefined>(undefined)
   const [txDetailsError, setTxDetailsError] = useState<Error | undefined>(undefined)

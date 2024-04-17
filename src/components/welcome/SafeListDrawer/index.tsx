@@ -37,7 +37,7 @@ const SafeListDrawer = () => {
         startIcon={<ChevronRightIcon />}
         onClick={() => setShowSidebar(true)}
       >
-        <Typography className={css.buttonText} fontWeight="bold">
+        <Typography className={css.buttonText} component="span" fontWeight="bold">
           My Safe Accounts{' '}
           <Typography color="text.secondary" fontWeight="bold">
             ({totalNumberOfSafes})

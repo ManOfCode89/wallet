@@ -31,7 +31,7 @@ describe('useInitSafeCoreSDK hook', () => {
 
     jest.spyOn(web3, 'useMultiWeb3ReadOnly').mockReturnValue(mockProvider)
     jest.spyOn(useSafeAddress, 'default').mockReturnValue(mockSafeAddress)
-    jest.spyOn(useChainId, 'useUrlChainId').mockReturnValue(mockChainId)
+    jest.spyOn(useChainId, 'default').mockReturnValue(mockChainId)
     jest
       .spyOn(router, 'useRouter')
       .mockReturnValue({ query: { safe: `gno:${mockSafeAddress}` } } as unknown as router.NextRouter)
