@@ -4,7 +4,7 @@ on:
 
   push:
     branches:
-      - main
+      - eternal-safe
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}

@@ -41,7 +41,7 @@ export const useInitWeb3 = () => {
       setWeb3ReadOnly(undefined)
       setMultiWeb3ReadOnly(undefined)
 
-      if (chain && router.pathname !== AppRoutes.welcome.index) {
+      if (chain && router.pathname !== AppRoutes.welcome.index && router.pathname !== AppRoutes.index) {
         dispatch(
           showNotification({
             message: `No RPC URL saved for ${chain.chainName ?? 'this'} network. You must provide one to continue.`,

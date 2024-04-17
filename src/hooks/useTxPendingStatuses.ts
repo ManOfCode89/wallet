@@ -10,8 +10,7 @@ import { isTransactionListItem } from '@/utils/transaction-guards'
 import useSafeInfo from './useSafeInfo'
 
 const pendingStatuses: Partial<Record<TxEvent, PendingStatus | null>> = {
-  [TxEvent.SIGNATURE_PROPOSED]: PendingStatus.SIGNING,
-  [TxEvent.SIGNATURE_INDEXED]: null,
+  [TxEvent.SIGNATURE_PROPOSED]: null,
   [TxEvent.EXECUTING]: PendingStatus.SUBMITTING,
   [TxEvent.PROCESSING]: PendingStatus.PROCESSING,
   [TxEvent.PROCESSED]: PendingStatus.INDEXING,
