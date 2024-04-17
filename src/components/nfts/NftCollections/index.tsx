@@ -62,7 +62,7 @@ const NftCollections = (): ReactElement => {
             px={2}
             bgcolor="background.paper"
             borderRadius={'0px 0px 6px 6px'}
-            borderTop={1}
+            borderTop={allNfts.length > 0 ? 1 : 0}
             borderColor="border.light"
             sx={{
               ':hover': {

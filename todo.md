@@ -1,3 +1,7 @@
+## Eternal Safe - Wave 1 Grant: Todo List
+
+This served as a working todo list for the scope of the [wave 1 grant](https://app.charmverse.io/safe-grants-program/page-005239065690887612).
+
 ### Todo
 
 - [ ] Send NFTs
@@ -32,13 +36,3 @@
 - [x] Update welcome page for Eternal Safe and only allow loading an already existing Safe
 - [x] Rename app
 - [x] Rip out analytics
-
-### Future
-
-- Custom contract interactions via built-in version of [tx-builder](https://github.com/safe-global/safe-react-apps/tree/development/apps/tx-builder)
-- Allow onchain message signing
-- Parse unknown onchain transactions
-- Safe creation
-- Dappnode package
-- Support L2 events
-- Support custom chains in UI
