@@ -3,7 +3,7 @@ import { Paper, Grid, Typography, TextField, Button, Tooltip, IconButton, SvgIco
 import InputAdornment from '@mui/material/InputAdornment'
 import RotateLeftIcon from '@mui/icons-material/RotateLeft'
 import { useAppDispatch, useAppSelector } from '@/store'
-import { selectSettings, setRpc, setTenderly } from '@/store/settingsSlice'
+import { selectSettings, setIPFS, setRpc, setTenderly } from '@/store/settingsSlice'
 import { CHAINLIST_URL, TENDERLY_SIMULATE_ENDPOINT_URL } from '@/config/constants'
 import useChainId from '@/hooks/useChainId'
 import { useCurrentChain } from '@/hooks/useChains'
@@ -12,12 +12,14 @@ import ExternalLink from '@/components/common/ExternalLink'
 
 export enum EnvVariablesField {
   rpc = 'rpc',
+  ipfs = 'ipfs',
   tenderlyURL = 'tenderlyURL',
   tenderlyToken = 'tenderlyToken',
 }
 
 export type EnvVariablesFormData = {
   [EnvVariablesField.rpc]: string
+  [EnvVariablesField.ipfs]: string
   [EnvVariablesField.tenderlyURL]: string
   [EnvVariablesField.tenderlyToken]: string
 }
@@ -32,6 +34,7 @@ const EnvironmentVariables = () => {
     mode: 'onChange',
     values: {
       [EnvVariablesField.rpc]: settings.env?.rpc[chainId] ?? chain?.publicRpcUri.value ?? '',
+      [EnvVariablesField.ipfs]: settings.env?.ipfs ?? '',
       [EnvVariablesField.tenderlyURL]: settings.env?.tenderly.url ?? '',
       [EnvVariablesField.tenderlyToken]: settings.env?.tenderly.accessToken ?? '',
     },
@@ -50,6 +53,12 @@ const EnvironmentVariables = () => {
         rpc: data[EnvVariablesField.rpc],
       }),
     )
+
+    // strip ending slash if present
+    if (data[EnvVariablesField.ipfs].endsWith('/')) {
+      data[EnvVariablesField.ipfs] = data[EnvVariablesField.ipfs].slice(0, -1)
+    }
+    dispatch(setIPFS(data[EnvVariablesField.ipfs]))
 
     dispatch(
       setTenderly({
@@ -143,6 +152,43 @@ const EnvironmentVariables = () => {
                 }}
                 fullWidth
                 required
+              />
+
+              <Typography fontWeight={700} mb={2} mt={3}>
+                IPFS URL
+                <Tooltip
+                  placement="top"
+                  arrow
+                  title="By default Eternal Safe uses the Cloudflare IPFS gateway. This IPFS gateway is only used to load the Uniswap Token List."
+                >
+                  <span>
+                    <SvgIcon
+                      component={InfoIcon}
+                      inheritViewBox
+                      fontSize="small"
+                      color="border"
+                      sx={{ verticalAlign: 'middle', ml: 0.5 }}
+                    />
+                  </span>
+                </Tooltip>
+              </Typography>
+
+              <TextField
+                {...register(EnvVariablesField.ipfs)}
+                variant="outlined"
+                type="url"
+                InputProps={{
+                  endAdornment: rpc ? null : (
+                    <InputAdornment position="end">
+                      <Tooltip title="Reset to default value">
+                        <IconButton onClick={() => onReset(EnvVariablesField.ipfs)} size="small" color="primary">
+                          <RotateLeftIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
+                fullWidth
               />
 
               {/* TODO(devanon): Consider tenderly */}

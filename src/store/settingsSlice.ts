@@ -12,6 +12,7 @@ export type EnvState = {
   rpc: {
     [chainId: string]: string
   }
+  ipfs: string
 }
 
 export enum TOKEN_LISTS {
@@ -56,6 +57,7 @@ export const initialState: SettingsState = {
       url: '',
       accessToken: '',
     },
+    ipfs: '',
   },
   signing: {
     onChainSigning: false,
@@ -96,6 +98,9 @@ export const settingsSlice = createSlice({
         delete state.env.rpc[chainId]
       }
     },
+    setIPFS: (state, { payload }: PayloadAction<EnvState['ipfs']>) => {
+      state.env.ipfs = payload
+    },
     setTenderly: (state, { payload }: PayloadAction<EnvState['tenderly']>) => {
       state.env.tenderly = merge({}, state.env.tenderly, payload)
     },
@@ -118,6 +123,7 @@ export const {
   setDarkMode,
   setTokenList,
   setRpc,
+  setIPFS,
   setTenderly,
   setOnChainSigning,
   setTransactionExecution,
@@ -134,6 +140,8 @@ export const selectTokenList = (state: RootState): SettingsState['tokenList'] =>
 }
 
 export const selectRpc = createSelector(selectSettings, (settings) => settings.env.rpc)
+
+export const selectIPFS = createSelector(selectSettings, (settings) => settings.env.ipfs)
 
 export const selectTenderly = createSelector(selectSettings, (settings) => settings.env.tenderly)
 

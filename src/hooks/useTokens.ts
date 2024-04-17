@@ -3,7 +3,7 @@ import { type TokenInfo } from '@uniswap/token-lists'
 import { useAppSelector } from '@/store'
 import { useTokenList } from '@/hooks/useTokenList'
 import { useCustomTokens } from '@/hooks/useCustomTokens'
-import { selectSettings, TOKEN_LISTS } from '@/store/settingsSlice'
+import { selectIPFS, selectSettings, TOKEN_LISTS } from '@/store/settingsSlice'
 import { useCurrentChain } from '@/hooks/useChains'
 import { FEATURES, hasFeature } from '@/utils/chains'
 import { DEFAULT_IPFS_GATEWAY, DEFAULT_TOKENLIST_IPNS } from '@/config/constants'
@@ -22,9 +22,12 @@ const useTokenListSetting = (): boolean | undefined => {
 
 export function useTokens(): Array<TokenInfo> | undefined {
   const isTokenListEnabled = useTokenListSetting()
+  const customIPFS = useAppSelector(selectIPFS)
 
-  // TODO(devanon): get IPFS gateway from env or fallback to default, need method for this
-  const listTokens = useTokenList(`${DEFAULT_IPFS_GATEWAY}/${DEFAULT_TOKENLIST_IPNS}`, isTokenListEnabled ?? false)
+  const listTokens = useTokenList(
+    `${customIPFS || DEFAULT_IPFS_GATEWAY}/${DEFAULT_TOKENLIST_IPNS}`,
+    isTokenListEnabled ?? false,
+  )
   const customTokens = useCustomTokens()
 
   const tokens = useMemo(() => {
