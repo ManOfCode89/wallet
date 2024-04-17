@@ -1,7 +1,6 @@
 import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import useSafeInfo from './useSafeInfo'
-import { useTxFilter } from '@/utils/tx-history-filter'
 import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { isEqual } from 'lodash'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
@@ -19,9 +18,6 @@ const useTxHistory = (): {
   error?: string
   loading: boolean
 } => {
-  // TODO(devanon): use filter
-  const [filter] = useTxFilter()
-
   const { safe, safeAddress } = useSafeInfo()
   const { chainId } = safe
 

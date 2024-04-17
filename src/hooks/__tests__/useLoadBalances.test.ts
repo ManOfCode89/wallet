@@ -11,25 +11,6 @@ import { TOKEN_LISTS } from '@/store/settingsSlice'
 
 const safeAddress = hexZeroPad('0x1234', 20)
 
-const mockBalanceEUR = {
-  fiatTotal: '1001',
-  items: [
-    {
-      balance: '1001',
-      fiatBalance: '1001',
-      fiatConversion: '1',
-      tokenInfo: {
-        address: hexZeroPad('0x3', 20),
-        decimals: 18,
-        logoUri: '',
-        name: 'sEuro',
-        symbol: 'sEUR',
-        type: TokenType.ERC20,
-      },
-    },
-  ],
-}
-
 const mockBalanceUSD = {
   fiatTotal: '1002',
   items: [
@@ -162,6 +143,9 @@ describe('useLoadBalances', () => {
           },
           theme: {},
           tokenList: 'ALL',
+          env: {
+            ipfs: '',
+          },
         },
         customTokens: {},
       } as store.RootState),
@@ -206,6 +190,9 @@ describe('useLoadBalances', () => {
           },
           theme: {},
           tokenList: TOKEN_LISTS.TRUSTED,
+          env: {
+            ipfs: '',
+          },
         },
         customTokens: {},
       } as store.RootState),
@@ -259,6 +246,9 @@ describe('useLoadBalances', () => {
           },
           theme: {},
           tokenList: TOKEN_LISTS.TRUSTED,
+          env: {
+            ipfs: '',
+          },
         },
         customTokens: {},
       } as store.RootState),
@@ -291,6 +281,9 @@ describe('useLoadBalances', () => {
           },
           theme: {},
           tokenList: TOKEN_LISTS.ALL,
+          env: {
+            ipfs: '',
+          },
         },
         customTokens: {},
       } as store.RootState),
