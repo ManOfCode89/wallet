@@ -101,6 +101,12 @@ export const getMockDetailedTx = ({ nonce }: { nonce?: number }): DetailedTransa
     },
     type: TransactionListItemType.TRANSACTION,
     conflictType: ConflictType.NONE,
-    details: mockTxDetails,
+    details: {
+      ...mockTxDetails,
+      detailedExecutionInfo: {
+        ...mockTxDetails.detailedExecutionInfo,
+        nonce: nonce ?? mockTxDetails.detailedExecutionInfo.nonce,
+      },
+    },
   }
 }

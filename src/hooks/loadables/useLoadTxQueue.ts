@@ -28,7 +28,7 @@ export const useLoadTxQueue = (): AsyncResult<Array<DetailedTransaction>> => {
 
       const results = await Promise.all(
         Object.values(transactions)
-          .reverse()
+          .filter((tx) => tx.data.nonce >= safe.nonce)
           .map(async (tx) => {
             const details = await extractTxDetails(safeAddress, tx, safe)
 
@@ -44,7 +44,9 @@ export const useLoadTxQueue = (): AsyncResult<Array<DetailedTransaction>> => {
           }),
       )
 
-      return results.filter(isDetailedTransactionListItem)
+      return results.filter(isDetailedTransactionListItem).sort((a, b) => {
+        return a.details.detailedExecutionInfo.nonce - b.details.detailedExecutionInfo.nonce
+      })
     },
     [safe, safeAddress, transactions, executedTransactions],
     false,

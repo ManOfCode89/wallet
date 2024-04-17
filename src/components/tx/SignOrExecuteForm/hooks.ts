@@ -16,7 +16,9 @@ import { useAddOrUpdateTx } from '@/hooks/useMagicLink'
 import { txDispatch, TxEvent } from '@/services/tx/txEvents'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { useSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
-import { useQueuedTxsLength } from '@/hooks/useTxQueue'
+import { useAppSelector } from '@/store'
+import { selectTxQueue } from '@/store/txQueueSlice'
+import { isEqual } from 'lodash'
 
 type TxActions = {
   signTx: (safeTx?: SafeTransaction, txId?: string, origin?: string) => Promise<string>
@@ -134,18 +136,25 @@ export const useIsExecutionLoop = (): boolean => {
 
 export const useRecommendedNonce = (): number | undefined => {
   const sdk = useSafeSDK()
-  const queuedTxLength = useQueuedTxsLength()
+  const { data } = useAppSelector((state) => selectTxQueue(state), isEqual)
+
+  const lastNonce = useMemo(() => {
+    return data.length > 0 ? data[data.length - 1].details.detailedExecutionInfo.nonce : undefined
+  }, [data])
 
   const [recommendedNonce] = useAsync(
     async () => {
       if (!sdk) return
 
       let recommendedNonce = await sdk.getNonce()
-      recommendedNonce += queuedTxLength
 
-      return recommendedNonce
+      if (lastNonce === undefined) return recommendedNonce
+
+      if (recommendedNonce > lastNonce) return recommendedNonce
+
+      return lastNonce + 1
     },
-    [sdk, queuedTxLength], // update when tx queue changes
+    [sdk, lastNonce],
     false, // keep old recommended nonce while refreshing to avoid skeleton
   )
 

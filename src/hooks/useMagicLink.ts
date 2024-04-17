@@ -3,8 +3,8 @@ import { parse, type ParsedUrlQuery } from 'querystring'
 import { prefixedAddressRe } from '@/utils/url'
 import { decodeTransactionMagicLink, encodeTransactionMagicLink, transactionKey } from '@/services/tx/txMagicLink'
 import { useEffect, useState, useCallback } from 'react'
-import { addOrUpdateTx, selectAllAddedTxs } from '@/store/addedTxsSlice'
-import { useAppDispatch, useAppSelector } from '@/store'
+import { addOrUpdateTx } from '@/store/addedTxsSlice'
+import { useAppDispatch } from '@/store'
 import useChainId from './useChainId'
 import useSafeAddress from './useSafeAddress'
 import { type SafeTransaction } from '@safe-global/safe-core-sdk-types'
@@ -101,8 +101,6 @@ export const useMagicLink = () => {
       dispatch(addOrUpdateTx({ chainId, safeAddress, tx, txKey }))
     }
   }, [chainId, safeAddress, tx, txKey, dispatch])
-
-  const addedTxs = useAppSelector(selectAllAddedTxs)
 }
 
 export const useAddOrUpdateTx = () => {
