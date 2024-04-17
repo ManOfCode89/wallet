@@ -35,7 +35,7 @@ const Navigation = (): ReactElement => {
   const getCounter = (item: NavItem) => {
     // Indicate qeueued txs
     if (item.href === AppRoutes.transactions.history) {
-      return queueSize
+      return queueSize > 0 ? queueSize.toString() : ''
     }
   }
 

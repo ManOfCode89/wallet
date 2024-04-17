@@ -1,4 +1,4 @@
-import { renderHook } from '@/tests/test-utils'
+import { renderHook, waitFor } from '@/tests/test-utils'
 import { ethers } from 'ethers'
 import { createSafeTx } from '@/tests/builders/safeTx'
 import type { SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
@@ -7,10 +7,18 @@ import * as useSafeInfoHook from '@/hooks/useSafeInfo'
 import * as wallet from '@/hooks/wallets/useWallet'
 import * as walletHooks from '@/utils/wallets'
 import * as pending from '@/hooks/usePendingTxs'
+import * as queued from '@/hooks/useTxQueue'
 import * as txSender from '@/services/tx/tx-sender/dispatch'
 import * as onboardHooks from '@/hooks/wallets/useOnboard'
 import { type OnboardAPI } from '@web3-onboard/core'
-import { useAlreadySigned, useImmediatelyExecutable, useIsExecutionLoop, useTxActions, useValidateNonce } from './hooks'
+import {
+  useAlreadySigned,
+  useImmediatelyExecutable,
+  useIsExecutionLoop,
+  useRecommendedNonce,
+  useTxActions,
+  useValidateNonce,
+} from './hooks'
 import type Safe from '@safe-global/safe-core-sdk'
 import type { SafeTransaction } from '@safe-global/safe-core-sdk-types'
 import * as safeCoreSDK from '@/hooks/coreSDK/safeCoreSDK'
@@ -139,6 +147,38 @@ describe('SignOrExecute hooks', () => {
       const { result } = renderHook(() => useIsExecutionLoop())
 
       expect(result.current).toBe(false)
+    })
+  })
+
+  describe('useRecommendedNonce', () => {
+    it('should return the same nonce when queue is empty', async () => {
+      const sdk = {
+        getNonce: jest.fn().mockResolvedValue(100),
+      } as unknown as Safe
+
+      jest.spyOn(safeCoreSDK, 'useSafeSDK').mockReturnValue(sdk)
+      jest.spyOn(queued, 'useQueuedTxsLength').mockReturnValue(0)
+
+      const { result } = renderHook(() => useRecommendedNonce())
+
+      await waitFor(() => {
+        expect(result.current).toBe(100)
+      })
+    })
+
+    it('should return a higher nonce when queue has 1 item', async () => {
+      const sdk = {
+        getNonce: jest.fn().mockResolvedValue(100),
+      } as unknown as Safe
+
+      jest.spyOn(safeCoreSDK, 'useSafeSDK').mockReturnValue(sdk)
+      jest.spyOn(queued, 'useQueuedTxsLength').mockReturnValue(1)
+
+      const { result } = renderHook(() => useRecommendedNonce())
+
+      await waitFor(() => {
+        expect(result.current).toBe(101)
+      })
     })
   })
 

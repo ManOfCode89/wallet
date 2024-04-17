@@ -20,14 +20,10 @@ const useTxQueue = (): {
   }, [data, loading, error])
 }
 
-// Get the size of the queue as a string
-export const useQueuedTxsLength = (): string => {
+export const useQueuedTxsLength = (): number => {
   const { data } = useAppSelector((state) => selectTxQueue(state), isEqual)
 
-  return useMemo(() => {
-    if (data.length === 0) return ''
-    return data.length.toString()
-  }, [data])
+  return useMemo(() => data.length, [data])
 }
 
 export const useQueuedTxByNonce = (nonce?: number) => {

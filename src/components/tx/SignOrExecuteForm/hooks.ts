@@ -138,14 +138,10 @@ export const useRecommendedNonce = (): number | undefined => {
 
   const [recommendedNonce] = useAsync(
     async () => {
-      if (!sdk || !queuedTxLength) return
+      if (!sdk) return
 
       let recommendedNonce = await sdk.getNonce()
-
-      let queue = parseInt(queuedTxLength)
-      if (queue > 0) {
-        recommendedNonce += queue
-      }
+      recommendedNonce += queuedTxLength
 
       return recommendedNonce
     },
