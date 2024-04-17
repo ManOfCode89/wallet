@@ -3,10 +3,6 @@ import chains from './chains'
 export const IS_PRODUCTION = process.env.NEXT_PUBLIC_IS_PRODUCTION === 'true'
 export const IS_DEV = process.env.NODE_ENV === 'development'
 
-export const GATEWAY_URL_PRODUCTION =
-  process.env.NEXT_PUBLIC_GATEWAY_URL_PRODUCTION || 'https://safe-client.safe.global'
-export const GATEWAY_URL_STAGING = process.env.NEXT_PUBLIC_GATEWAY_URL_STAGING || 'https://safe-client.staging.5afe.dev'
-
 // Magic numbers
 export const POLLING_INTERVAL = 15_000
 export const BASE_TX_GAS = 21_000
@@ -72,11 +68,6 @@ export const TWITTER_URL = 'https://twitter.com/safe'
 
 // Legal
 export const IS_OFFICIAL_HOST = process.env.NEXT_PUBLIC_IS_OFFICIAL_HOST === 'true'
-
-// Risk mitigation (Redefine)
-export const REDEFINE_SIMULATION_URL = 'https://dashboard.redefine.net/reports/'
-export const REDEFINE_API = process.env.NEXT_PUBLIC_REDEFINE_API
-export const REDEFINE_ARTICLE = 'https://safe.mirror.xyz/rInLWZwD_sf7enjoFerj6FIzCYmVMGrrV8Nhg4THdwI'
 
 // Eternal Safe
 export const REPO_URL = 'https://github.com/eternalsafe/wallet'

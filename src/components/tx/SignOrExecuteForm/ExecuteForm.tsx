@@ -21,7 +21,6 @@ import { asError } from '@/services/exceptions/utils'
 
 import css from './styles.module.css'
 import commonCss from '@/components/tx-flow/common/styles.module.css'
-import { TxSecurityContext } from '../security/shared/TxSecurityContext'
 import useIsSafeOwner from '@/hooks/useIsSafeOwner'
 import NonOwnerError from '@/components/tx/SignOrExecuteForm/NonOwnerError'
 
@@ -35,12 +34,10 @@ export const ExecuteForm = ({
   isOwner,
   isExecutionLoop,
   txActions,
-  txSecurity,
 }: SignOrExecuteProps & {
   isOwner: ReturnType<typeof useIsSafeOwner>
   isExecutionLoop: ReturnType<typeof useIsExecutionLoop>
   txActions: ReturnType<typeof useTxActions>
-  txSecurity: ReturnType<typeof useTxSecurityContext>
   safeTx?: SafeTransaction
 }): ReactElement => {
   // Form state
@@ -51,7 +48,6 @@ export const ExecuteForm = ({
   const currentChain = useCurrentChain()
   const { executeTx } = txActions
   const { setTxFlow } = useContext(TxModalContext)
-  const { needsRiskConfirmation, isRiskConfirmed, setIsRiskIgnored } = txSecurity
 
   // Estimate gas limit
   const { gasLimit, gasLimitError } = useGasLimit(safeTx)
@@ -63,11 +59,6 @@ export const ExecuteForm = ({
   // On modal submit
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
-
-    if (needsRiskConfirmation && !isRiskConfirmed) {
-      setIsRiskIgnored(true)
-      return
-    }
 
     setIsSubmittable(false)
     setSubmitError(undefined)
@@ -97,13 +88,7 @@ export const ExecuteForm = ({
   })
 
   const cannotPropose = !isOwner && !onlyExecute
-  const submitDisabled =
-    !safeTx ||
-    !isSubmittable ||
-    disableSubmit ||
-    isExecutionLoop ||
-    cannotPropose ||
-    (needsRiskConfirmation && !isRiskConfirmed)
+  const submitDisabled = !safeTx || !isSubmittable || disableSubmit || isExecutionLoop || cannotPropose
 
   return (
     <>
@@ -155,11 +140,8 @@ export const ExecuteForm = ({
   )
 }
 
-const useTxSecurityContext = () => useContext(TxSecurityContext)
-
 export default madProps(ExecuteForm, {
   isOwner: useIsSafeOwner,
   isExecutionLoop: useIsExecutionLoop,
   txActions: useTxActions,
-  txSecurity: useTxSecurityContext,
 })

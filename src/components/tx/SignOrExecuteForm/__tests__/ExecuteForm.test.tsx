@@ -1,6 +1,3 @@
-import { defaultSecurityContextValues } from '@/components/tx/security/shared/TxSecurityContext'
-import { type AsyncResult } from '@/hooks/useAsync'
-import { type RelayResponse } from '@/services/tx/relaying'
 import { createMockSafeTransaction } from '@/tests/transactions'
 import { OperationType } from '@safe-global/safe-core-sdk-types'
 import { type ReactElement } from 'react'
@@ -29,9 +26,7 @@ describe('ExecuteForm', () => {
     onSubmit: jest.fn(),
     isOwner: true,
     isExecutionLoop: false,
-    relays: [undefined, undefined, false] as AsyncResult<RelayResponse>,
     txActions: { signTx: jest.fn(), addToBatch: jest.fn(), executeTx: jest.fn() },
-    txSecurity: defaultSecurityContextValues,
   }
 
   beforeEach(() => {
@@ -162,35 +157,5 @@ describe('ExecuteForm', () => {
 
     expect(button).toBeInTheDocument()
     expect(button).toBeDisabled()
-  })
-
-  it('shows a disabled submit button if there is a high or critical risk and user has not confirmed it', () => {
-    const { getByText } = render(
-      <ExecuteForm
-        {...defaultProps}
-        safeTx={safeTransaction}
-        txSecurity={{ ...defaultProps.txSecurity, isRiskConfirmed: false, needsRiskConfirmation: true }}
-      />,
-    )
-
-    const button = getByText('Execute')
-
-    expect(button).toBeInTheDocument()
-    expect(button).toBeDisabled()
-  })
-
-  it('shows an enabled submit button if there is a high or critical risk and user has confirmed it', () => {
-    const { getByText } = render(
-      <ExecuteForm
-        {...defaultProps}
-        safeTx={safeTransaction}
-        txSecurity={{ ...defaultProps.txSecurity, isRiskConfirmed: true, needsRiskConfirmation: true }}
-      />,
-    )
-
-    const button = getByText('Execute')
-
-    expect(button).toBeInTheDocument()
-    expect(button).not.toBeDisabled()
   })
 })

@@ -91,7 +91,6 @@ const TxSimulationBlock = ({ transactions, disabled, gasLimit, executionOwner }:
           />
         </Typography>
       </div>
-
       <div className={sharedCss.result}>
         {isLoading ? (
           <CircularProgress

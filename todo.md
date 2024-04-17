@@ -11,6 +11,7 @@ This served as a working todo list for the scope of the [wave 1 grant](https://a
 
 ### Done ✓
 
+- [x] Remove Redefine
 - [x] Query NFTs
 - [x] Update env variables
 - [x] Hide Safe creation

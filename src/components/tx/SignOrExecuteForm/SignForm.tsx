@@ -12,7 +12,6 @@ import type { SafeTransaction } from '@safe-global/safe-core-sdk-types'
 import { TxModalContext } from '@/components/tx-flow'
 import { asError } from '@/services/exceptions/utils'
 import commonCss from '@/components/tx-flow/common/styles.module.css'
-import { TxSecurityContext } from '../security/shared/TxSecurityContext'
 import NonOwnerError from '@/components/tx/SignOrExecuteForm/NonOwnerError'
 
 export const SignForm = ({
@@ -22,11 +21,9 @@ export const SignForm = ({
   disableSubmit = false,
   isOwner,
   txActions,
-  txSecurity,
 }: SignOrExecuteProps & {
   isOwner: ReturnType<typeof useIsSafeOwner>
   txActions: ReturnType<typeof useTxActions>
-  txSecurity: ReturnType<typeof useTxSecurityContext>
   safeTx?: SafeTransaction
 }): ReactElement => {
   // Form state
@@ -36,17 +33,11 @@ export const SignForm = ({
   // Hooks
   const { signTx } = txActions
   const { setTxFlow } = useContext(TxModalContext)
-  const { needsRiskConfirmation, isRiskConfirmed, setIsRiskIgnored } = txSecurity
   const hasSigned = useAlreadySigned(safeTx)
 
   // On modal submit
   const handleSubmit = async (e: SyntheticEvent) => {
     e.preventDefault()
-
-    if (needsRiskConfirmation && !isRiskConfirmed) {
-      setIsRiskIgnored(true)
-      return
-    }
 
     if (!safeTx) return
 
@@ -71,8 +62,7 @@ export const SignForm = ({
   }
 
   const cannotPropose = !isOwner
-  const submitDisabled =
-    !safeTx || !isSubmittable || disableSubmit || cannotPropose || (needsRiskConfirmation && !isRiskConfirmed)
+  const submitDisabled = !safeTx || !isSubmittable || disableSubmit || cannotPropose
 
   return (
     <form onSubmit={handleSubmit}>
@@ -120,10 +110,7 @@ export const SignForm = ({
   )
 }
 
-const useTxSecurityContext = () => useContext(TxSecurityContext)
-
 export default madProps(SignForm, {
   isOwner: useIsSafeOwner,
   txActions: useTxActions,
-  txSecurity: useTxSecurityContext,
 })

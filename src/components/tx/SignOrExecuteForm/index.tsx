@@ -13,9 +13,7 @@ import TxCard from '@/components/tx-flow/common/TxCard'
 import ConfirmationTitle, { ConfirmationTitleTypes } from '@/components/tx/SignOrExecuteForm/ConfirmationTitle'
 import { useAppSelector } from '@/store'
 import { selectSettings } from '@/store/settingsSlice'
-import { RedefineBalanceChanges } from '../security/redefine/RedefineBalanceChange'
 import UnknownContractError from './UnknownContractError'
-import RiskConfirmationError from './RiskConfirmationError'
 import useDecodeTx from '@/hooks/useDecodeTx'
 import { ErrorBoundary } from '@sentry/react'
 import ApprovalEditor from '../ApprovalEditor'
@@ -87,10 +85,9 @@ export const SignOrExecuteForm = ({
           decodedDataLoading={decodedDataLoading}
           showMultisend={!props.isBatch}
         />
-
-        <RedefineBalanceChanges />
       </TxCard>
 
+      {/* TODO(devanon): If Tenderly settings not set, show a message here */}
       <TxCard>
         <TxChecks />
       </TxCard>
@@ -112,8 +109,6 @@ export const SignOrExecuteForm = ({
         <WrongChainWarning />
 
         <UnknownContractError />
-
-        <RiskConfirmationError />
 
         {willExecute ? (
           <ExecuteForm

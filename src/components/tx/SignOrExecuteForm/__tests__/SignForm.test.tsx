@@ -1,4 +1,3 @@
-import { defaultSecurityContextValues } from '@/components/tx/security/shared/TxSecurityContext'
 import { type ReactElement } from 'react'
 import * as hooks from '@/components/tx/SignOrExecuteForm/hooks'
 import { SignForm } from '@/components/tx/SignOrExecuteForm/SignForm'
@@ -26,7 +25,6 @@ describe('SignForm', () => {
     onSubmit: jest.fn(),
     isOwner: true,
     txActions: { signTx: jest.fn(), addToBatch: jest.fn(), executeTx: jest.fn() },
-    txSecurity: defaultSecurityContextValues,
   }
 
   beforeEach(() => {
@@ -165,35 +163,5 @@ describe('SignForm', () => {
 
     expect(button).toBeInTheDocument()
     expect(button).toBeDisabled()
-  })
-
-  it('shows a disabled submit button if there is a high or critical risk and user has not confirmed it', () => {
-    const { getByText } = render(
-      <SignForm
-        {...defaultProps}
-        safeTx={safeTransaction}
-        txSecurity={{ ...defaultSecurityContextValues, needsRiskConfirmation: true, isRiskConfirmed: false }}
-      />,
-    )
-
-    const button = getByText('Sign')
-
-    expect(button).toBeInTheDocument()
-    expect(button).toBeDisabled()
-  })
-
-  it('shows an enabled submit button if there is a high or critical risk and user has confirmed it', () => {
-    const { getByText } = render(
-      <SignForm
-        {...defaultProps}
-        safeTx={safeTransaction}
-        txSecurity={{ ...defaultSecurityContextValues, needsRiskConfirmation: true, isRiskConfirmed: true }}
-      />,
-    )
-
-    const button = getByText('Sign')
-
-    expect(button).toBeInTheDocument()
-    expect(button).not.toBeDisabled()
   })
 })
