@@ -45,9 +45,7 @@ export const CreateSpendingLimit = ({
   const { handleSubmit, watch, control } = formMethods
 
   const tokenAddress = watch(SpendingLimitFields.tokenAddress)
-  const selectedToken = tokenAddress
-    ? balances.items.find((item) => item.tokenInfo.address === tokenAddress)
-    : undefined
+  const selectedToken = tokenAddress ? balances.find((item) => item.tokenInfo.address === tokenAddress) : undefined
 
   const validateSpendingLimit = useCallback(
     (value: string) => {
@@ -68,7 +66,7 @@ export const CreateSpendingLimit = ({
             <AddressBookInput name={SpendingLimitFields.beneficiary} label="Beneficiary" />
           </FormControl>
 
-          <TokenAmountInput balances={balances.items} selectedToken={selectedToken} validate={validateSpendingLimit} />
+          <TokenAmountInput balances={balances} selectedToken={selectedToken} validate={validateSpendingLimit} />
 
           <Typography variant="h4" fontWeight={700} mt={3}>
             Reset Timer

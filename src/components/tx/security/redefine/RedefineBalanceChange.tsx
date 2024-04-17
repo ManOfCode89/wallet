@@ -27,7 +27,7 @@ const FungibleBalanceChange = ({
 }) => {
   const { balances } = useBalances()
 
-  const logoUri = balances.items.find((item) => {
+  const logoUri = balances.find((item) => {
     return change.type === 'NATIVE'
       ? item.tokenInfo.type === TokenType.NATIVE_TOKEN
       : sameAddress(item.tokenInfo.address, change.address)

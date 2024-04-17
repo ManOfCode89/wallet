@@ -10,6 +10,7 @@ import useLoadBalances from './loadables/useLoadBalances'
 import useLoadTxHistory from './loadables/useLoadTxHistory'
 import useLoadMessages from './loadables/useLoadSafeMessages'
 import useLoadTxQueue from '@/hooks/loadables/useLoadTxQueue'
+import useLoadCollectiblesBalances from '@/hooks/loadables/useLoadCollectiblesBalance'
 
 // Import all the loadable slices
 import { chainsSlice } from '@/store/chainsSlice'
@@ -20,6 +21,7 @@ import { txQueueSlice } from '@/store/txQueueSlice'
 import { spendingLimitSlice } from '@/store/spendingLimitsSlice'
 import useLoadSpendingLimits from '@/hooks/loadables/useLoadSpendingLimits'
 import { safeMessagesSlice } from '@/store/safeMessagesSlice'
+import { collectiblesBalanceSlice } from '@/store/collectiblesBalancesSlice'
 
 // Dispatch into the corresponding store when the loadable is loaded
 const useUpdateStore = (slice: Slice, useLoadHook: () => AsyncResult<unknown>): void => {
@@ -42,6 +44,7 @@ const useLoadableStores = () => {
   useUpdateStore(chainsSlice, useLoadChains)
   useUpdateStore(safeInfoSlice, useLoadSafeInfo)
   useUpdateStore(balancesSlice, useLoadBalances)
+  useUpdateStore(collectiblesBalanceSlice, useLoadCollectiblesBalances)
   useUpdateStore(txHistorySlice, useLoadTxHistory)
   useUpdateStore(txQueueSlice, useLoadTxQueue)
   useUpdateStore(safeMessagesSlice, useLoadMessages)

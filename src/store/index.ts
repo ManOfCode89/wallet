@@ -28,12 +28,15 @@ import { safeMessagesListener, safeMessagesSlice } from './safeMessagesSlice'
 import { pendingSafeMessagesSlice } from './pendingSafeMessagesSlice'
 import { batchSlice } from './batchSlice'
 import { customTokensSlice } from './customTokensSlice'
+import { customCollectiblesSlice } from '@/store/customCollectiblesSlice'
 import { addedTxsSlice } from './addedTxsSlice'
+import { collectiblesBalanceSlice } from '@/store/collectiblesBalancesSlice'
 
 const rootReducer = combineReducers({
   [chainsSlice.name]: chainsSlice.reducer,
   [safeInfoSlice.name]: safeInfoSlice.reducer,
   [balancesSlice.name]: balancesSlice.reducer,
+  [collectiblesBalanceSlice.name]: collectiblesBalanceSlice.reducer,
   [sessionSlice.name]: sessionSlice.reducer,
   [txHistorySlice.name]: txHistorySlice.reducer,
   [txQueueSlice.name]: txQueueSlice.reducer,
@@ -48,6 +51,7 @@ const rootReducer = combineReducers({
   [pendingSafeMessagesSlice.name]: pendingSafeMessagesSlice.reducer,
   [batchSlice.name]: batchSlice.reducer,
   [customTokensSlice.name]: customTokensSlice.reducer,
+  [customCollectiblesSlice.name]: customCollectiblesSlice.reducer,
   [addedTxsSlice.name]: addedTxsSlice.reducer,
 })
 
@@ -61,6 +65,7 @@ const persistedSlices: (keyof PreloadedState<RootState>)[] = [
   pendingSafeMessagesSlice.name,
   batchSlice.name,
   customTokensSlice.name,
+  customCollectiblesSlice.name,
   addedTxsSlice.name,
 ]
 

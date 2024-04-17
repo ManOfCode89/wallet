@@ -17,7 +17,7 @@ export const RemoveSpendingLimit = ({ params }: { params: SpendingLimitState }) 
   const { setSafeTx, setSafeTxError } = useContext(SafeTxContext)
   const chainId = useChainId()
   const { balances } = useBalances()
-  const token = balances.items.find((item) => item.tokenInfo.address === params.token.address)
+  const token = balances.find((item) => item.tokenInfo.address === params.token.address)
 
   useEffect(() => {
     const spendingLimitAddress = getSpendingLimitModuleAddress(chainId)

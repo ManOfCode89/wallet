@@ -16,11 +16,9 @@ const NoQueuedTxns = () => {
 
 const TxPage = ({
   useTxns,
-  isFirstPage,
 }: {
   useTxns: typeof useTxHistory | typeof useTxQueue
   onNextPage?: (pageUrl: string) => void
-  isFirstPage: boolean
 }): ReactElement => {
   const { data, error, loading } = useTxns()
   const isQueue = useTxns === useTxQueue
@@ -52,7 +50,7 @@ const PaginatedTxns = ({ useTxns }: { useTxns: typeof useTxHistory | typeof useT
   return (
     <Box position="relative">
       {pages.map((pageUrl, index) => (
-        <TxPage key={pageUrl} useTxns={useTxns} isFirstPage={index === 0} />
+        <TxPage key={pageUrl} useTxns={useTxns} />
       ))}
     </Box>
   )

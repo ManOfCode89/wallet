@@ -37,7 +37,7 @@ export const useApprovalInfos = (
 
       return Promise.all(
         approvals.payload.map(async (approval) => {
-          let tokenInfo: Omit<TokenInfo, 'name' | 'logoUri'> | undefined = balances.items.find(
+          let tokenInfo: Omit<TokenInfo, 'name' | 'logoUri'> | undefined = balances.find(
             (item) => item.tokenInfo.address === approval.tokenAddress,
           )?.tokenInfo
 
@@ -54,7 +54,7 @@ export const useApprovalInfos = (
       )
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [hasApprovalSignatures, balances.items.length],
+    [hasApprovalSignatures, balances.length],
     false, // Do not clear data on balance updates
   )
 

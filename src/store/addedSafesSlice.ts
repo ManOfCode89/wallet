@@ -1,11 +1,12 @@
 import type { listenerMiddlewareInstance } from '.'
 import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { AddressEx, SafeBalanceResponse, SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
+import type { AddressEx, SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import { TokenType } from '@safe-global/safe-gateway-typescript-sdk'
 import type { RootState } from '.'
 import { selectSafeInfo, safeInfoSlice } from '@/store/safeInfoSlice'
 import { balancesSlice } from './balancesSlice'
 import { safeFormatUnits } from '@/utils/formatters'
+import type { TokenItem } from '@/hooks/loadables/useLoadBalances'
 
 export type AddedSafesOnChain = {
   [safeAddress: string]: {
@@ -51,15 +52,15 @@ export const addedSafesSlice = createSlice({
     },
     updateAddedSafeBalance: (
       state,
-      { payload }: PayloadAction<{ chainId: string; address: string; balances?: SafeBalanceResponse }>,
+      { payload }: PayloadAction<{ chainId: string; address: string; balances?: Array<TokenItem> }>,
     ) => {
       const { chainId, address, balances } = payload
 
-      if (!balances?.items || !isAddedSafe(state, chainId, address)) {
+      if (!balances || !isAddedSafe(state, chainId, address)) {
         return
       }
 
-      for (const item of balances.items) {
+      for (const item of balances) {
         if (item.tokenInfo.type !== TokenType.NATIVE_TOKEN) {
           continue
         }

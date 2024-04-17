@@ -7,7 +7,6 @@ import * as spendingLimit from '@/hooks/useSpendingLimit'
 import * as spendingLimitBeneficiary from '@/hooks/useIsOnlySpendingLimitBeneficiary'
 import * as balances from '@/hooks/useBalances'
 import * as wallet from '@/hooks/wallets/useWallet'
-import type { SafeBalanceResponse } from '@/hooks/loadables/useLoadBalances'
 
 describe('TokenTransfer utils', () => {
   describe('useTokenAmount', () => {
@@ -89,10 +88,7 @@ describe('TokenTransfer utils', () => {
           type: TokenType.ERC20,
         },
       }
-      const balance: SafeBalanceResponse = {
-        fiatTotal: '200',
-        items: [mockToken, mockToken1],
-      }
+      const balance = [mockToken, mockToken1]
 
       jest.spyOn(spendingLimitBeneficiary, 'default').mockReturnValue(false)
       jest.spyOn(balances, 'default').mockReturnValue({
@@ -102,7 +98,7 @@ describe('TokenTransfer utils', () => {
 
       const { result } = renderHook(() => useVisibleTokens())
 
-      expect(result.current).toStrictEqual(balance.items)
+      expect(result.current).toStrictEqual(balance)
     })
 
     it('only returns spending limit tokens if its a spending limit beneficiary', () => {
@@ -143,14 +139,10 @@ describe('TokenTransfer utils', () => {
           type: TokenType.ERC20,
         },
       }
-      const balance: SafeBalanceResponse = {
-        fiatTotal: '200',
-        items: [mockToken, mockToken1],
-      }
 
       jest.spyOn(spendingLimitBeneficiary, 'default').mockReturnValue(true)
       jest.spyOn(balances, 'default').mockReturnValue({
-        balances: balance,
+        balances: [mockToken, mockToken1],
         loading: false,
       })
 

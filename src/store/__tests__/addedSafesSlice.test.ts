@@ -1,5 +1,5 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit'
-import type { SafeBalanceResponse, SafeInfo, TokenType } from '@safe-global/safe-gateway-typescript-sdk'
+import type { SafeInfo, TokenType } from '@safe-global/safe-gateway-typescript-sdk'
 import type { RootState } from '..'
 import type { AddedSafesState } from '../addedSafesSlice'
 import {
@@ -42,37 +42,34 @@ describe('addedSafesSlice', () => {
 
   describe('updateAddedSafeBalance', () => {
     it('should add the Safe balance to the store', () => {
-      const balances: SafeBalanceResponse = {
-        fiatTotal: '',
-        items: [
-          {
-            tokenInfo: {
-              type: 'NATIVE_TOKEN' as TokenType,
-              address: '',
-              decimals: 18,
-              symbol: '',
-              name: '',
-              logoUri: '',
-            },
-            balance: '8000000000000000000',
-            fiatBalance: '',
-            fiatConversion: '',
+      const balances = [
+        {
+          tokenInfo: {
+            type: 'NATIVE_TOKEN' as TokenType,
+            address: '',
+            decimals: 18,
+            symbol: '',
+            name: '',
+            logoUri: '',
           },
-          {
-            tokenInfo: {
-              type: 'ERC20' as TokenType,
-              address: '',
-              decimals: 18,
-              symbol: '',
-              name: '',
-              logoUri: '',
-            },
-            balance: '9000000000000000000',
-            fiatBalance: '',
-            fiatConversion: '',
+          balance: '8000000000000000000',
+          fiatBalance: '',
+          fiatConversion: '',
+        },
+        {
+          tokenInfo: {
+            type: 'ERC20' as TokenType,
+            address: '',
+            decimals: 18,
+            symbol: '',
+            name: '',
+            logoUri: '',
           },
-        ],
-      }
+          balance: '9000000000000000000',
+          fiatBalance: '',
+          fiatConversion: '',
+        },
+      ]
       const state: AddedSafesState = {
         '4': { ['0x1']: { threshold: 1, owners: [{ value: '0x456' }] } },
       }
@@ -84,37 +81,34 @@ describe('addedSafesSlice', () => {
     })
 
     it("shouldn't add the balance if the Safe isn't added", () => {
-      const balances: SafeBalanceResponse = {
-        fiatTotal: '',
-        items: [
-          {
-            tokenInfo: {
-              type: 'NATIVE_TOKEN' as TokenType,
-              address: '',
-              decimals: 18,
-              symbol: '',
-              name: '',
-              logoUri: '',
-            },
-            balance: '123',
-            fiatBalance: '',
-            fiatConversion: '',
+      const balances = [
+        {
+          tokenInfo: {
+            type: 'NATIVE_TOKEN' as TokenType,
+            address: '',
+            decimals: 18,
+            symbol: '',
+            name: '',
+            logoUri: '',
           },
-          {
-            tokenInfo: {
-              type: 'ERC20' as TokenType,
-              address: '',
-              decimals: 18,
-              symbol: '',
-              name: '',
-              logoUri: '',
-            },
-            balance: '456',
-            fiatBalance: '',
-            fiatConversion: '',
+          balance: '123',
+          fiatBalance: '',
+          fiatConversion: '',
+        },
+        {
+          tokenInfo: {
+            type: 'ERC20' as TokenType,
+            address: '',
+            decimals: 18,
+            symbol: '',
+            name: '',
+            logoUri: '',
           },
-        ],
-      }
+          balance: '456',
+          fiatBalance: '',
+          fiatConversion: '',
+        },
+      ]
       const state: AddedSafesState = {}
 
       const result = addedSafesSlice.reducer(state, updateAddedSafeBalance({ chainId: '4', address: '0x1', balances }))
@@ -165,14 +159,9 @@ describe('addedSafesSlice', () => {
         dispatch: jest.fn(),
       }
 
-      const payload: SafeBalanceResponse = {
-        items: [],
-        fiatTotal: '',
-      }
-
       const action = balancesSlice.actions.set({
         loading: false,
-        data: payload,
+        data: [],
       })
 
       listenerMiddlewareInstance.middleware(listenerApi)(jest.fn())(action)
@@ -181,7 +170,7 @@ describe('addedSafesSlice', () => {
         updateAddedSafeBalance({
           chainId: '5',
           address: '0x123',
-          balances: payload,
+          balances: [],
         }),
       )
     })
@@ -227,10 +216,7 @@ describe('addedSafesSlice', () => {
 
       const action = balancesSlice.actions.set({
         loading: false,
-        data: {
-          items: [],
-          fiatTotal: '',
-        },
+        data: [],
       })
 
       listenerMiddlewareInstance.middleware(listenerApi)(jest.fn())(action)

@@ -49,7 +49,7 @@ const ReviewSpendingLimitTx = ({
   const onboard = useOnboard()
   const { safe, safeAddress } = useSafeInfo()
   const { balances } = useBalances()
-  const token = balances.items.find((item) => item.tokenInfo.address === params.tokenAddress)
+  const token = balances.find((item) => item.tokenInfo.address === params.tokenAddress)
   const spendingLimit = useSpendingLimit(token?.tokenInfo)
 
   const txParams: SpendingLimitTxParams = useMemo(

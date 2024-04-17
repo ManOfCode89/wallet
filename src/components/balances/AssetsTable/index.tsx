@@ -1,5 +1,5 @@
 import { type ReactElement, useContext } from 'react'
-import { Button, Tooltip, Typography, IconButton, Box, Skeleton } from '@mui/material'
+import { Button, Tooltip, Typography, IconButton, Box, Skeleton, TableRow, TableCell } from '@mui/material'
 import type { TokenInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import { TokenType } from '@safe-global/safe-gateway-typescript-sdk'
 import css from './styles.module.css'
@@ -14,7 +14,7 @@ import CheckWallet from '@/components/common/CheckWallet'
 import useSpendingLimit from '@/hooks/useSpendingLimit'
 import { TxModalContext } from '@/components/tx-flow'
 import { TokenTransferFlow } from '@/components/tx-flow/flows'
-import AddToken from '@/components/balances/AssetsTable/AddToken'
+import AddTokenOrCollectible from '@/components/common/AddTokenOrCollectible'
 
 const skeletonCells: EnhancedTableProps['rows'][0]['cells'] = {
   asset: {
@@ -114,7 +114,7 @@ const AssetsTable = (): ReactElement => {
 
   const rows = loading
     ? skeletonRows
-    : (balances.items || []).map((item) => {
+    : balances.map((item) => {
         const isNative = isNativeToken(item.tokenInfo)
 
         return {
@@ -177,7 +177,12 @@ const AssetsTable = (): ReactElement => {
     <>
       <div className={css.container}>
         <EnhancedTable rows={rows} headCells={headCells}>
-          <AddToken columns={headCells.length} />
+          <TableRow>
+            <TableCell colSpan={headCells.length - 1}>
+              <AddTokenOrCollectible />
+            </TableCell>
+            <TableCell />
+          </TableRow>
         </EnhancedTable>
       </div>
     </>

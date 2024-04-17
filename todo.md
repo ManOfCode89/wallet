@@ -1,13 +1,14 @@
 ### Todo
 
-- [ ] Query / send NFTs
+- [ ] Send NFTs
 - [ ] Replace Safe branded assets in public/
 - [ ] Update terms and other imprint
 - [ ] Remove all uses of Safe Gateway SDK, leaving only type usage
-- [ ] Update env variables
 
 ### Done ✓
 
+- [x] Query NFTs
+- [x] Update env variables
 - [x] Hide Safe creation
 - [x] Ask for RPC URL in Safe Loading flow
 - [x] Remove relaying

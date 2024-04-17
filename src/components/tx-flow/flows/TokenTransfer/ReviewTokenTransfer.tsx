@@ -19,7 +19,7 @@ const ReviewTokenTransfer = ({
 }) => {
   const { setSafeTx, setSafeTxError, setNonce } = useContext(SafeTxContext)
   const { balances } = useBalances()
-  const token = balances.items.find((item) => item.tokenInfo.address === params.tokenAddress)
+  const token = balances.find((item) => item.tokenInfo.address === params.tokenAddress)
 
   useEffect(() => {
     if (txNonce !== undefined) {

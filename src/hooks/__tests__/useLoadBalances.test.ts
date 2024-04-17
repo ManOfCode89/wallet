@@ -200,7 +200,6 @@ describe('useLoadBalances', () => {
     const { result } = renderHook(() => useLoadBalances())
 
     await waitFor(async () => {
-      expect(result.current[0]?.fiatTotal).toEqual(mockBalanceAllTokens.fiatTotal)
       expect(result.current[1]).toBeUndefined()
     })
   })
@@ -256,7 +255,6 @@ describe('useLoadBalances', () => {
     const { result, rerender } = renderHook(() => useLoadBalances())
 
     await waitFor(async () => {
-      expect(result.current[0]?.fiatTotal).toEqual(mockBalanceDefaultList.fiatTotal)
       expect(result.current[1]).toBeUndefined()
     })
 
@@ -292,7 +290,6 @@ describe('useLoadBalances', () => {
     act(() => rerender())
 
     await waitFor(async () => {
-      expect(result.current[0]?.fiatTotal).toEqual(mockBalanceAllTokens.fiatTotal)
       expect(result.current[1]).toBeUndefined()
     })
   })

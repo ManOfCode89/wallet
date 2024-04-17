@@ -6,11 +6,7 @@ import useSafeInfo from '../useSafeInfo'
 import { getERC20Balance } from '@/utils/tokens'
 import { constants } from 'ethers'
 import { useTokens } from '@/hooks/useTokens'
-
-export type SafeBalanceResponse = {
-  fiatTotal: string
-  items: Array<TokenItem>
-}
+import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
 
 export type TokenItem = {
   tokenInfo: TokenInfo
@@ -24,49 +20,51 @@ const isTokenItem = (item: TokenItem | undefined): item is TokenItem => {
   return !!item
 }
 
-export const useLoadBalances = (): AsyncResult<SafeBalanceResponse> => {
+export const useLoadBalances = (): AsyncResult<Array<TokenItem>> => {
   const { safeAddress } = useSafeInfo()
+  const web3ReadOnly = useMultiWeb3ReadOnly()
 
   const tokens = useTokens()
 
-  // Re-fetch assets when the entire SafeInfo updates
-  const [data, error, loading] = useAsync<SafeBalanceResponse | undefined>(
+  const [data, error, loading] = useAsync<Array<TokenItem> | undefined>(
     async () => {
-      if (!safeAddress || !tokens) return
+      if (!safeAddress || !tokens || !web3ReadOnly) return
 
-      const requests = tokens.map(async (token) => {
-        let balance = await getERC20Balance(token.address, safeAddress)
+      const balances = await Promise.all(
+        tokens.map(async (token) => {
+          let balance = await getERC20Balance(web3ReadOnly, token.address, safeAddress)
+          return {
+            token,
+            balance,
+          }
+        }),
+      )
 
-        if (token.address !== constants.AddressZero && !token.extensions?.custom && (balance?.isZero() ?? true)) {
-          return
-        }
+      return balances
+        .map(({ token, balance }) => {
+          if (token.address !== constants.AddressZero && !token.extensions?.custom && balance.isZero()) {
+            return
+          }
 
-        return {
-          tokenInfo: {
-            type: token.address === constants.AddressZero ? TokenType.NATIVE_TOKEN : TokenType.ERC20,
-            address: token.address,
-            decimals: token.decimals,
-            logoUri: token.logoURI,
-            name: token.name,
-            symbol: token.symbol,
-          },
-          balance: balance?.toString() ?? '0',
-          fiatBalance: '',
-          fiatConversion: '',
-          custom: token.extensions?.custom ?? false,
-        } as TokenItem
-      })
-
-      let balances = await Promise.all(requests)
-      let filteredBalances = balances.filter(isTokenItem)
-
-      return {
-        fiatTotal: '',
-        items: filteredBalances,
-      }
+          return {
+            tokenInfo: {
+              type: token.address === constants.AddressZero ? TokenType.NATIVE_TOKEN : TokenType.ERC20,
+              address: token.address,
+              decimals: token.decimals,
+              logoUri: token.logoURI,
+              name: token.name,
+              symbol: token.symbol,
+            },
+            balance: balance?.toString() ?? '0',
+            fiatBalance: '',
+            fiatConversion: '',
+            custom: token.extensions?.custom ?? false,
+          } as TokenItem
+        })
+        .filter(isTokenItem)
     },
-    [safeAddress, tokens],
-    true,
+    [safeAddress, tokens, web3ReadOnly],
+    false,
   )
 
   // Log errors

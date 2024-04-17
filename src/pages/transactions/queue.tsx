@@ -4,10 +4,9 @@ import useTxQueue from '@/hooks/useTxQueue'
 import PaginatedTxns from '@/components/common/PaginatedTxns'
 import TxHeader from '@/components/transactions/TxHeader'
 import { Box } from '@mui/material'
-import { usePendingTxsQueue, useShowUnsignedQueue } from '@/hooks/usePendingTxs'
 
 const Queue: NextPage = () => {
-  const showPending = useShowUnsignedQueue()
+  // const showPending = useShowUnsignedQueue()
 
   return (
     <>
@@ -20,7 +19,7 @@ const Queue: NextPage = () => {
       <main>
         <Box mb={4}>
           {/* Pending unsigned transactions */}
-          {showPending && <PaginatedTxns useTxns={usePendingTxsQueue} />}
+          {/* {showPending && <PaginatedTxns useTxns={usePendingTxsQueue} />} */}
 
           {/* The main queue of signed transactions */}
           <PaginatedTxns useTxns={useTxQueue} />

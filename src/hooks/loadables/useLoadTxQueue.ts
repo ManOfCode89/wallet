@@ -20,10 +20,10 @@ export const useLoadTxQueue = (): AsyncResult<Array<DetailedTransaction>> => {
     isEqual,
   )
 
-  const [data, error, loading] = useAsync<Array<DetailedTransaction>>(
+  const [data, error, loading] = useAsync<Array<DetailedTransaction> | undefined>(
     async () => {
       if (!transactions || !executedTransactions || !safeAddress || !safe) {
-        return []
+        return
       }
 
       const results = await Promise.all(

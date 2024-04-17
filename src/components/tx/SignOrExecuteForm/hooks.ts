@@ -16,9 +16,7 @@ import { useAddOrUpdateTx } from '@/hooks/useMagicLink'
 import { txDispatch, TxEvent } from '@/services/tx/txEvents'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { useSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
-import { useAppSelector } from '@/store'
-import { selectTxQueue } from '@/store/txQueueSlice'
-import { isEqual } from 'lodash'
+import useTxQueue from '@/hooks/useTxQueue'
 
 type TxActions = {
   signTx: (safeTx?: SafeTransaction, txId?: string, origin?: string) => Promise<string>
@@ -136,7 +134,7 @@ export const useIsExecutionLoop = (): boolean => {
 
 export const useRecommendedNonce = (): number | undefined => {
   const sdk = useSafeSDK()
-  const { data } = useAppSelector((state) => selectTxQueue(state), isEqual)
+  const { data } = useTxQueue()
 
   const lastNonce = useMemo(() => {
     return data.length > 0 ? data[data.length - 1].details.detailedExecutionInfo.nonce : undefined

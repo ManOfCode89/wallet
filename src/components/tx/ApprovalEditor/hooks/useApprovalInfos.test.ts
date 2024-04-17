@@ -110,9 +110,7 @@ describe('useApprovalInfos', () => {
       },
     }
 
-    jest
-      .spyOn(balances, 'default')
-      .mockReturnValue({ balances: { fiatTotal: '0', items: [mockBalanceItem] }, error: undefined, loading: false })
+    jest.spyOn(balances, 'default').mockReturnValue({ balances: [mockBalanceItem], error: undefined, loading: false })
     const testInterface = new Interface(['function approve(address, uint256)'])
 
     const mockSafeTx = createMockSafeTransaction({
@@ -141,6 +139,7 @@ describe('useApprovalInfos', () => {
     const mockTokenInfo = {
       address: '0x0000000000000000000000000000000000000123',
       symbol: 'HT',
+      name: 'Mock Token',
       decimals: 18,
       type: TokenType.ERC20,
     }

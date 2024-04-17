@@ -19,6 +19,8 @@ import {
   TextField,
   Typography,
   Tooltip,
+  type SxProps,
+  type Theme,
 } from '@mui/material'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import NftIcon from '@/public/images/common/nft.svg'
@@ -136,7 +138,7 @@ const NftGrid = ({
 
   return (
     <>
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ borderRadius: '6px 6px 0px 0px' }}>
         <Table aria-labelledby="tableTitle">
           <TableHead>
             <TableRow>
@@ -145,11 +147,13 @@ const NftGrid = ({
                   key={headCell.id}
                   align="left"
                   padding="normal"
-                  sx={{
-                    display: headCell.xsHidden ? { xs: 'none', sm: 'table-cell' } : undefined,
-                    width: headCell.width,
-                    'text-align': headCell.textAlign,
-                  }}
+                  sx={
+                    {
+                      display: headCell.xsHidden ? { xs: 'none', sm: 'table-cell' } : undefined,
+                      width: headCell.width,
+                      textAlign: headCell.textAlign,
+                    } as SxProps<Theme> | undefined
+                  }
                 >
                   {headCell.id === 'collection' ? (
                     <Box display="flex" alignItems="center" alignContent="center" gap={1}>
@@ -180,11 +184,13 @@ const NftGrid = ({
                       <>Links</>
                     ) : null
                   ) : headCell.id === 'checkbox' ? (
-                    <Checkbox
-                      checked={filteredNfts.length > 0 && filteredNfts.length === selectedNfts.length}
-                      onChange={onSelectAll}
-                      title="Select all"
-                    />
+                    filteredNfts.length > 0 ? (
+                      <Checkbox
+                        checked={filteredNfts.length > 0 && filteredNfts.length === selectedNfts.length}
+                        onChange={onSelectAll}
+                        title="Select all"
+                      />
+                    ) : null
                   ) : (
                     headCell.label
                   )}
@@ -223,7 +229,7 @@ const NftGrid = ({
 
                   {/* Token ID */}
                   <TableCell onClick={onClick} sx={sx}>
-                    <Typography sx={item.name ? undefined : { wordBreak: 'break-all' }}>
+                    <Typography sx={item.name ? undefined : { wordBreak: 'break-word' }}>
                       {item.name || `${item.tokenSymbol} #${item.id.slice(0, 20)}`}
                     </Typography>
                   </TableCell>

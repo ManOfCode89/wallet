@@ -14,7 +14,7 @@ import { type DetailedTransaction, isDetailedTransactionListItem } from '@/utils
 import { selectTxHistory } from '@/store/txHistorySlice'
 
 const useTxHistory = (): {
-  data?: Array<DetailedTransaction>
+  data: Array<DetailedTransaction>
   error?: string
   loading: boolean
 } => {
@@ -65,7 +65,7 @@ const useTxHistory = (): {
   )
 
   return {
-    data,
+    data: data ?? [],
     error: error?.message,
     loading: loading || executedTransactionsLoading,
   }

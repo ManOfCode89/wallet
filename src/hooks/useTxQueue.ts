@@ -5,7 +5,7 @@ import { selectTxQueue } from '@/store/txQueueSlice'
 import { useMemo } from 'react'
 
 const useTxQueue = (): {
-  data?: Array<DetailedTransaction>
+  data: Array<DetailedTransaction>
   error?: string
   loading: boolean
 } => {
@@ -13,9 +13,9 @@ const useTxQueue = (): {
 
   return useMemo(() => {
     return {
-      data,
+      data: data ?? [],
       error,
-      loading,
+      loading: loading || data === undefined,
     }
   }, [data, loading, error])
 }
@@ -23,14 +23,14 @@ const useTxQueue = (): {
 export const useQueuedTxsLength = (): number => {
   const { data } = useAppSelector((state) => selectTxQueue(state), isEqual)
 
-  return useMemo(() => data.length, [data])
+  return useMemo(() => data?.length ?? 0, [data])
 }
 
 export const useQueuedTxByNonce = (nonce?: number) => {
   const { data } = useAppSelector((state) => selectTxQueue(state), isEqual)
 
   return useMemo(() => {
-    return data.filter((tx) => tx.details.detailedExecutionInfo.nonce === nonce)
+    return data?.filter((tx) => tx.details.detailedExecutionInfo.nonce === nonce) ?? []
   }, [data, nonce])
 }
 

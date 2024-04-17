@@ -1,26 +1,13 @@
-import { useEffect } from 'react'
-import { getCollectiblesPage, type SafeCollectiblesPage } from '@safe-global/safe-gateway-typescript-sdk'
-import useAsync, { type AsyncResult } from './useAsync'
-import { Errors, logError } from '@/services/exceptions'
-import useSafeInfo from './useSafeInfo'
+import { useMemo } from 'react'
+import type { SafeCollectibleResponse } from '@safe-global/safe-gateway-typescript-sdk'
+import { selectCollectibleBalances } from '@/store/collectiblesBalancesSlice'
+import { useAppSelector } from '@/store'
+import { isEqual } from 'lodash'
 
-export const useCollectibles = (pageUrl?: string): AsyncResult<SafeCollectiblesPage> => {
-  const { safe, safeAddress } = useSafeInfo()
+export const useCollectibles = (): [Array<SafeCollectibleResponse>, string | undefined, boolean] => {
+  const { data, error, loading } = useAppSelector(selectCollectibleBalances, isEqual)
 
-  const [data, error, loading] = useAsync<SafeCollectiblesPage>(() => {
-    if (!safeAddress) return
-    //TODO(devanon): Remove or replace CGW usage
-    return getCollectiblesPage(safe.chainId, safeAddress, undefined, pageUrl)
-  }, [safeAddress, safe.chainId, pageUrl])
-
-  // Log errors
-  useEffect(() => {
-    if (error) {
-      logError(Errors._604, error.message)
-    }
-  }, [error])
-
-  return [data, error, loading || !safeAddress]
+  return useMemo(() => [data ?? [], error, loading || data === undefined], [data, error, loading])
 }
 
 export default useCollectibles

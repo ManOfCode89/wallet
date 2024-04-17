@@ -24,12 +24,12 @@ export const useVisibleTokens = () => {
   const wallet = useWallet()
 
   if (isOnlySpendingLimitBeneficiary) {
-    return balances.items.filter(({ tokenInfo }) => {
+    return balances.filter(({ tokenInfo }) => {
       return spendingLimits?.some(({ beneficiary, token }) => {
         return sameAddress(beneficiary, wallet?.address) && sameAddress(tokenInfo.address, token.address)
       })
     })
   }
 
-  return balances.items
+  return balances
 }
