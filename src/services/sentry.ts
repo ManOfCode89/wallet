@@ -1,9 +1,7 @@
 import { init, ErrorBoundary, captureException } from '@sentry/react'
-import { SENTRY_DSN } from '@/config/constants'
 import packageJson from '../../package.json'
 
 init({
-  dsn: SENTRY_DSN,
   release: `safe-wallet-web@${packageJson.version}`,
   sampleRate: 0.1,
   // ignore MetaMask errors we don't control

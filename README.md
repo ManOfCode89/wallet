@@ -24,15 +24,12 @@ Here's the list of all the environment variables:
 
 | Env variable                                 | Description                                                                                                                                                             |
 | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_INFURA_TOKEN`                   | [Infura](https://docs.infura.io/infura/networks/ethereum/how-to/secure-a-project/project-id) RPC API token                                                              |
-| `NEXT_PUBLIC_SAFE_APPS_INFURA_TOKEN`         | Infura token for Safe Apps, falls back to `NEXT_PUBLIC_INFURA_TOKEN`                                                                                                    |
 | `NEXT_PUBLIC_IS_PRODUCTION`                  | Set to `true` to build a minified production app                                                                                                                        |
 | `NEXT_PUBLIC_SAFE_VERSION`                   | The latest version of the Safe contract, defaults to 1.3.0                                                                                                              |
 | `NEXT_PUBLIC_WC_PROJECT_ID`                  | [WalletConnect v2](https://docs.walletconnect.com/2.0/cloud/relay) project ID                                                                                           |
 | `NEXT_PUBLIC_TENDERLY_ORG_NAME`              | [Tenderly](https://tenderly.co) org name for Transaction Simulation                                                                                                     |
 | `NEXT_PUBLIC_TENDERLY_PROJECT_NAME`          | Tenderly project name                                                                                                                                                   |
 | `NEXT_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL` | Tenderly simulation URL                                                                                                                                                 |
-| `NEXT_PUBLIC_SENTRY_DSN`                     | [Sentry](https://sentry.io) id for tracking runtime errors                                                                                                              |
 | `NEXT_PUBLIC_IS_OFFICIAL_HOST`               | Whether it's the official distribution of the app, or a fork; has legal implications. Set to true only if you also update the legal pages like Imprint and Terms of use |
 | `NEXT_PUBLIC_REDEFINE_API`                   | Redefine API base URL                                                                                                                                                   |
 
