@@ -33,6 +33,7 @@ export const useMasterCopies = () => {
   const chainId = useChainId()
   const fetchMasterCopies = async (): Promise<MasterCopy[] | undefined> => {
     try {
+      // TODO(devanon): Remove or replace CGW usage
       const res = await getMasterCopies(chainId)
       return res.map(extractMasterCopyInfo)
     } catch (error) {

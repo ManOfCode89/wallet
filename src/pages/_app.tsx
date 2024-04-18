@@ -25,7 +25,6 @@ import ErrorBoundary from '@/components/common/ErrorBoundary'
 import createEmotionCache from '@/utils/createEmotionCache'
 import MetaTags from '@/components/common/MetaTags'
 import useAdjustUrl from '@/hooks/useAdjustUrl'
-import useSafeMessageNotifications from '@/hooks/messages/useSafeMessageNotifications'
 import useSafeMessagePendingStatuses from '@/hooks/messages/useSafeMessagePendingStatuses'
 import useChangedValue from '@/hooks/useChangedValue'
 import { TxModalProvider } from '@/components/tx-flow'
@@ -40,7 +39,6 @@ const InitApp = (): null => {
   useInitWeb3()
   useInitSafeCoreSDK()
   useTxNotifications()
-  useSafeMessageNotifications()
   useSafeNotifications()
   useTxPendingStatuses()
   useSafeMessagePendingStatuses()

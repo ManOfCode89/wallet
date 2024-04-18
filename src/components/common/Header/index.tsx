@@ -52,13 +52,6 @@ const Header = ({ onMenuToggle, onBatchToggle }: HeaderProps): ReactElement => {
         </Link>
       </div>
 
-      {/* TODO(devanon): reintroduce once we support the transaction builder again */}
-      {/* {safeAddress && (
-        <div className={classnames(css.element, css.hideMobile)}>
-          <BatchIndicator onClick={handleBatchToggle} />
-        </div>
-      )} */}
-
       <div className={classnames(css.element, css.connectWallet)}>
         <ConnectWallet />
       </div>

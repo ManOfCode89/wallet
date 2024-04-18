@@ -7,9 +7,14 @@ import useIntervalCounter from '../useIntervalCounter'
 import useSafeInfo from '../useSafeInfo'
 import { Errors, logError } from '@/services/exceptions'
 import { POLLING_INTERVAL } from '@/config/constants'
-import { useSafeImplementation, useSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
+import { isLegacyVersion, useSafeImplementation, useSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import { addressEx } from '@/utils/addresses'
 import type Safe from '@safe-global/safe-core-sdk'
+import { _safeDeployments } from '@safe-global/safe-deployments'
+
+const isKnownContract = (address: string): boolean => {
+  return _safeDeployments.some((deployment) => Object.values(deployment.networkAddresses).includes(address))
+}
 
 export const getSafeInfo = async (sdk: Safe, implementation: string): Promise<SafeInfo> => {
   const [chainId, nonce, threshold, owners, modules, guard, fallbackHandler, contractVersion] = await Promise.all([
@@ -28,6 +33,12 @@ export const getSafeInfo = async (sdk: Safe, implementation: string): Promise<Sa
     version = version + '+L2'
   }
 
+  let implementationVersionState = isKnownContract(implementation)
+    ? isLegacyVersion(version)
+      ? ImplementationVersionState.OUTDATED
+      : ImplementationVersionState.UP_TO_DATE
+    : ImplementationVersionState.UNKNOWN
+
   let info: SafeInfo = {
     address: { value: sdk.getAddress() },
     chainId: chainId.toString(),
@@ -35,8 +46,7 @@ export const getSafeInfo = async (sdk: Safe, implementation: string): Promise<Sa
     threshold,
     owners: owners.map(addressEx),
     implementation: addressEx(implementation),
-    // TODO(devanon): Get version state: https://github.com/safe-global/safe-client-gateway/blob/main/src/routes/safes/safes.service.ts#L233
-    implementationVersionState: ImplementationVersionState.UP_TO_DATE,
+    implementationVersionState,
 
     modules: modules.map(addressEx),
     guard: addressEx(guard),

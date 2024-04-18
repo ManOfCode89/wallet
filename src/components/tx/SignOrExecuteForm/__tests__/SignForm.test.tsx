@@ -93,51 +93,6 @@ describe('SignForm', () => {
     })
   })
 
-  // TODO(devanon): re-enable these tests
-
-  // it('shows a batch button on tx creation', () => {
-  //   const { getByText } = render(<SignForm {...defaultProps} isCreation />)
-
-  //   expect(getByText('Add to batch')).toBeInTheDocument()
-  // })
-
-  // it('does not show a batch button when signing a batch', () => {
-  //   const { queryByText } = render(<SignForm {...defaultProps} isCreation isBatch />)
-
-  //   expect(queryByText('Add to batch')).not.toBeInTheDocument()
-  // })
-
-  // it('disables the batch button if tx is not batchable', () => {
-  //   const { getByText } = render(<SignForm {...defaultProps} isCreation isBatchable={false} />)
-
-  //   const batchButton = getByText('Add to batch')
-
-  //   expect(batchButton).toBeInTheDocument()
-  //   expect(batchButton).toBeDisabled()
-  // })
-
-  // it('submits a batch when the batch button is clicked', async () => {
-  //   const mockAddToBatch = jest.fn()
-
-  //   const { getByText } = render(
-  //     <SignForm
-  //       {...defaultProps}
-  //       safeTx={safeTransaction}
-  //       isBatchable
-  //       isCreation
-  //       txActions={{ signTx: jest.fn(), addToBatch: mockAddToBatch, executeTx: jest.fn() }}
-  //     />,
-  //   )
-
-  //   const batchButton = getByText('Add to batch')
-
-  //   fireEvent.click(batchButton)
-
-  //   await waitFor(() => {
-  //     expect(mockAddToBatch).toHaveBeenCalled()
-  //   })
-  // })
-
   it('shows a disabled submit button if there is no safeTx', () => {
     const { getByText } = render(<SignForm {...defaultProps} safeTx={undefined} />)
 

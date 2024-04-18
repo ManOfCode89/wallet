@@ -1,31 +1,16 @@
-import { useContext, useMemo } from 'react'
-import { Box, SvgIcon, Typography, Alert, AlertTitle, Skeleton, Button } from '@mui/material'
+import { Box, SvgIcon, Typography, Alert, AlertTitle, Skeleton, Link } from '@mui/material'
 import { ImplementationVersionState } from '@safe-global/safe-gateway-typescript-sdk'
-import { LATEST_SAFE_VERSION } from '@/config/constants'
-import { sameAddress } from '@/utils/addresses'
-import type { MasterCopy } from '@/hooks/useMasterCopies'
-import { MasterCopyDeployer, useMasterCopies } from '@/hooks/useMasterCopies'
+import { LATEST_SAFE_VERSION, REPO_URL } from '@/config/constants'
 import useSafeInfo from '@/hooks/useSafeInfo'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import InfoIcon from '@/public/images/notifications/info.svg'
-import { TxModalContext } from '@/components/tx-flow'
-import { UpdateSafeFlow } from '@/components/tx-flow/flows'
-import ExternalLink from '@/components/common/ExternalLink'
-import CheckWallet from '@/components/common/CheckWallet'
+import { isValidSafeVersion } from '@/hooks/coreSDK/safeCoreSDK'
 
-// TODO(devanon): Show message if safe is >v1.3.0
 export const ContractVersion = () => {
-  const { setTxFlow } = useContext(TxModalContext)
-  const [masterCopies] = useMasterCopies()
   const { safe, safeLoaded } = useSafeInfo()
-  const masterCopyAddress = safe.implementation.value
-
-  const safeMasterCopy: MasterCopy | undefined = useMemo(() => {
-    return masterCopies?.find((mc) => sameAddress(mc.address, masterCopyAddress))
-  }, [masterCopies, masterCopyAddress])
 
   const needsUpdate = safe.implementationVersionState === ImplementationVersionState.OUTDATED
-  const showUpdateDialog = safeMasterCopy?.deployer === MasterCopyDeployer.GNOSIS && needsUpdate
+  const unsupportedVersion = safe.version ? !isValidSafeVersion(safe.version) : true
 
   return (
     <>
@@ -34,30 +19,40 @@ export const ContractVersion = () => {
       </Typography>
 
       <Typography variant="body1" fontWeight={400}>
-        {safeLoaded ? safe.version ? safe.version : 'Unsupported contract' : <Skeleton width="60px" />}
+        {safeLoaded ? unsupportedVersion ? 'Unsupported contract' : safe.version : <Skeleton width="60px" />}
       </Typography>
       <Box mt={2}>
         {safeLoaded ? (
-          showUpdateDialog ? (
+          needsUpdate ? (
             <Alert
               sx={{ borderRadius: '2px', borderColor: '#B0FFC9' }}
               icon={<SvgIcon component={InfoIcon} inheritViewBox color="secondary" />}
             >
-              <AlertTitle sx={{ fontWeight: 700 }}>New version is available: {LATEST_SAFE_VERSION}</AlertTitle>
+              <AlertTitle sx={{ fontWeight: 700 }}>
+                This version of Eternal Safe works best with Safe version {LATEST_SAFE_VERSION}.
+              </AlertTitle>
 
-              <Typography mb={3}>
-                Update now to take advantage of new features and the highest security standards available. You will need
-                to confirm this update just like any other transaction.{' '}
-                <ExternalLink href={safeMasterCopy?.deployerRepoUrl}>GitHub</ExternalLink>
+              <Typography>
+                Please use the official Safe{'{Wallet}'} app to update your Safe to {LATEST_SAFE_VERSION}.
               </Typography>
+            </Alert>
+          ) : unsupportedVersion ? (
+            <Alert
+              sx={{ borderRadius: '2px', borderColor: '#B0FFC9' }}
+              icon={<SvgIcon component={InfoIcon} inheritViewBox color="secondary" />}
+            >
+              <AlertTitle sx={{ fontWeight: 700 }}>
+                This version of Eternal Safe works best with {LATEST_SAFE_VERSION}.
+              </AlertTitle>
 
-              <CheckWallet>
-                {(isOk) => (
-                  <Button onClick={() => setTxFlow(<UpdateSafeFlow />)} variant="contained" disabled={!isOk}>
-                    Update
-                  </Button>
-                )}
-              </CheckWallet>
+              <Typography>
+                You appear to be using an unsupported version of Safe, which may cause issues using Eternal Safe. You
+                can continue to use it at your own risk or{' '}
+                <Link href={REPO_URL} target="_blank" rel="noreferrer">
+                  check if there is a newer version of Eternal Safe
+                </Link>
+                .
+              </Typography>
             </Alert>
           ) : (
             <Typography display="flex" alignItems="center">
