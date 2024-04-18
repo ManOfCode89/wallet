@@ -123,11 +123,11 @@ const AddTokenOrCollectible = ({
 
   useEffect(() => {
     if (data) {
-      setValue('name', data.name)
-      setValue('symbol', data.symbol)
-      if (isERC20Data(data)) setValue('decimals', data.decimals)
+      setValue('name', data.name, { shouldValidate: true })
+      setValue('symbol', data.symbol, { shouldValidate: true })
+      if (isERC20Data(data) && variant === 'token') setValue('decimals', data.decimals, { shouldValidate: true })
     }
-  }, [data, setValue])
+  }, [data, setValue, variant])
 
   const variantCapitalized = capitalizeFirstLetter(variant)
 

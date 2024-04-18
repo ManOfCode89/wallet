@@ -3,6 +3,7 @@ import { ERC20__factory, ERC721__factory } from '@/types/contracts'
 import { type TokenInfo, TokenType } from '@safe-global/safe-gateway-typescript-sdk'
 import { constants, BigNumber } from 'ethers'
 import type { Provider } from '@ethersproject/abstract-provider'
+import { isString } from 'lodash'
 
 export const UNLIMITED_APPROVAL_AMOUNT = BigNumber.from(2).pow(256).sub(1)
 
@@ -101,7 +102,7 @@ export const getERC721Balance = async (web3: Provider, token: string, address: s
  * @param token address of erc20 token
  * @param address address to check balance of
  */
-export const getERC721TokenIds = async (web3: Provider, token: string, address: string): Promise<Array<BigNumber>> => {
+export const getERC721TokenIds = async (web3: Provider, token: string, address: string): Promise<Array<string>> => {
   const erc721 = ERC721__factory.connect(token, web3)
   const fromLogs = await erc721.queryFilter(
     erc721.filters['Transfer(address,address,uint256)'](address, undefined, undefined),
@@ -118,23 +119,25 @@ export const getERC721TokenIds = async (web3: Provider, token: string, address: 
 
   const ownedTokenIds = combinedLogs
     .map((event) => {
-      // If the transfer is to the given address, add the token ID to the list of owned token IDs
       if (event.args.to === address) {
         return event.args.tokenId
       }
-      // If the transfer is from the given address, remove the token ID from the list of owned token IDs
       if (event.args.from === address) {
         return event.args.tokenId.mul(-1) // Negative token ID indicates removal
       }
     })
-    .filter(BigNumber.isBigNumber)
+    .map((id) => id?.toString())
+    .filter(isString)
 
   // Use reduce to consolidate the list of token IDs
-  return ownedTokenIds.reduce((acc: BigNumber[], tokenId: BigNumber) => {
-    if (tokenId.gt(0) && !acc.includes(tokenId)) {
-      acc.push(tokenId) // Add new token ID
-    } else if (tokenId.lt(0) && acc.includes(tokenId.mul(-1))) {
-      acc.splice(acc.indexOf(tokenId.mul(-1)), 1) // Remove token ID
+  return ownedTokenIds.reduce((acc: string[], tokenId: string) => {
+    if (tokenId.startsWith('-')) {
+      let tokenIdStr = tokenId.slice(1)
+      if (acc.includes(tokenIdStr)) {
+        acc.splice(acc.indexOf(tokenIdStr), 1)
+      }
+    } else if (!acc.includes(tokenId)) {
+      acc.push(tokenId)
     }
     return acc
   }, [])

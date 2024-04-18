@@ -35,7 +35,7 @@ export const useLoadCollectiblesBalances = (): AsyncResult<Array<SafeCollectible
                 tokenName: token.name,
                 tokenSymbol: token.symbol,
                 logoUri: '',
-                id: id.toString(),
+                id,
                 uri: '',
                 name: '',
                 description: '',

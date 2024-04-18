@@ -10,10 +10,11 @@ import useIsSafeOwner from './useIsSafeOwner'
 import { isValidSafeVersion } from './coreSDK/safeCoreSDK'
 import useSafeAddress from '@/hooks/useSafeAddress'
 import useLocalStorage from '@/services/local-storage/useLocalStorage'
+import { REPO_URL } from '@/config/constants'
 
 const CLI_LINK = {
-  href: 'https://github.com/5afe/safe-cli',
-  title: 'Get CLI',
+  href: REPO_URL,
+  title: 'Check for Eternal Safe updates',
 }
 
 type DismissedUpdateNotifications = {
@@ -139,8 +140,7 @@ const useSafeNotifications = (): void => {
       showNotification({
         variant: 'warning',
         message: `This Safe Account was created with an unsupported base contract.
-           The web interface might not work correctly.
-           We recommend using the command line interface instead.`,
+            Eternal Safe may not work correctly, proceed at your own risk.`,
         groupKey: 'invalid-mastercopy',
         link: CLI_LINK,
       }),

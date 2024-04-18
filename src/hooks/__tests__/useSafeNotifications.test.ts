@@ -94,8 +94,8 @@ describe('useSafeNotifications', () => {
         message: `Safe Account version 0.0.1 is not supported by this web app anymore. You can update your Safe Account via the CLI.`,
         groupKey: 'safe-outdated-version',
         link: {
-          href: 'https://github.com/5afe/safe-cli',
-          title: 'Get CLI',
+          href: 'https://github.com/eternalsafe/wallet',
+          title: 'Check for Eternal Safe updates',
         },
         onClose: expect.anything(),
       })
@@ -145,12 +145,11 @@ describe('useSafeNotifications', () => {
       expect(showNotification).toHaveBeenCalledWith({
         variant: 'warning',
         message: `This Safe Account was created with an unsupported base contract.
-           The web interface might not work correctly.
-           We recommend using the command line interface instead.`,
+            Eternal Safe may not work correctly, proceed at your own risk.`,
         groupKey: 'invalid-mastercopy',
         link: {
-          href: 'https://github.com/5afe/safe-cli',
-          title: 'Get CLI',
+          href: 'https://github.com/eternalsafe/wallet',
+          title: 'Check for Eternal Safe updates',
         },
       })
     })
