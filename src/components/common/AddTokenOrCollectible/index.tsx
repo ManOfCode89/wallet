@@ -1,4 +1,4 @@
-import type { BaseSyntheticEvent, ReactElement } from 'react'
+import { type BaseSyntheticEvent, type ReactElement, useEffect } from 'react'
 import React, { useState } from 'react'
 import Box from '@mui/material/Box'
 import PlusIcon from '@/public/images/common/plus.svg'
@@ -74,7 +74,7 @@ const AddTokenOrCollectible = ({
     mode: 'onChange',
   })
 
-  const { handleSubmit, formState, watch, reset } = methods
+  const { handleSubmit, formState, watch, reset, setValue } = methods
 
   const submitCallback = handleSubmit((inputData: TokenEntry) => {
     try {
@@ -121,6 +121,14 @@ const AddTokenOrCollectible = ({
 
   const [data, error, loading] = useTokenOrCollectible(watch('address'))
 
+  useEffect(() => {
+    if (data) {
+      setValue('name', data.name)
+      setValue('symbol', data.symbol)
+      if (isERC20Data(data)) setValue('decimals', data.decimals)
+    }
+  }, [data, setValue])
+
   const variantCapitalized = capitalizeFirstLetter(variant)
 
   return (
@@ -146,7 +154,6 @@ const AddTokenOrCollectible = ({
               </Box>
             </DialogContent>
 
-            {/* TODO(devanon): Insert data values when we can get them, otherwise leave empty */}
             <Collapse in={!!data}>
               <DialogContent>
                 <Grid
@@ -162,7 +169,7 @@ const AddTokenOrCollectible = ({
                       label="Token name"
                       required
                       InputLabelProps={{ shrink: true }}
-                      placeholder={data?.name || 'Token name'}
+                      placeholder="Token name"
                       InputProps={{
                         endAdornment: loading ? (
                           <InputAdornment position="end">
@@ -179,7 +186,7 @@ const AddTokenOrCollectible = ({
                       label="Token symbol"
                       required
                       InputLabelProps={{ shrink: true }}
-                      placeholder={data?.symbol || 'Token symbol'}
+                      placeholder="Token symbol"
                       InputProps={{
                         endAdornment: loading ? (
                           <InputAdornment position="end">
@@ -195,7 +202,7 @@ const AddTokenOrCollectible = ({
                         name="decimals"
                         label="Token decimals"
                         InputLabelProps={{ shrink: true }}
-                        placeholder={data?.decimals.toString() || 'Token decimals'}
+                        placeholder="Token decimals"
                         InputProps={{
                           endAdornment: loading ? (
                             <InputAdornment position="end">

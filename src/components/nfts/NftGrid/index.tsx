@@ -21,6 +21,7 @@ import {
   Tooltip,
   type SxProps,
   type Theme,
+  IconButton,
 } from '@mui/material'
 import FilterAltIcon from '@mui/icons-material/FilterAlt'
 import NftIcon from '@/public/images/common/nft.svg'
@@ -29,6 +30,8 @@ import ExternalLink from '@/components/common/ExternalLink'
 import useChainId from '@/hooks/useChainId'
 import { nftPlatforms } from '../config'
 import EthHashInfo from '@/components/common/EthHashInfo'
+import { useRemoveCollectible } from '@/hooks/useRemoveTokenOrCollectible'
+import { VisibilityOutlined } from '@mui/icons-material'
 
 interface NftsTableProps {
   nfts: SafeCollectibleResponse[]
@@ -103,6 +106,8 @@ const NftGrid = ({
   const linkTemplates = nftPlatforms[chainId] || []
   // Filter string
   const [filter, setFilter] = useState<string>('')
+
+  const { removing, remove } = useRemoveCollectible()
 
   const onFilterChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -221,7 +226,17 @@ const NftGrid = ({
                             showName={false}
                             showCopyButton
                             hasExplorer
-                          />
+                          >
+                            <Tooltip title="Hide NFT (you will have to re-add it)" placement="top" disableInteractive>
+                              <IconButton
+                                disabled={removing !== undefined}
+                                size="small"
+                                onClick={() => remove(item.address)}
+                              >
+                                <VisibilityOutlined color="border" fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          </EthHashInfo>
                         </Typography>
                       </div>
                     </Box>

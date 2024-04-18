@@ -9,12 +9,12 @@ import EnhancedTable, { type EnhancedTableProps } from '@/components/common/Enha
 import TokenExplorerLink from '@/components/common/TokenExplorerLink'
 import { VisibilityOutlined } from '@mui/icons-material'
 import useBalances from '@/hooks/useBalances'
-import { useRemoveToken } from './useRemoveToken'
 import CheckWallet from '@/components/common/CheckWallet'
 import useSpendingLimit from '@/hooks/useSpendingLimit'
 import { TxModalContext } from '@/components/tx-flow'
 import { TokenTransferFlow } from '@/components/tx-flow/flows'
 import AddTokenOrCollectible from '@/components/common/AddTokenOrCollectible'
+import { useRemoveToken } from '@/hooks/useRemoveTokenOrCollectible'
 
 const skeletonCells: EnhancedTableProps['rows'][0]['cells'] = {
   asset: {
@@ -106,7 +106,7 @@ const AssetsTable = (): ReactElement => {
   const { balances, loading } = useBalances()
   const { setTxFlow } = useContext(TxModalContext)
 
-  const { removingToken, removeToken } = useRemoveToken()
+  const { removing: removingToken, remove: removeToken } = useRemoveToken()
 
   const onSendClick = (tokenAddress: string) => {
     setTxFlow(<TokenTransferFlow tokenAddress={tokenAddress} />)
