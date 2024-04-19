@@ -49,8 +49,7 @@ const getStep = (status: SafeCreationStatus) => {
     case SafeCreationStatus.INDEX_FAILED:
       return {
         description: 'Your Safe Account is successfully created!',
-        instruction:
-          'You can already open Safe{Wallet}. It might take a moment until it becomes fully usable in the interface.',
+        instruction: 'You can already open Eternal Safe.',
       }
   }
 }

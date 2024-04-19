@@ -74,7 +74,7 @@ export const ImportFileUpload = ({
             mr: 0.5,
           }}
         />
-        Only JSON files exported from the {'Safe{Wallet}'} can be imported.
+        Only JSON files exported from Eternal Safe can be imported.
       </Typography>
     </>
   )
