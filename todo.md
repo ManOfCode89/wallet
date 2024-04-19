@@ -4,13 +4,13 @@ This served as a working todo list for the scope of the [wave 1 grant](https://a
 
 ### Todo
 
-- [ ] Send NFTs
 - [ ] Replace Safe branded assets in public/
 - [ ] Update terms and other imprint
 - [ ] Remove all uses of Safe Gateway SDK, leaving only type usage
 
 ### Done ✓
 
+- [x] Send NFTs
 - [x] Remove Redefine
 - [x] Query NFTs
 - [x] Update env variables

@@ -7,6 +7,8 @@ import { getERC20Balance } from '@/utils/tokens'
 import { constants } from 'ethers'
 import { useTokens } from '@/hooks/useTokens'
 import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
+import useIntervalCounter from '@/hooks/useIntervalCounter'
+import { POLLING_INTERVAL } from '@/config/constants'
 
 export type TokenItem = {
   tokenInfo: TokenInfo
@@ -21,6 +23,7 @@ const isTokenItem = (item: TokenItem | undefined): item is TokenItem => {
 }
 
 export const useLoadBalances = (): AsyncResult<Array<TokenItem>> => {
+  const [pollCount, resetPolling] = useIntervalCounter(POLLING_INTERVAL)
   const { safeAddress } = useSafeInfo()
   const web3ReadOnly = useMultiWeb3ReadOnly()
 
@@ -63,9 +66,14 @@ export const useLoadBalances = (): AsyncResult<Array<TokenItem>> => {
         })
         .filter(isTokenItem)
     },
-    [safeAddress, tokens, web3ReadOnly],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pollCount, safeAddress, tokens, web3ReadOnly],
     false,
   )
+
+  useEffect(() => {
+    resetPolling()
+  }, [resetPolling, safeAddress, tokens])
 
   // Log errors
   useEffect(() => {

@@ -8,12 +8,15 @@ import { useAppSelector } from '@/store'
 import { selectCustomCollectiblesByChain } from '@/store/customCollectiblesSlice'
 import useChainId from '@/hooks/useChainId'
 import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
+import useIntervalCounter from '@/hooks/useIntervalCounter'
+import { POLLING_INTERVAL } from '@/config/constants'
 
 const isSafeCollectibleResponse = (item: SafeCollectibleResponse | undefined): item is SafeCollectibleResponse => {
   return !!item
 }
 
 export const useLoadCollectiblesBalances = (): AsyncResult<Array<SafeCollectibleResponse>> => {
+  const [pollCount, resetPolling] = useIntervalCounter(POLLING_INTERVAL)
   const { safeAddress } = useSafeInfo()
   const chainId = useChainId()
   const web3ReadOnly = useMultiWeb3ReadOnly()
@@ -48,9 +51,13 @@ export const useLoadCollectiblesBalances = (): AsyncResult<Array<SafeCollectible
 
       return balances.flat().filter(isSafeCollectibleResponse)
     },
-    [safeAddress, collectibles, web3ReadOnly],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [pollCount, safeAddress, collectibles, web3ReadOnly],
     false,
   )
+  useEffect(() => {
+    resetPolling()
+  }, [resetPolling, safeAddress, collectibles])
 
   // Log errors
   useEffect(() => {
