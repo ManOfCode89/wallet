@@ -10,14 +10,12 @@ import { useIsSidebarRoute } from '@/hooks/useIsSidebarRoute'
 import useDebounce from '@/hooks/useDebounce'
 import { useRouter } from 'next/router'
 import { TxModalContext } from '@/components/tx-flow'
-import BatchSidebar from '@/components/batch/BatchSidebar'
 
 const PageLayout = ({ pathname, children }: { pathname: string; children: ReactElement }): ReactElement => {
   const router = useRouter()
   const isSidebarRoute = useIsSidebarRoute()
   const [noSidebar, setNoSidebar] = useState<boolean>(isSidebarRoute)
   const [isSidebarOpen, setSidebarOpen] = useState<boolean>(true)
-  const [isBatchOpen, setBatchOpen] = useState<boolean>(false)
   const hideSidebar = noSidebar || !isSidebarOpen
   const { setFullWidth } = useContext(TxModalContext)
   let isAnimated = useDebounce(!noSidebar, 300)
@@ -35,7 +33,7 @@ const PageLayout = ({ pathname, children }: { pathname: string; children: ReactE
   return (
     <>
       <header className={css.header}>
-        <Header onMenuToggle={noSidebar ? undefined : setSidebarOpen} onBatchToggle={setBatchOpen} />
+        <Header onMenuToggle={noSidebar ? undefined : setSidebarOpen} />
       </header>
 
       {!noSidebar && <SideDrawer isOpen={isSidebarOpen} onToggle={setSidebarOpen} />}
@@ -50,7 +48,7 @@ const PageLayout = ({ pathname, children }: { pathname: string; children: ReactE
           <SafeLoadingError>{children}</SafeLoadingError>
         </div>
 
-        <BatchSidebar isOpen={isBatchOpen} onToggle={setBatchOpen} />
+        {/* <BatchSidebar isOpen={isBatchOpen} onToggle={setBatchOpen} /> */}
 
         <Footer />
       </div>

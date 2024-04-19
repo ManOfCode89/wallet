@@ -4,12 +4,12 @@ This served as a working todo list for the scope of the [wave 1 grant](https://a
 
 ### Todo
 
-- [ ] Replace Safe branded assets in public/
 - [ ] Update terms and other imprint
 - [ ] Remove all uses of Safe Gateway SDK, leaving only type usage
 
 ### Done ✓
 
+- [x] Replace Safe branded assets in public/
 - [x] Send NFTs
 - [x] Remove Redefine
 - [x] Query NFTs

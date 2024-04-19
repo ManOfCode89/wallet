@@ -9,16 +9,12 @@ import ConnectWallet from '@/components/common/ConnectWallet'
 import NetworkSelector from '@/components/common/NetworkSelector'
 import { AppRoutes } from '@/config/routes'
 import Link from 'next/link'
-import useSafeAddress from '@/hooks/useSafeAddress'
-// import BatchIndicator from '@/components/batch/BatchIndicator'
 
 type HeaderProps = {
   onMenuToggle?: Dispatch<SetStateAction<boolean>>
-  onBatchToggle?: Dispatch<SetStateAction<boolean>>
 }
 
-const Header = ({ onMenuToggle, onBatchToggle }: HeaderProps): ReactElement => {
-  const safeAddress = useSafeAddress()
+const Header = ({ onMenuToggle }: HeaderProps): ReactElement => {
   const router = useRouter()
 
   // Logo link: if on Dashboard, link to Welcome, otherwise to the root (which redirects to either Dashboard or Welcome)
@@ -29,12 +25,6 @@ const Header = ({ onMenuToggle, onBatchToggle }: HeaderProps): ReactElement => {
       onMenuToggle((isOpen) => !isOpen)
     } else {
       router.push(logoHref)
-    }
-  }
-
-  const handleBatchToggle = () => {
-    if (onBatchToggle) {
-      onBatchToggle((isOpen) => !isOpen)
     }
   }
 
