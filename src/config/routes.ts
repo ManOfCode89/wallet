@@ -23,7 +23,6 @@ export const AppRoutes = {
     index: '/settings',
     environmentVariables: '/settings/environment-variables',
     data: '/settings/data',
-    cookies: '/settings/cookies',
     appearance: '/settings/appearance',
   },
   transactions: {

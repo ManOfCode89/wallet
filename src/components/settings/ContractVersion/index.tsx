@@ -1,6 +1,6 @@
 import { Box, SvgIcon, Typography, Alert, AlertTitle, Skeleton, Link } from '@mui/material'
 import { ImplementationVersionState } from '@safe-global/safe-gateway-typescript-sdk'
-import { LATEST_SAFE_VERSION, REPO_URL } from '@/config/constants'
+import { LATEST_SAFE_VERSION, REPO_LATEST_RELEASE_URL } from '@/config/constants'
 import useSafeInfo from '@/hooks/useSafeInfo'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import InfoIcon from '@/public/images/notifications/info.svg'
@@ -48,7 +48,7 @@ export const ContractVersion = () => {
               <Typography>
                 You appear to be using an unsupported version of Safe, which may cause issues using Eternal Safe. You
                 can continue to use it at your own risk or{' '}
-                <Link href={REPO_URL} target="_blank" rel="noreferrer">
+                <Link href={REPO_LATEST_RELEASE_URL} target="_blank" rel="noreferrer">
                   check if there is a newer version of Eternal Safe
                 </Link>
                 .

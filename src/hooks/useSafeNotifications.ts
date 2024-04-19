@@ -10,10 +10,10 @@ import useIsSafeOwner from './useIsSafeOwner'
 import { isValidSafeVersion } from './coreSDK/safeCoreSDK'
 import useSafeAddress from '@/hooks/useSafeAddress'
 import useLocalStorage from '@/services/local-storage/useLocalStorage'
-import { REPO_URL } from '@/config/constants'
+import { REPO_LATEST_RELEASE_URL } from '@/config/constants'
 
 const CLI_LINK = {
-  href: REPO_URL,
+  href: REPO_LATEST_RELEASE_URL,
   title: 'Check for Eternal Safe updates',
 }
 

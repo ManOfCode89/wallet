@@ -9,7 +9,7 @@ import {
 import HelpCenterIcon from '@/public/images/sidebar/help-center.svg'
 import { ListItem } from '@mui/material'
 import DebugToggle from '../DebugToggle'
-import { REPO_URL, IS_PRODUCTION } from '@/config/constants'
+import { REPO_DISCUSSIONS_URL, IS_PRODUCTION } from '@/config/constants'
 
 const SidebarFooter = (): ReactElement => {
   return (
@@ -21,7 +21,7 @@ const SidebarFooter = (): ReactElement => {
       )}
 
       <ListItem disablePadding>
-        <a target="_blank" rel="noopener noreferrer" href={REPO_URL} style={{ width: '100%' }}>
+        <a target="_blank" rel="noopener noreferrer" href={REPO_DISCUSSIONS_URL} style={{ width: '100%' }}>
           <SidebarListItemButton>
             <SidebarListItemIcon color="primary">
               <HelpCenterIcon />

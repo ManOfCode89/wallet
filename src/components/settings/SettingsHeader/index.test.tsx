@@ -31,7 +31,6 @@ describe('SettingsHeader', () => {
     it('displays general preferences if no safe is open', () => {
       const result = render(<SettingsHeader />)
 
-      expect(result.getByText('Cookies')).toBeInTheDocument()
       expect(result.getByText('Appearance')).toBeInTheDocument()
       expect(result.getByText('Data')).toBeInTheDocument()
       expect(result.getByText('Environment variables')).toBeInTheDocument()

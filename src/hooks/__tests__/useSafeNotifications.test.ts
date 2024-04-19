@@ -94,7 +94,7 @@ describe('useSafeNotifications', () => {
         message: `Safe Account version 0.0.1 is not supported by this web app anymore. You can update your Safe Account via the CLI.`,
         groupKey: 'safe-outdated-version',
         link: {
-          href: 'https://github.com/eternalsafe/wallet',
+          href: 'https://github.com/eternalsafe/wallet/releases/latest',
           title: 'Check for Eternal Safe updates',
         },
         onClose: expect.anything(),
@@ -148,7 +148,7 @@ describe('useSafeNotifications', () => {
             Eternal Safe may not work correctly, proceed at your own risk.`,
         groupKey: 'invalid-mastercopy',
         link: {
-          href: 'https://github.com/eternalsafe/wallet',
+          href: 'https://github.com/eternalsafe/wallet/releases/latest',
           title: 'Check for Eternal Safe updates',
         },
       })

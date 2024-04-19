@@ -71,8 +71,8 @@ export const IS_OFFICIAL_HOST = process.env.NEXT_PUBLIC_IS_OFFICIAL_HOST === 'tr
 
 // Eternal Safe
 export const REPO_URL = 'https://github.com/eternalsafe/wallet'
+export const REPO_DISCUSSIONS_URL = `${REPO_URL}/discussions/10`
+export const REPO_LATEST_RELEASE_URL = `${REPO_URL}/releases/latest`
 export const DEFAULT_IPFS_GATEWAY = 'https://cloudflare-ipfs.com'
 export const DEFAULT_TOKENLIST_IPNS = 'ipns/tokens.uniswap.org'
-export const DEFAULT_TOKENLIST_INFO =
-  'https://tokenlists.org/token-list?url=https://gateway.ipfs.io/ipns/tokens.uniswap.org'
 export const CHAINLIST_URL = 'https://chainlist.org/'
