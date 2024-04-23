@@ -11,8 +11,8 @@ export const LATEST_SAFE_VERSION = process.env.NEXT_PUBLIC_SAFE_VERSION || '1.3.
 
 // Wallets
 export const WC_PROJECT_ID = process.env.NEXT_PUBLIC_WC_PROJECT_ID || ''
-export const TREZOR_APP_URL = 'app.safe.global'
-export const TREZOR_EMAIL = 'support@safe.global'
+export const TREZOR_APP_URL = 'eternalsafe.eth'
+export const TREZOR_EMAIL = 'devanon@eternalsafe.eth'
 
 // Safe Token
 export const SAFE_TOKEN_ADDRESSES: { [chainId: string]: string } = {
@@ -76,3 +76,4 @@ export const REPO_LATEST_RELEASE_URL = `${REPO_URL}/releases/latest`
 export const DEFAULT_IPFS_GATEWAY = 'https://cloudflare-ipfs.com'
 export const DEFAULT_TOKENLIST_IPNS = 'ipns/tokens.uniswap.org'
 export const CHAINLIST_URL = 'https://chainlist.org/'
+export const OFFICIAL_APP_URL = 'https://app.safe.global'

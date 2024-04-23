@@ -4,6 +4,7 @@ This served as a working todo list for the scope of the [wave 1 grant](https://a
 
 ### Todo
 
+- [ ] Update `docs/`
 - [ ] Update terms and other imprint
 - [ ] Remove all uses of Safe Gateway SDK, leaving only type usage
 

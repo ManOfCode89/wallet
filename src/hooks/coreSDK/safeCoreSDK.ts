@@ -5,7 +5,6 @@ import { Gnosis_safe__factory } from '@/types/contracts'
 import { invariant } from '@/utils/helpers'
 import type { Web3Provider } from '@ethersproject/providers'
 import Safe from '@safe-global/safe-core-sdk'
-import type { SafeVersion } from '@safe-global/safe-core-sdk-types'
 import EthersAdapter from '@safe-global/safe-ethers-lib'
 import type { SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import type { Provider } from '@ethersproject/providers'
@@ -17,8 +16,10 @@ export const isLegacyVersion = (safeVersion: string): boolean => {
   return semverSatisfies(safeVersion, LEGACY_VERSION)
 }
 
-export const isValidSafeVersion = (safeVersion?: SafeInfo['version']): safeVersion is SafeVersion => {
-  const SAFE_VERSIONS: SafeVersion[] = ['1.3.0', '1.2.0', '1.1.1', '1.0.0']
+export type ModernSafeVersion = '1.1.1' | '1.2.0' | '1.3.0' | '1.4.1'
+
+export const isValidSafeVersion = (safeVersion?: SafeInfo['version']): safeVersion is ModernSafeVersion => {
+  const SAFE_VERSIONS: ModernSafeVersion[] = ['1.4.1', '1.3.0', '1.2.0', '1.1.1']
   return !!safeVersion && SAFE_VERSIONS.some((version) => semverSatisfies(safeVersion, version))
 }
 

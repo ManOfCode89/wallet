@@ -27,6 +27,8 @@ jest.mock('@/types/contracts', () => {
 describe('safeCoreSDK', () => {
   describe('isValidSafeVersion', () => {
     it('should return true for valid versions', () => {
+      expect(isValidSafeVersion('1.4.1')).toBe(true)
+
       expect(isValidSafeVersion('1.3.0')).toBe(true)
 
       expect(isValidSafeVersion('1.2.0')).toBe(true)
@@ -40,7 +42,7 @@ describe('safeCoreSDK', () => {
 
       expect(isValidSafeVersion('1.4.0')).toBe(false)
 
-      expect(isValidSafeVersion('1.0.0')).toBe(true)
+      expect(isValidSafeVersion('1.0.0')).toBe(false)
 
       expect(isValidSafeVersion('0.0.1')).toBe(false)
 

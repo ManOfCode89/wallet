@@ -19,7 +19,15 @@ export const ContractVersion = () => {
       </Typography>
 
       <Typography variant="body1" fontWeight={400}>
-        {safeLoaded ? unsupportedVersion ? 'Unsupported contract' : safe.version : <Skeleton width="60px" />}
+        {safeLoaded ? (
+          unsupportedVersion ? (
+            `Unsupported contract ${safe.version ? `(${safe.version})` : ''}`
+          ) : (
+            safe.version
+          )
+        ) : (
+          <Skeleton width="60px" />
+        )}
       </Typography>
       <Box mt={2}>
         {safeLoaded ? (

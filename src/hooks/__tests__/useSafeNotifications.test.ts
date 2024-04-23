@@ -56,14 +56,11 @@ describe('useSafeNotifications', () => {
       expect(result.current).toBeUndefined()
       expect(showNotification).toHaveBeenCalledWith({
         variant: 'warning',
-        message: `Your Safe Account version 1.1.1 is out of date. Please update it.`,
+        message: `Your Safe Account version 1.1.1 is out of date. Please update it using Safe{Wallet}.`,
         groupKey: 'safe-outdated-version',
         link: {
-          href: {
-            pathname: '/settings/setup',
-            query: { safe: 'eth:0x123' },
-          },
-          title: 'Update Safe Account',
+          href: 'https://app.safe.global',
+          title: 'Safe{Wallet}',
         },
         onClose: expect.anything(),
       })
@@ -91,11 +88,11 @@ describe('useSafeNotifications', () => {
       expect(result.current).toBeUndefined()
       expect(showNotification).toHaveBeenCalledWith({
         variant: 'warning',
-        message: `Safe Account version 0.0.1 is not supported by this web app anymore. You can update your Safe Account via the CLI.`,
+        message: `Safe Account version 0.0.1 is not supported by Eternal Safe. You can update your Safe Account in Safe{Wallet}.`,
         groupKey: 'safe-outdated-version',
         link: {
-          href: 'https://github.com/eternalsafe/wallet/releases/latest',
-          title: 'Check for Eternal Safe updates',
+          href: 'https://app.safe.global',
+          title: 'Safe{Wallet}',
         },
         onClose: expect.anything(),
       })

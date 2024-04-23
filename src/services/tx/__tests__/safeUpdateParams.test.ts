@@ -17,33 +17,6 @@ const MOCK_SAFE_ADDRESS = '0x0000000000000000000000000000000000005AFE'
 describe('safeUpgradeParams', () => {
   jest.spyOn(web3, 'getMultiWeb3ReadOnly').mockImplementation(() => MulticallWrapper.wrap(new Web3Provider(jest.fn())))
 
-  it('Should add empty setFallbackHandler transaction data for older Safes', () => {
-    const mockSafe = {
-      address: {
-        value: MOCK_SAFE_ADDRESS,
-      },
-      version: '1.0.0',
-    } as SafeInfo
-    const txs = createUpdateSafeTxs(mockSafe, { chainId: '4', l2: false } as ChainInfo)
-    const [masterCopyTx, fallbackHandlerTx] = txs
-    // Safe upgrades mastercopy and fallbackhandler
-    expect(txs).toHaveLength(2)
-    // Check change masterCopy
-    expect(sameAddress(masterCopyTx.to, MOCK_SAFE_ADDRESS)).toBeTruthy()
-    expect(masterCopyTx.value).toEqual('0')
-    expect(
-      sameAddress(
-        decodeChangeMasterCopyAddress(masterCopyTx.data),
-        getSafeSingletonDeployment({ version: '1.3.0', network: '4' })?.defaultAddress,
-      ),
-    ).toBeTruthy()
-
-    // Check setFallbackHandler
-    expect(sameAddress(fallbackHandlerTx.to, MOCK_SAFE_ADDRESS)).toBeTruthy()
-    expect(fallbackHandlerTx.value).toEqual('0')
-    expect(fallbackHandlerTx.data).toEqual('0x')
-  })
-
   it('Should upgrade L1 safe to L1 1.3.0', () => {
     const mockSafe = {
       address: {

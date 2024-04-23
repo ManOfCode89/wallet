@@ -6,12 +6,9 @@ import { useSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import useIntervalCounter from '@/hooks/useIntervalCounter'
 import { POLLING_INTERVAL } from '@/config/constants'
 import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
-import {
-  Gnosis_safe_l2__factory,
-  Gnosis_safe__factory,
-} from '@/types/contracts/factories/@safe-global/safe-deployments/dist/assets/v1.3.0'
 import { useAppDispatch } from '@/store'
 import { showNotification } from '@/store/notificationsSlice'
+import { getSafeContract } from '@/utils/safe-versions'
 
 export type TxHistoryItem = {
   txId: string
@@ -37,14 +34,9 @@ export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
     async () => {
       if (!safeAddress || !provider || !sdk) return
 
-      let safeContract
+      const safeContract = getSafeContract(sdk, safeAddress, safe.version, provider)
 
-      //TODO(devanon): Support all versions, for now just assumes v1.3.0
-      if (sdk.getContractManager().isL1SafeMasterCopy) {
-        safeContract = Gnosis_safe__factory.connect(safeAddress, provider)
-      } else {
-        safeContract = Gnosis_safe_l2__factory.connect(safeAddress, provider)
-      }
+      if (!safeContract) return
 
       const logs = await safeContract.queryFilter(safeContract.filters.ExecutionSuccess(), 0, 'latest')
 
