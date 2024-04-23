@@ -8,7 +8,6 @@ import useLoadChains from './loadables/useLoadChains'
 import useLoadSafeInfo from './loadables/useLoadSafeInfo'
 import useLoadBalances from './loadables/useLoadBalances'
 import useLoadTxHistory from './loadables/useLoadTxHistory'
-import useLoadMessages from './loadables/useLoadSafeMessages'
 import useLoadTxQueue from '@/hooks/loadables/useLoadTxQueue'
 import useLoadCollectiblesBalances from '@/hooks/loadables/useLoadCollectiblesBalance'
 
@@ -20,7 +19,6 @@ import { txHistorySlice } from '@/store/txHistorySlice'
 import { txQueueSlice } from '@/store/txQueueSlice'
 import { spendingLimitSlice } from '@/store/spendingLimitsSlice'
 import useLoadSpendingLimits from '@/hooks/loadables/useLoadSpendingLimits'
-import { safeMessagesSlice } from '@/store/safeMessagesSlice'
 import { collectiblesBalanceSlice } from '@/store/collectiblesBalancesSlice'
 
 // Dispatch into the corresponding store when the loadable is loaded
@@ -47,7 +45,6 @@ const useLoadableStores = () => {
   useUpdateStore(collectiblesBalanceSlice, useLoadCollectiblesBalances)
   useUpdateStore(txHistorySlice, useLoadTxHistory)
   useUpdateStore(txQueueSlice, useLoadTxQueue)
-  useUpdateStore(safeMessagesSlice, useLoadMessages)
   useUpdateStore(spendingLimitSlice, useLoadSpendingLimits)
 }
 

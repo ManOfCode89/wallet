@@ -14,7 +14,6 @@ import useIsSafeOwner from '@/hooks/useIsSafeOwner'
 import useWallet from './wallets/useWallet'
 import useSafeAddress from './useSafeAddress'
 import { getExplorerLink } from '@/utils/gateway'
-import { getTxDetails } from '@/services/tx/txDetails'
 
 const TxNotifications = {
   [TxEvent.SIGN_FAILED]: 'Failed to sign. Please try again.',
@@ -79,13 +78,6 @@ const useTxNotifications = (): void => {
         const groupKey = 'groupKey' in detail && detail.groupKey ? detail.groupKey : txId || ''
 
         let humanDescription = 'Transaction'
-        const id = txId || txHash
-        if (id) {
-          try {
-            const txDetails = await getTxDetails(chain.chainId, id)
-            humanDescription = txDetails.txInfo.humanDescription || humanDescription
-          } catch {}
-        }
 
         dispatch(
           showNotification({

@@ -1,12 +1,14 @@
 import type { SafeTransaction } from '@safe-global/safe-core-sdk-types'
 import type { JsonRpcProvider } from '@ethersproject/providers'
 
-import { getSafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import { isSmartContract } from '@/hooks/wallets/web3'
 import { sameAddress } from '@/utils/addresses'
 import { getTransactionRecipients } from '@/utils/transaction-calldata'
 import { SecuritySeverity } from '../types'
 import type { SecurityResponse, SecurityModule } from '../types'
+import { getSafeSDKAndImplementation } from '@/hooks/coreSDK/useInitSafeCoreSDK'
+import { getSafeInfo } from '@/hooks/loadables/useLoadSafeInfo'
+import type { Provider } from '@ethersproject/providers'
 
 type RecipientAddressModuleWarning = {
   severity: SecuritySeverity
@@ -42,15 +44,19 @@ export class RecipientAddressModule
     return knownAddresses.some((knownAddress) => sameAddress(knownAddress, address))
   }
 
-  private async shouldWarnOfMainnetSafe(currentChainId: string, address: string): Promise<boolean> {
+  private async shouldWarnOfMainnetSafe(provider: Provider, currentChainId: string, address: string): Promise<boolean> {
     // We only check if the address is a Safe on mainnet to reduce the number of requests
     if (currentChainId === MAINNET_CHAIN_ID) {
       return false
     }
 
     try {
-      // TODO(devanon): Remove or replace CGW usage
-      await getSafeInfo(MAINNET_CHAIN_ID, address)
+      let [sdk, implementation] = await getSafeSDKAndImplementation(provider, address, currentChainId)
+      console.log({ sdk, implementation })
+      if (!sdk) {
+        throw new Error('Safe SDK not available')
+      }
+      await getSafeInfo(sdk, implementation)
       return true
     } catch {
       return false
@@ -85,7 +91,7 @@ export class RecipientAddressModule
 
     const [balance, shouldWarnOfMainnetSafe] = await Promise.all([
       provider.getBalance(address),
-      this.shouldWarnOfMainnetSafe(chainId, address),
+      this.shouldWarnOfMainnetSafe(provider, chainId, address),
     ])
 
     if (balance.eq(0)) {

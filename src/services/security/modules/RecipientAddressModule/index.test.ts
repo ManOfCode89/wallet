@@ -1,9 +1,11 @@
-import * as sdk from '@safe-global/safe-gateway-typescript-sdk'
+import * as useSafeCoreSDK from '@/hooks/coreSDK/useInitSafeCoreSDK'
+import * as useLoadSafeInfo from '@/hooks/loadables/useLoadSafeInfo'
 import { OperationType } from '@safe-global/safe-core-sdk-types'
 import { ethers } from 'ethers'
 import { hexZeroPad } from 'ethers/lib/utils'
 import type { JsonRpcProvider } from '@ethersproject/providers'
 import type { SafeInfo } from '@safe-global/safe-gateway-typescript-sdk'
+import type Safe from '@safe-global/safe-core-sdk'
 
 import * as web3 from '@/hooks/wallets/web3'
 import { RecipientAddressModule } from '.'
@@ -24,7 +26,8 @@ describe('RecipientAddressModule', () => {
     getBalance: mockGetBalance,
   } as unknown as JsonRpcProvider
 
-  const mockGetSafeInfo = jest.spyOn(sdk, 'getSafeInfo')
+  const mockGetSafeSDKAndImplementation = jest.spyOn(useSafeCoreSDK, 'getSafeSDKAndImplementation')
+  const mockGetSafeInfo = jest.spyOn(useLoadSafeInfo, 'getSafeInfo')
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -682,6 +685,7 @@ describe('RecipientAddressModule', () => {
     beforeEach(() => {
       isSmartContractSpy.mockImplementation(() => Promise.resolve(false))
       mockGetBalance.mockImplementation(() => Promise.resolve(ethers.BigNumber.from(1)))
+      mockGetSafeSDKAndImplementation.mockImplementation(() => Promise.resolve([{}, '0x1'] as [Safe, string]))
       mockGetSafeInfo.mockImplementation(() => Promise.resolve({} as SafeInfo))
     })
 

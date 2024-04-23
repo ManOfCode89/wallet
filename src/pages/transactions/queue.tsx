@@ -6,8 +6,6 @@ import TxHeader from '@/components/transactions/TxHeader'
 import { Box } from '@mui/material'
 
 const Queue: NextPage = () => {
-  // const showPending = useShowUnsignedQueue()
-
   return (
     <>
       <Head>
@@ -18,9 +16,6 @@ const Queue: NextPage = () => {
 
       <main>
         <Box mb={4}>
-          {/* Pending unsigned transactions */}
-          {/* {showPending && <PaginatedTxns useTxns={usePendingTxsQueue} />} */}
-
           {/* The main queue of signed transactions */}
           <PaginatedTxns useTxns={useTxQueue} />
         </Box>
