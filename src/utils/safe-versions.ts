@@ -25,7 +25,8 @@ export const hasSafeFeature = (feature: SAFE_FEATURES, version: SafeInfo['versio
   return sdkHasSafeFeature(feature, version)
 }
 
-export const getSafeContract = (sdk: Safe, safeAddress: string, safeVersion: string | null, provider: Provider) => {
+function getSafeFactory(safeVersion: string | null) {
+  const isL2 = safeVersion?.endsWith('L2') ?? false
   if (!isValidSafeVersion(safeVersion)) return
 
   const version: ModernSafeVersion = safeVersion ?? LATEST_SAFE_VERSION
@@ -33,8 +34,28 @@ export const getSafeContract = (sdk: Safe, safeAddress: string, safeVersion: str
   const factories = {
     '1.1.1': Gnosis_safe__factory111,
     '1.2.0': Gnosis_safe__factory120,
-    '1.3.0': sdk.getContractManager().isL1SafeMasterCopy ? Gnosis_safe__factory130 : Gnosis_safe_l2__factory130,
-    '1.4.1': sdk.getContractManager().isL1SafeMasterCopy ? Safe__factory141 : Safe_l2__factory141,
+    '1.3.0': isL2 ? Gnosis_safe_l2__factory130 : Gnosis_safe__factory130,
+    '1.4.1': isL2 ? Safe_l2__factory141 : Safe__factory141,
+  }
+
+  return factories[version]
+}
+
+export const getSafeABI = (safeVersion: string | null) => {
+  return getSafeFactory(safeVersion)?.abi
+}
+
+export const getSafeContract = (safeAddress: string, safeVersion: string | null, provider: Provider) => {
+  const isL2 = safeVersion?.endsWith('L2') ?? false
+  if (!isValidSafeVersion(safeVersion)) return
+
+  const version: ModernSafeVersion = safeVersion ?? LATEST_SAFE_VERSION
+
+  const factories = {
+    '1.1.1': Gnosis_safe__factory111,
+    '1.2.0': Gnosis_safe__factory120,
+    '1.3.0': isL2 ? Gnosis_safe_l2__factory130 : Gnosis_safe__factory130,
+    '1.4.1': isL2 ? Safe_l2__factory141 : Safe__factory141,
   }
 
   return factories[version].connect(safeAddress, provider)

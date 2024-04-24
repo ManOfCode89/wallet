@@ -15,6 +15,7 @@ import {
 import { transactionKey } from './txMagicLink'
 import { addressEx } from '@/utils/addresses'
 import type { Custom, MultisigExecutionDetails, TransactionData } from '@safe-global/safe-apps-sdk'
+import { ethers } from 'ethers'
 
 const ZERO_ADDRESS: string = '0x0000000000000000000000000000000000000000'
 const EMPTY_DATA: string = '0x'
@@ -135,10 +136,12 @@ export const extractTxDetails = async (
     to: addressEx(safeTx.data.to),
     dataSize: dataSize.toString(),
     value: safeTx.data.value,
-    isCancellation: false, // TOOD(devanon): implement this,
+    isCancellation: isCancellation(safeAddress, safeTx.data, dataSize),
   }
 
   const operation = (safeTx.data.operation ?? Operation.CALL) as unknown as Operation
+
+  const dataDecoded = safeContractInterface.decodeFunctionData('execTransaction', safeTx.data.data)
 
   const txData: TransactionData = {
     hexData: safeTx.data.data,
@@ -194,4 +197,20 @@ export const extractTxDetails = async (
     txData,
     detailedExecutionInfo,
   }
+}
+
+function isCancellation(safe: string, transactionData: SafeTransactionData, dataSize: number): boolean {
+  const { to, value, baseGas, gasPrice, gasToken, operation, refundReceiver, safeTxGas } = transactionData
+
+  return (
+    to === safe &&
+    dataSize === 0 &&
+    (!value || Number(value) === 0) &&
+    operation === 0 &&
+    (!baseGas || Number(baseGas) === 0) &&
+    (!gasPrice || Number(gasPrice) === 0) &&
+    (!gasToken || gasToken === ethers.constants.AddressZero) &&
+    (!refundReceiver || refundReceiver === ethers.constants.AddressZero) &&
+    (!safeTxGas || safeTxGas === 0)
+  )
 }

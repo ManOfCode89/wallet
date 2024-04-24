@@ -24,7 +24,6 @@ export type TxHistory = {
 
 export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
   const dispatch = useAppDispatch()
-  const sdk = useSafeSDK()
   const provider = useMultiWeb3ReadOnly()
   const { safe, safeAddress } = useSafeInfo()
   const { chainId } = safe
@@ -32,9 +31,9 @@ export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
 
   const [data, error, loading] = useAsync<TxHistory | undefined>(
     async () => {
-      if (!safeAddress || !provider || !sdk) return
+      if (!safeAddress || !provider) return
 
-      const safeContract = getSafeContract(sdk, safeAddress, safe.version, provider)
+      const safeContract = getSafeContract(safeAddress, safe.version, provider)
 
       if (!safeContract) return
 
@@ -63,7 +62,7 @@ export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
       }, {} as TxHistory)
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [safeAddress, provider, pollCount, sdk],
+    [safeAddress, provider, pollCount],
     false,
   )
 
