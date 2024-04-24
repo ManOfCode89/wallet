@@ -10,10 +10,12 @@ import { POLLING_INTERVAL } from '@/config/constants'
 import { isLegacyVersion, useSafeImplementation, useSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import { addressEx } from '@/utils/addresses'
 import type Safe from '@safe-global/safe-core-sdk'
-import { _safeDeployments } from '@safe-global/safe-deployments'
+import { _safeDeployments, _safeL2Deployments } from '@safe-global/safe-deployments'
 
 const isKnownContract = (address: string): boolean => {
-  return _safeDeployments.some((deployment) => Object.values(deployment.networkAddresses).includes(address))
+  return _safeDeployments
+    .concat(_safeL2Deployments)
+    .some((deployment) => Object.values(deployment.networkAddresses).includes(address))
 }
 
 export const getSafeInfo = async (sdk: Safe, implementation: string): Promise<SafeInfo> => {
