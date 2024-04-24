@@ -131,8 +131,6 @@ export const extractTxDetails = async (
   const dataByteLength = safeTx.data.data ? Buffer.byteLength(safeTx.data.data) : 0
   const dataSize = dataByteLength >= 2 ? Math.floor((dataByteLength - 2) / 2) : 0
 
-  // TODO(devanon): extract more data similar to
-  // https://github.com/safe-global/safe-client-gateway/blob/5293d98286bee62f1a7d13c3a405ed8e73bcf770/src/routes/transactions/mappers/common/transaction-info.mapper.ts#L64
   const txInfo: Custom = {
     type: TransactionInfoType.CUSTOM,
     to: addressEx(safeTx.data.to),
