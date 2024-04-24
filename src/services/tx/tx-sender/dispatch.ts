@@ -12,20 +12,21 @@ import { getSafeSDKWithSigner, getUncheckedSafeSDK, assertWalletChain, tryOffCha
 import { createWeb3 } from '@/hooks/wallets/web3'
 import { type OnboardAPI } from '@web3-onboard/core'
 import { asError } from '@/services/exceptions/utils'
+import { EternalSafeTransaction } from '@/store/addedTxsSlice'
 
 /**
  * Sign a transaction
  */
 export const dispatchTxSigning = async (
-  safeTx: SafeTransaction,
+  safeTx: EternalSafeTransaction,
   safeVersion: SafeInfo['version'],
   onboard: OnboardAPI,
   chainId: SafeInfo['chainId'],
   txId?: string,
-): Promise<SafeTransaction> => {
+): Promise<EternalSafeTransaction> => {
   const sdk = await getSafeSDKWithSigner(onboard, chainId)
 
-  let signedTx: SafeTransaction | undefined
+  let signedTx: EternalSafeTransaction | undefined
   try {
     signedTx = await tryOffChainTxSigning(safeTx, safeVersion, sdk)
   } catch (error) {

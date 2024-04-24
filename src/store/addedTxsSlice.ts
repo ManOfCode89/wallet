@@ -4,6 +4,18 @@ import type { SafeTransactionData, SafeTransaction } from '@safe-global/safe-cor
 import EthSafeTransaction from '@safe-global/safe-core-sdk/dist/src/utils/transactions/SafeTransaction'
 import EthSignSignature from '@safe-global/safe-core-sdk/dist/src/utils/signatures/SafeSignature'
 
+export class EternalSafeTransaction extends EthSafeTransaction {
+  timestamp: number
+
+  constructor(data: SafeTransactionData, signatures: Record<string, string>, timestamp: number) {
+    super(data)
+    this.timestamp = timestamp
+    for (const [signer, data] of Object.entries(signatures)) {
+      this.addSignature(new EthSignSignature(signer, data))
+    }
+  }
+}
+
 export type StoredSafeTransaction = {
   data: SafeTransactionData
   signatures: Record<string, string>
@@ -88,7 +100,7 @@ export const selectAddedTxs = createSelector(
     [chainId, safeAddress],
   ):
     | {
-        [txKey: string]: SafeTransaction
+        [txKey: string]: EternalSafeTransaction
       }
     | undefined => {
     const loaded = allAddedTxs?.[chainId]?.[safeAddress]
@@ -96,14 +108,10 @@ export const selectAddedTxs = createSelector(
       return {}
     }
     const result: {
-      [txKey: string]: SafeTransaction
+      [txKey: string]: EternalSafeTransaction
     } = {}
     Object.keys(loaded).forEach((key) => {
-      const safeTx = new EthSafeTransaction(loaded[key].data)
-      Object.entries(loaded[key].signatures).forEach(([signer, data]) => {
-        safeTx.addSignature(new EthSignSignature(signer, data))
-      })
-      result[key] = safeTx
+      result[key] = new EternalSafeTransaction(loaded[key].data, loaded[key].signatures, loaded[key].timestamp)
     })
     return result
   },
@@ -114,30 +122,11 @@ export const selectAddedTx = createSelector(
     selectAllAddedTxs,
     (_: RootState, chainId: string, safeAddress: string, txKey: string) => [chainId, safeAddress, txKey],
   ],
-  (allAddedTxs, [chainId, safeAddress, txKey]): SafeTransaction | undefined => {
+  (allAddedTxs, [chainId, safeAddress, txKey]): EternalSafeTransaction | undefined => {
     const loaded = allAddedTxs?.[chainId]?.[safeAddress]?.[txKey]
     if (!loaded) {
       return
     }
-    const safeTx = new EthSafeTransaction(loaded.data)
-    Object.entries(loaded.signatures).forEach(([signer, data]) => {
-      safeTx.addSignature(new EthSignSignature(signer, data))
-    })
-
-    return safeTx
-  },
-)
-
-export const selectTimestampForAddedTx = createSelector(
-  [
-    selectAllAddedTxs,
-    (_: RootState, chainId: string, safeAddress: string, txKey: string) => [chainId, safeAddress, txKey],
-  ],
-  (allAddedTxs, [chainId, safeAddress, txKey]): number | undefined => {
-    const loaded = allAddedTxs?.[chainId]?.[safeAddress]?.[txKey]
-    if (!loaded) {
-      return
-    }
-    return loaded.timestamp
+    return new EternalSafeTransaction(loaded.data, loaded.signatures, loaded.timestamp)
   },
 )

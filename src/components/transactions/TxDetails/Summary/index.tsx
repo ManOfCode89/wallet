@@ -9,8 +9,6 @@ import { dateString } from '@/utils/formatters'
 import css from './styles.module.css'
 import type { SafeTransaction } from '@safe-global/safe-core-sdk-types'
 import SafeTxGasForm from '../SafeTxGasForm'
-import { useAppSelector } from '@/store'
-import { selectTimestampForAddedTx } from '@/store/addedTxsSlice'
 import useChainId from '@/hooks/useChainId'
 
 interface Props {
@@ -20,21 +18,18 @@ interface Props {
 
 const Summary = ({ txDetails, defaultExpanded = false }: Props): ReactElement => {
   const [expanded, setExpanded] = useState<boolean>(defaultExpanded)
-  const chainId = useChainId()
 
   const toggleExpanded = () => {
     setExpanded((val) => !val)
   }
 
-  const { txHash, detailedExecutionInfo, executedAt, txData, safeAddress } = txDetails
+  const { txHash, detailedExecutionInfo, executedAt, txData } = txDetails
 
-  let confirmations, safeTxHash: string | undefined, baseGas, gasPrice, gasToken, refundReceiver, safeTxGas
+  let confirmations, safeTxHash: string | undefined, baseGas, gasPrice, gasToken, refundReceiver, safeTxGas, submittedAt
   if (isMultisigDetailedExecutionInfo(detailedExecutionInfo)) {
-    ;({ confirmations, safeTxHash, baseGas, gasPrice, gasToken, safeTxGas } = detailedExecutionInfo)
+    ;({ confirmations, safeTxHash, baseGas, gasPrice, gasToken, safeTxGas, submittedAt } = detailedExecutionInfo)
     refundReceiver = detailedExecutionInfo.refundReceiver?.value
   }
-
-  const timestamp = useAppSelector((state) => selectTimestampForAddedTx(state, chainId, safeAddress, safeTxHash ?? ''))
 
   return (
     <>
@@ -44,9 +39,11 @@ const Summary = ({ txDetails, defaultExpanded = false }: Props): ReactElement =>
       <TxDataRow datatestid="tx-safe-hash" title="safeTxHash:">
         {generateDataRowValue(safeTxHash, 'hash')}
       </TxDataRow>
-      <TxDataRow datatestid="tx-created-at" title="Created/Imported:">
-        {timestamp ? dateString(timestamp) : null}
-      </TxDataRow>
+      {submittedAt && (
+        <TxDataRow datatestid="tx-created-at" title="Created/Imported:">
+          {dateString(submittedAt)}
+        </TxDataRow>
+      )}
       {executedAt && (
         <TxDataRow datatestid="tx-executed-at" title="Executed:">
           {dateString(executedAt)}

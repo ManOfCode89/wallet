@@ -16,6 +16,8 @@ import { transactionKey } from './txMagicLink'
 import { addressEx } from '@/utils/addresses'
 import type { Custom, MultisigExecutionDetails, TransactionData } from '@safe-global/safe-apps-sdk'
 import { ethers } from 'ethers'
+import { getSafeABI } from '@/utils/safe-versions'
+import { EternalSafeTransaction } from '@/store/addedTxsSlice'
 
 const ZERO_ADDRESS: string = '0x0000000000000000000000000000000000000000'
 const EMPTY_DATA: string = '0x'
@@ -122,7 +124,7 @@ export default extractTxInfo
  */
 export const extractTxDetails = async (
   safeAddress: string,
-  safeTx: SafeTransaction,
+  safeTx: EternalSafeTransaction,
   safe: SafeInfo,
   txId?: string,
 ): Promise<TransactionDetails> => {
@@ -141,25 +143,23 @@ export const extractTxDetails = async (
 
   const operation = (safeTx.data.operation ?? Operation.CALL) as unknown as Operation
 
-  const dataDecoded = safeContractInterface.decodeFunctionData('execTransaction', safeTx.data.data)
-
   const txData: TransactionData = {
     hexData: safeTx.data.data,
-    dataDecoded: undefined, // TOOD(devanon): implement this
+    // Need to use some transaction decoder to get the decoded data
+    // e.g. tenderly, openchain, etc.
+    dataDecoded: undefined,
     to: addressEx(safeTx.data.to),
     value: safeTx.data.value,
     operation,
-    addressInfoIndex: undefined, // TOOD(devanon): implement this
+    addressInfoIndex: undefined,
     trustedDelegateCallTarget: false,
   }
 
   const txKey = await transactionKey(safeTx)
 
-  // TODO(devanon): support module execution details
-  // TODO(devanon): compare with https://github.com/safe-global/safe-client-gateway/blob/5293d98286bee62f1a7d13c3a405ed8e73bcf770/src/routes/transactions/mappers/multisig-transactions/multisig-transaction-execution-details.mapper.ts#L26
   const detailedExecutionInfo: MultisigExecutionDetails = {
     type: DetailedExecutionInfoType.MULTISIG,
-    submittedAt: 1000000, // TOOD(devanon): implement this
+    submittedAt: safeTx.timestamp,
     nonce: safeTx.data.nonce,
     safeTxGas: safeTx.data.safeTxGas?.toString() ?? '0',
     baseGas: safeTx.data.baseGas?.toString() ?? '0',
@@ -167,7 +167,7 @@ export const extractTxDetails = async (
     gasToken: safeTx.data.gasToken,
     refundReceiver: addressEx(safeTx.data.refundReceiver),
     safeTxHash: txKey,
-    executor: undefined, // TOOD(devanon): implement this
+    executor: undefined, // modified in `enrichTransactionDetailsFromHistory`
     signers: safe.owners,
     confirmationsRequired: safe.threshold,
     confirmations: Array.from(safeTx.signatures.values()).map((signature) => ({
@@ -176,13 +176,13 @@ export const extractTxDetails = async (
       submittedAt: 0, // TOOD(devanon): implement this
     })),
     rejectors: undefined, // TOOD(devanon): implement this
-    gasTokenInfo: undefined, // TOOD(devanon): implement this
+    gasTokenInfo: undefined,
     trusted: true,
   }
 
   const proposedTxId = txId ?? `multisig_${safeAddress}_${txKey}`
 
-  // TODO(devanon): implement more statuses
+  // modified in `enrichTransactionDetailsFromHistory`
   const txStatus =
     detailedExecutionInfo.confirmations.length >= safe.threshold
       ? TransactionStatus.AWAITING_EXECUTION
@@ -193,9 +193,10 @@ export const extractTxDetails = async (
     txId: proposedTxId,
     txStatus,
     txInfo,
-    executedAt: undefined,
     txData,
     detailedExecutionInfo,
+    executedAt: undefined, // modified in `enrichTransactionDetailsFromHistory`
+    txHash: undefined, // modified in `enrichTransactionDetailsFromHistory`
   }
 }
 

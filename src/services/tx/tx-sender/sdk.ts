@@ -14,6 +14,7 @@ import { type OnboardAPI } from '@web3-onboard/core'
 import type { ConnectedWallet } from '@/hooks/wallets/useOnboard'
 import type { JsonRpcSigner } from '@ethersproject/providers'
 import { asError } from '@/services/exceptions/utils'
+import { EternalSafeTransaction } from '@/store/addedTxsSlice'
 
 export const getAndValidateSafeSDK = (): Safe => {
   const safeSDK = getSafeSDK()
@@ -135,15 +136,17 @@ export const getSupportedSigningMethods = (safeVersion: SafeInfo['version']): Si
 }
 
 export const tryOffChainTxSigning = async (
-  safeTx: SafeTransaction,
+  safeTx: EternalSafeTransaction,
   safeVersion: SafeInfo['version'],
   sdk: Safe,
-): Promise<SafeTransaction> => {
+): Promise<EternalSafeTransaction> => {
   const signingMethods = getSupportedSigningMethods(safeVersion)
 
   for await (const [i, signingMethod] of signingMethods.entries()) {
     try {
-      return await sdk.signTransaction(safeTx, signingMethod)
+      let signedTx = (await sdk.signTransaction(safeTx, signingMethod)) as EternalSafeTransaction
+      signedTx.timestamp = safeTx.timestamp
+      return signedTx
     } catch (error) {
       const isLastSigningMethod = i === signingMethods.length - 1
 
