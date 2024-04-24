@@ -17,13 +17,12 @@ import { txDispatch, TxEvent } from '@/services/tx/txEvents'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import { useSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import useTxQueue from '@/hooks/useTxQueue'
-import { EternalSafeTransaction } from '@/store/addedTxsSlice'
 
 type TxActions = {
-  signTx: (safeTx?: EternalSafeTransaction, txId?: string, origin?: string) => Promise<string>
+  signTx: (safeTx?: SafeTransaction, txId?: string, origin?: string) => Promise<string>
   executeTx: (
     txOptions: TransactionOptions,
-    safeTx?: EternalSafeTransaction,
+    safeTx?: SafeTransaction,
     txId?: string,
     origin?: string,
   ) => Promise<string>
@@ -53,11 +52,7 @@ export const useTxActions = (): TxActions => {
      * Propose a transaction
      * If txId is passed, it's an existing tx being signed
      */
-    const proposeTx = async (
-      sender: string,
-      safeTx: EternalSafeTransaction,
-      txId?: string,
-    ): Promise<TransactionDetails> => {
+    const proposeTx = async (sender: string, safeTx: SafeTransaction, txId?: string): Promise<TransactionDetails> => {
       const txKey = await addOrUpdateTx(safeTx)
       if (!txKey) throw new Error('Failed to propose tx')
 

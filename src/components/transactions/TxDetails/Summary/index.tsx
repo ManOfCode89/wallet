@@ -9,7 +9,6 @@ import { dateString } from '@/utils/formatters'
 import css from './styles.module.css'
 import type { SafeTransaction } from '@safe-global/safe-core-sdk-types'
 import SafeTxGasForm from '../SafeTxGasForm'
-import useChainId from '@/hooks/useChainId'
 
 interface Props {
   txDetails: TransactionDetails

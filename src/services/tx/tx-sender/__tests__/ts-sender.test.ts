@@ -1,26 +1,38 @@
 import { setSafeSDK } from '@/hooks/coreSDK/safeCoreSDK'
 import type Safe from '@safe-global/safe-core-sdk'
-import type { TransactionResult } from '@safe-global/safe-core-sdk-types'
+import type { SafeTransactionDataPartial, TransactionResult } from '@safe-global/safe-core-sdk-types'
 import {
-  type TransactionDetails,
   TransactionInfoType,
   TransactionStatus,
+  DetailedExecutionInfoType,
 } from '@safe-global/safe-gateway-typescript-sdk'
 import extractTxInfo from '../../extractTxInfo'
 import * as txEvents from '../../txEvents'
-import { createTx, createExistingTx, createRejectTx, dispatchTxExecution, dispatchTxSigning } from '..'
+import {
+  createTx as createTxLibrary,
+  createExistingTx,
+  createRejectTx,
+  dispatchTxExecution,
+  dispatchTxSigning,
+} from '..'
 import { ErrorCode } from '@ethersproject/logger'
 import { waitFor } from '@/tests/test-utils'
 
 import type { EIP1193Provider, OnboardAPI, WalletState, AppState } from '@web3-onboard/core'
 import { hexZeroPad } from 'ethers/lib/utils'
 import { addressEx } from '@/utils/addresses'
+import type { EternalSafeTransaction } from '@/store/addedTxsSlice'
+import type { TransactionDetails } from '@/utils/transaction-guards'
 
 // Mock getTransactionDetails
 jest.mock('@safe-global/safe-gateway-typescript-sdk', () => ({
   postSafeGasEstimation: jest.fn(() => Promise.resolve({ safeTxGas: 60000, recommendedNonce: 17 })),
   Operation: {
     CALL: 0,
+  },
+  DetailedExecutionInfoType: {
+    MULTISIG: 0,
+    MODULE: 1,
   },
   TransactionStatus: {
     AWAITING_CONFIRMATIONS: 0,
@@ -101,6 +113,24 @@ const mockTxDetails: TransactionDetails = {
     value: '0',
     isCancellation: false,
   },
+  detailedExecutionInfo: {
+    type: DetailedExecutionInfoType.MULTISIG,
+    submittedAt: 0,
+    nonce: 0,
+    safeTxGas: '0',
+    baseGas: '0',
+    gasPrice: '0',
+    gasToken: '',
+    refundReceiver: addressEx('0x'),
+    safeTxHash: '',
+    executor: addressEx('0x'),
+    signers: [],
+    confirmationsRequired: 0,
+    confirmations: [],
+    rejectors: [],
+    gasTokenInfo: undefined,
+    trusted: true,
+  },
 }
 
 // Mock Safe SDK
@@ -115,7 +145,7 @@ const mockSafeSDK = {
   createRejectionTransaction: jest.fn(() => ({
     addSignature: jest.fn(),
   })),
-  signTransaction: jest.fn(),
+  signTransaction: jest.fn(() => Promise.resolve({})),
   executeTransaction: jest.fn(() =>
     Promise.resolve({
       transactionResponse: {
@@ -129,6 +159,12 @@ const mockSafeSDK = {
   getTransactionHash: jest.fn(() => Promise.resolve('0x1234567890')),
   getContractVersion: jest.fn(() => Promise.resolve('1.1.1')),
 } as unknown as Safe
+
+async function createTx(txParams: SafeTransactionDataPartial, nonce?: number) {
+  const tx = (await createTxLibrary(txParams, nonce)) as EternalSafeTransaction
+  tx.timestamp = 1234567890
+  return tx
+}
 
 describe('txSender', () => {
   beforeAll(() => {

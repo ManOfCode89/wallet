@@ -16,7 +16,6 @@ import { transactionKey } from './txMagicLink'
 import { addressEx } from '@/utils/addresses'
 import type { Custom, MultisigExecutionDetails, TransactionData } from '@safe-global/safe-apps-sdk'
 import { ethers } from 'ethers'
-import { getSafeABI } from '@/utils/safe-versions'
 import { EternalSafeTransaction } from '@/store/addedTxsSlice'
 
 const ZERO_ADDRESS: string = '0x0000000000000000000000000000000000000000'
@@ -124,7 +123,7 @@ export default extractTxInfo
  */
 export const extractTxDetails = async (
   safeAddress: string,
-  safeTx: EternalSafeTransaction,
+  safeTx: EternalSafeTransaction | SafeTransaction,
   safe: SafeInfo,
   txId?: string,
 ): Promise<TransactionDetails> => {
@@ -157,7 +156,7 @@ export const extractTxDetails = async (
 
   const detailedExecutionInfo: MultisigExecutionDetails = {
     type: DetailedExecutionInfoType.MULTISIG,
-    submittedAt: safeTx.timestamp,
+    submittedAt: safeTx instanceof EternalSafeTransaction ? safeTx.timestamp : Date.now(),
     nonce: safeTx.data.nonce,
     safeTxGas: safeTx.data.safeTxGas?.toString() ?? '0',
     baseGas: safeTx.data.baseGas?.toString() ?? '0',

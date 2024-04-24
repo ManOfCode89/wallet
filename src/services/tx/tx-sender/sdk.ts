@@ -136,16 +136,18 @@ export const getSupportedSigningMethods = (safeVersion: SafeInfo['version']): Si
 }
 
 export const tryOffChainTxSigning = async (
-  safeTx: EternalSafeTransaction,
+  safeTx: EternalSafeTransaction | SafeTransaction,
   safeVersion: SafeInfo['version'],
   sdk: Safe,
-): Promise<EternalSafeTransaction> => {
+): Promise<EternalSafeTransaction | SafeTransaction> => {
   const signingMethods = getSupportedSigningMethods(safeVersion)
 
   for await (const [i, signingMethod] of signingMethods.entries()) {
     try {
-      let signedTx = (await sdk.signTransaction(safeTx, signingMethod)) as EternalSafeTransaction
-      signedTx.timestamp = safeTx.timestamp
+      let signedTx = await sdk.signTransaction(safeTx, signingMethod)
+      if (safeTx instanceof EternalSafeTransaction) {
+        ;(signedTx as EternalSafeTransaction).timestamp = safeTx.timestamp
+      }
       return signedTx
     } catch (error) {
       const isLastSigningMethod = i === signingMethods.length - 1

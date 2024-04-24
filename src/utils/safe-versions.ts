@@ -15,7 +15,6 @@ import {
   Safe_l2__factory as Safe_l2__factory141,
   Safe__factory as Safe__factory141,
 } from '@/types/contracts/factories/@safe-global/safe-deployments/dist/assets/v1.4.1'
-import type Safe from '@safe-global/safe-core-sdk'
 
 // Note: backend returns `SafeInfo['version']` as `null` for unsupported contracts
 export const hasSafeFeature = (feature: SAFE_FEATURES, version: SafeInfo['version']): boolean => {

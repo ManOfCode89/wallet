@@ -29,10 +29,13 @@
     "node": ">=16"
   },
   "resolutions": {
+    "@solana/web3.js": "^1.87.7",
     "@walletconnect/core": "^2.10.6",
     "@walletconnect/ethereum-provider": "^2.10.6",
     "@walletconnect/utils": "^2.10.6",
-    "@web3-onboard/trezor/**/protobufjs": "^7.2.4"
+    "@web3-onboard/trezor/**/protobufjs": "^7.2.4",
+    "crypto-es": "^2.1.0",
+    "crypto-js": "^4.2.0"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^9.7.1",
