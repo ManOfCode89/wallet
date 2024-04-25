@@ -1,12 +1,8 @@
 export const AppRoutes = {
   '404': '/404',
   _offline: '/_offline',
-  terms: '/terms',
-  privacy: '/privacy',
-  licenses: '/licenses',
   index: '/',
   imprint: '/imprint',
-  cookie: '/cookie',
   addressBook: '/address-book',
   addOwner: '/addOwner',
   balances: {

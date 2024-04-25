@@ -5,10 +5,10 @@ This served as a working todo list for the scope of the [wave 1 grant](https://a
 ### Todo
 
 - [ ] Update `docs/`
-- [ ] Update terms and other imprint
 
 ### Done ✓
 
+- [x] Update terms and other imprint
 - [x] Remove all uses of Safe Gateway SDK, leaving only type usage
 - [x] Replace Safe branded assets in public/
 - [x] Send NFTs

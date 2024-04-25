@@ -10,15 +10,7 @@ import ExternalLink from '../ExternalLink'
 import MUILink from '@mui/material/Link'
 import { REPO_DISCUSSIONS_URL } from '@/config/constants'
 
-const footerPages = [
-  AppRoutes.welcome.index,
-  AppRoutes.settings.index,
-  AppRoutes.imprint,
-  AppRoutes.privacy,
-  AppRoutes.cookie,
-  AppRoutes.terms,
-  AppRoutes.licenses,
-]
+const footerPages = [AppRoutes.welcome.index, AppRoutes.settings.index, AppRoutes.imprint]
 
 const FooterLink = ({ children, href }: { children: ReactNode; href: string }): ReactElement => {
   return href ? (
@@ -48,13 +40,7 @@ const Footer = (): ReactElement | null => {
           <Typography variant="caption">Eternal Safe</Typography>
         </li>
         <li>
-          <FooterLink href={getHref(AppRoutes.terms)}>Terms</FooterLink>
-        </li>
-        <li>
-          <FooterLink href={getHref(AppRoutes.privacy)}>Privacy</FooterLink>
-        </li>
-        <li>
-          <FooterLink href={getHref(AppRoutes.licenses)}>Licenses</FooterLink>
+          <FooterLink href={getHref(AppRoutes.imprint)}>Imprint</FooterLink>
         </li>
         <li>
           <FooterLink href={getHref(AppRoutes.settings.index)}>Preferences</FooterLink>

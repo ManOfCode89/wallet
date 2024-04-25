@@ -66,9 +66,6 @@ export const RECOVERY_FEEDBACK_FORM =
 export const DISCORD_URL = 'https://chat.safe.global'
 export const TWITTER_URL = 'https://twitter.com/safe'
 
-// Legal
-export const IS_OFFICIAL_HOST = process.env.NEXT_PUBLIC_IS_OFFICIAL_HOST === 'true'
-
 // Eternal Safe
 export const REPO_URL = 'https://github.com/eternalsafe/wallet'
 export const REPO_DISCUSSIONS_URL = `${REPO_URL}/discussions/10`

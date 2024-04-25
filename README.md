@@ -23,15 +23,14 @@ Create a `.env` file with environment variables. You can use the `.env.example` 
 
 Here's the list of all the environment variables:
 
-| Env variable                                 | Description                                                                                                                                                             |
-| -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_IS_PRODUCTION`                  | Set to `true` to build a minified production app                                                                                                                        |
-| `NEXT_PUBLIC_SAFE_VERSION`                   | The latest version of the Safe contract, defaults to 1.3.0                                                                                                              |
-| `NEXT_PUBLIC_WC_PROJECT_ID`                  | [WalletConnect v2](https://docs.walletconnect.com/2.0/cloud/relay) project ID                                                                                           |
-| `NEXT_PUBLIC_TENDERLY_ORG_NAME`              | [Tenderly](https://tenderly.co) org name for Transaction Simulation                                                                                                     |
-| `NEXT_PUBLIC_TENDERLY_PROJECT_NAME`          | Tenderly project name                                                                                                                                                   |
-| `NEXT_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL` | Tenderly simulation URL                                                                                                                                                 |
-| `NEXT_PUBLIC_IS_OFFICIAL_HOST`               | Whether it's the official distribution of the app, or a fork; has legal implications. Set to true only if you also update the legal pages like Imprint and Terms of use |
+| Env variable                                 | Description                                                                   |
+| -------------------------------------------- | ----------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_IS_PRODUCTION`                  | Set to `true` to build a minified production app                              |
+| `NEXT_PUBLIC_SAFE_VERSION`                   | The latest version of the Safe contract, defaults to 1.3.0                    |
+| `NEXT_PUBLIC_WC_PROJECT_ID`                  | [WalletConnect v2](https://docs.walletconnect.com/2.0/cloud/relay) project ID |
+| `NEXT_PUBLIC_TENDERLY_ORG_NAME`              | [Tenderly](https://tenderly.co) org name for Transaction Simulation           |
+| `NEXT_PUBLIC_TENDERLY_PROJECT_NAME`          | Tenderly project name                                                         |
+| `NEXT_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL` | Tenderly simulation URL                                                       |
 
 If you don't provide some of the variables, the corresponding features will be disabled in the UI.
 
