@@ -8,7 +8,6 @@ import {
   getReadOnlyMultiSendCallOnlyContract,
   getReadOnlyCurrentGnosisSafeContract,
 } from '@/services/contracts/safeContracts'
-import { TENDERLY_SIMULATE_ENDPOINT_URL, TENDERLY_ORG_NAME, TENDERLY_PROJECT_NAME } from '@/config/constants'
 import { FEATURES, hasFeature } from '@/utils/chains'
 import type { StateObject, TenderlySimulatePayload, TenderlySimulation } from '@/components/tx/security/tenderly/types'
 import { getWeb3ReadOnly } from '@/hooks/wallets/web3'
@@ -21,32 +20,28 @@ export const isTxSimulationEnabled = (chain?: ChainInfo): boolean => {
     return false
   }
 
-  const isSimulationEnvSet =
-    Boolean(TENDERLY_SIMULATE_ENDPOINT_URL) && Boolean(TENDERLY_ORG_NAME) && Boolean(TENDERLY_PROJECT_NAME)
-
-  return isSimulationEnvSet && hasFeature(chain, FEATURES.TX_SIMULATION)
+  return hasFeature(chain, FEATURES.TX_SIMULATION)
 }
 
 export const getSimulation = async (
   tx: TenderlySimulatePayload,
-  customTenderly: EnvState['tenderly'] | undefined,
+  customTenderly: EnvState['tenderly'],
 ): Promise<TenderlySimulation> => {
   const requestObject: RequestInit = {
     method: 'POST',
     body: JSON.stringify(tx),
   }
 
-  if (customTenderly?.accessToken) {
-    requestObject.headers = {
-      'content-type': 'application/JSON',
-      'X-Access-Key': customTenderly.accessToken,
-    }
+  if (!customTenderly?.accessToken || !customTenderly?.orgName || !customTenderly?.projectName) {
+    throw new Error('Tenderly not configured, please configure it in the settings.')
   }
 
-  const data = await fetch(
-    customTenderly?.url ? customTenderly.url : TENDERLY_SIMULATE_ENDPOINT_URL,
-    requestObject,
-  ).then((res) => {
+  requestObject.headers = {
+    'content-type': 'application/JSON',
+    'X-Access-Key': customTenderly.accessToken,
+  }
+
+  const data = await fetch(getAPILink(customTenderly), requestObject).then((res) => {
     if (res.ok) {
       return res.json()
     }
@@ -58,8 +53,12 @@ export const getSimulation = async (
   return data as TenderlySimulation
 }
 
-export const getSimulationLink = (simulationId: string): string => {
-  return `https://dashboard.tenderly.co/public/${TENDERLY_ORG_NAME}/${TENDERLY_PROJECT_NAME}/simulator/${simulationId}`
+export const getAPILink = (customTenderly: EnvState['tenderly']): string => {
+  return `https://api.tenderly.co/api/v1/account/${customTenderly.orgName}/project/${customTenderly.projectName}/simulate`
+}
+
+export const getSimulationLink = (simulationId: string, customTenderly: EnvState['tenderly']): string => {
+  return `https://dashboard.tenderly.co/public/${customTenderly.orgName}/${customTenderly.projectName}/simulator/${simulationId}`
 }
 
 type SingleTransactionSimulationParams = {

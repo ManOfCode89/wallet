@@ -4,23 +4,27 @@ import InputAdornment from '@mui/material/InputAdornment'
 import RotateLeftIcon from '@mui/icons-material/RotateLeft'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { selectSettings, setIPFS, setRpc, setTenderly } from '@/store/settingsSlice'
-import { CHAINLIST_URL, TENDERLY_SIMULATE_ENDPOINT_URL } from '@/config/constants'
+import { CHAINLIST_URL } from '@/config/constants'
 import useChainId from '@/hooks/useChainId'
 import { useCurrentChain } from '@/hooks/useChains'
 import InfoIcon from '@/public/images/notifications/info.svg'
 import ExternalLink from '@/components/common/ExternalLink'
+import ErrorMessage from '@/components/tx/ErrorMessage'
+import { useEffect, useState } from 'react'
 
 export enum EnvVariablesField {
   rpc = 'rpc',
   ipfs = 'ipfs',
-  tenderlyURL = 'tenderlyURL',
+  tenderlyOrgName = 'tenderlyOrgName',
+  tenderlyProjectName = 'tenderlyProjectName',
   tenderlyToken = 'tenderlyToken',
 }
 
 export type EnvVariablesFormData = {
   [EnvVariablesField.rpc]: string
   [EnvVariablesField.ipfs]: string
-  [EnvVariablesField.tenderlyURL]: string
+  [EnvVariablesField.tenderlyOrgName]: string
+  [EnvVariablesField.tenderlyProjectName]: string
   [EnvVariablesField.tenderlyToken]: string
 }
 
@@ -35,7 +39,8 @@ const EnvironmentVariables = () => {
     values: {
       [EnvVariablesField.rpc]: settings.env?.rpc[chainId] ?? chain?.publicRpcUri.value ?? '',
       [EnvVariablesField.ipfs]: settings.env?.ipfs ?? '',
-      [EnvVariablesField.tenderlyURL]: settings.env?.tenderly.url ?? '',
+      [EnvVariablesField.tenderlyOrgName]: settings.env?.tenderly.orgName ?? '',
+      [EnvVariablesField.tenderlyProjectName]: settings.env?.tenderly.projectName ?? '',
       [EnvVariablesField.tenderlyToken]: settings.env?.tenderly.accessToken ?? '',
     },
   })
@@ -43,8 +48,22 @@ const EnvironmentVariables = () => {
   const { register, handleSubmit, formState, setValue, watch } = formMethods
 
   const rpc = watch(EnvVariablesField.rpc)
-  const tenderlyURL = watch(EnvVariablesField.tenderlyURL)
+  const ipfs = watch(EnvVariablesField.ipfs)
+  const tenderlyOrgName = watch(EnvVariablesField.tenderlyOrgName)
+  const tenderlyProjectName = watch(EnvVariablesField.tenderlyProjectName)
   const tenderlyToken = watch(EnvVariablesField.tenderlyToken)
+
+  const [tenderlyPartial, setTenderlyPartial] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!!tenderlyOrgName && !!tenderlyProjectName && !!tenderlyToken) {
+      setTenderlyPartial(false)
+    } else if (!!tenderlyOrgName || !!tenderlyProjectName || !!tenderlyToken) {
+      setTenderlyPartial(true)
+    } else {
+      setTenderlyPartial(false)
+    }
+  }, [tenderlyOrgName, tenderlyProjectName, tenderlyToken])
 
   const onSubmit = handleSubmit((data) => {
     dispatch(
@@ -62,7 +81,8 @@ const EnvironmentVariables = () => {
 
     dispatch(
       setTenderly({
-        url: data[EnvVariablesField.tenderlyURL],
+        orgName: data[EnvVariablesField.tenderlyOrgName],
+        projectName: data[EnvVariablesField.tenderlyProjectName],
         accessToken: data[EnvVariablesField.tenderlyToken],
       }),
     )
@@ -71,7 +91,7 @@ const EnvironmentVariables = () => {
   })
 
   const onReset = (name: EnvVariablesField) => {
-    setValue(name, '')
+    setValue(name, '', { shouldValidate: true })
   }
 
   return (
@@ -95,7 +115,10 @@ const EnvironmentVariables = () => {
                   arrow
                   title={
                     <Box alignItems="center" gap={1} padding={1}>
-                      <span>Any provider that implements the Ethereum JSON-RPC standard can be used.</span>
+                      <span>
+                        Any provider that implements the Ethereum JSON-RPC standard can be used. We recommend using a
+                        private node for best performance.
+                      </span>
                       <br />
                       <br />
                       <span>
@@ -178,7 +201,7 @@ const EnvironmentVariables = () => {
                 variant="outlined"
                 type="url"
                 InputProps={{
-                  endAdornment: rpc ? null : (
+                  endAdornment: ipfs ? (
                     <InputAdornment position="end">
                       <Tooltip title="Reset to default value">
                         <IconButton onClick={() => onReset(EnvVariablesField.ipfs)} size="small" color="primary">
@@ -186,13 +209,12 @@ const EnvironmentVariables = () => {
                         </IconButton>
                       </Tooltip>
                     </InputAdornment>
-                  ),
+                  ) : null,
                 }}
                 fullWidth
               />
 
-              {/* TODO(devanon): Consider tenderly */}
-              <Typography fontWeight={700} mb={2} mt={3}>
+              <Typography fontWeight={700} mt={3}>
                 Tenderly
                 <Tooltip
                   placement="top"
@@ -219,25 +241,53 @@ const EnvironmentVariables = () => {
                     />
                   </span>
                 </Tooltip>
+                {tenderlyPartial && (
+                  <ErrorMessage>Either all Tenderly fields must be filled or none at all.</ErrorMessage>
+                )}
               </Typography>
 
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
+              <Grid mt={2} container spacing={2}>
+                <Grid item xs={12} md={3}>
                   <TextField
-                    {...register(EnvVariablesField.tenderlyURL)}
-                    type="url"
+                    {...register(EnvVariablesField.tenderlyOrgName, { required: tenderlyPartial })}
                     variant="outlined"
-                    label="Tenderly API URL"
-                    placeholder={TENDERLY_SIMULATE_ENDPOINT_URL}
+                    label="Tenderly organization name"
                     InputLabelProps={{
                       shrink: true,
                     }}
                     InputProps={{
-                      endAdornment: tenderlyURL ? (
+                      endAdornment: tenderlyOrgName ? (
                         <InputAdornment position="end">
                           <Tooltip title="Reset to default value">
                             <IconButton
-                              onClick={() => onReset(EnvVariablesField.tenderlyURL)}
+                              onClick={() => onReset(EnvVariablesField.tenderlyOrgName)}
+                              size="small"
+                              color="primary"
+                            >
+                              <RotateLeftIcon />
+                            </IconButton>
+                          </Tooltip>
+                        </InputAdornment>
+                      ) : null,
+                    }}
+                    fullWidth
+                  />
+                </Grid>
+
+                <Grid item xs={12} md={3}>
+                  <TextField
+                    {...register(EnvVariablesField.tenderlyProjectName, { required: tenderlyPartial })}
+                    variant="outlined"
+                    label="Tenderly project name"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    InputProps={{
+                      endAdornment: tenderlyProjectName ? (
+                        <InputAdornment position="end">
+                          <Tooltip title="Reset to default value">
+                            <IconButton
+                              onClick={() => onReset(EnvVariablesField.tenderlyProjectName)}
                               size="small"
                               color="primary"
                             >
@@ -253,7 +303,7 @@ const EnvironmentVariables = () => {
 
                 <Grid item xs={12} md={6}>
                   <TextField
-                    {...register(EnvVariablesField.tenderlyToken)}
+                    {...register(EnvVariablesField.tenderlyToken, { required: tenderlyPartial })}
                     variant="outlined"
                     label="Tenderly access token"
                     InputLabelProps={{

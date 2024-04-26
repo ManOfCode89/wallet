@@ -1,4 +1,4 @@
-import { Alert, Button, Paper, SvgIcon, Tooltip, Typography } from '@mui/material'
+import { Alert, Button, Paper, SvgIcon, Link as MuiLink, Tooltip, Typography } from '@mui/material'
 import { useContext, useEffect } from 'react'
 import type { ReactElement } from 'react'
 
@@ -18,6 +18,12 @@ import sharedCss from '@/components/tx/security/shared/styles.module.css'
 import { TxInfoContext } from '@/components/tx-flow/TxInfoProvider'
 import { SafeTxContext } from '@/components/tx-flow/SafeTxProvider'
 import InfoIcon from '@/public/images/notifications/info.svg'
+import { useAppSelector } from '@/store'
+import { selectTenderly } from '@/store/settingsSlice'
+import { AppRoutes } from '@/config/routes'
+import ErrorMessage from '@/components/tx/ErrorMessage'
+import { useRouter } from 'next/router'
+import Link from 'next/link'
 
 export type TxSimulationProps = {
   transactions?: SimulationTxParams['transactions']
@@ -129,9 +135,24 @@ const TxSimulationBlock = ({ transactions, disabled, gasLimit, executionOwner }:
 
 export const TxSimulation = (props: TxSimulationProps): ReactElement | null => {
   const chain = useCurrentChain()
+  const tenderly = useAppSelector(selectTenderly)
+  const router = useRouter()
 
   if (!chain || !isTxSimulationEnabled(chain)) {
     return null
+  }
+
+  if (!tenderly?.accessToken && !tenderly?.orgName && !tenderly?.projectName) {
+    return (
+      <ErrorMessage level="info">
+        <Typography fontWeight="bold">Tenderly not configured</Typography>
+        You can connect your Tenderly account to Eternal Safe in order to simulate transactions.{' '}
+        <Link href={{ pathname: AppRoutes.settings.environmentVariables, query: router.query }} legacyBehavior passHref>
+          <MuiLink>Configure Tenderly</MuiLink>
+        </Link>
+        .
+      </ErrorMessage>
+    )
   }
 
   return <TxSimulationBlock {...props} />

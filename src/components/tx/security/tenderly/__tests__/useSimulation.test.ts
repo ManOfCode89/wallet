@@ -4,6 +4,7 @@ import { act, renderHook, waitFor } from '@/tests/test-utils'
 import { useSimulation } from '@/components/tx/security/tenderly/useSimulation'
 import * as utils from '@/components/tx/security/tenderly/utils'
 import { FETCH_STATUS, type TenderlySimulation } from '@/components/tx/security/tenderly/types'
+import * as store from '@/store'
 
 const setupFetchStub = (data: any) => (_url: string) => {
   return Promise.resolve({
@@ -26,6 +27,20 @@ describe('useSimulation()', () => {
 
   beforeEach(() => {
     jest.resetAllMocks()
+
+    jest.spyOn(store, 'useAppSelector').mockImplementation((selector) =>
+      selector({
+        settings: {
+          env: {
+            tenderly: {
+              orgName: 'myorg',
+              projectName: 'myproj',
+              accessToken: 'test123',
+            },
+          },
+        },
+      } as store.RootState),
+    )
   })
 
   it('should have the correct initial values', () => {

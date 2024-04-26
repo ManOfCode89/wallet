@@ -6,7 +6,8 @@ import type { RootState } from '@/store'
 
 export type EnvState = {
   tenderly: {
-    url: string
+    orgName: string
+    projectName: string
     accessToken: string
   }
   rpc: {
@@ -54,7 +55,8 @@ export const initialState: SettingsState = {
   env: {
     rpc: {},
     tenderly: {
-      url: '',
+      orgName: '',
+      projectName: '',
       accessToken: '',
     },
     ipfs: '',

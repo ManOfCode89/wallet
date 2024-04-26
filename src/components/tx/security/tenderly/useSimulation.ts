@@ -31,7 +31,10 @@ export const useSimulation = (): UseSimulationReturn => {
   const [requestError, setRequestError] = useState<string | undefined>(undefined)
   const tenderly = useAppSelector(selectTenderly)
 
-  const simulationLink = useMemo(() => getSimulationLink(simulation?.simulation.id || ''), [simulation])
+  const simulationLink = useMemo(
+    () => getSimulationLink(simulation?.simulation.id || '', tenderly),
+    [simulation, tenderly],
+  )
 
   const resetSimulation = useCallback(() => {
     setSimulationRequestStatus(FETCH_STATUS.NOT_ASKED)
@@ -43,6 +46,12 @@ export const useSimulation = (): UseSimulationReturn => {
     async (params: SimulationTxParams) => {
       setSimulationRequestStatus(FETCH_STATUS.LOADING)
       setRequestError(undefined)
+
+      if (!tenderly?.accessToken || !tenderly?.orgName || !tenderly?.projectName) {
+        setRequestError('Tenderly not configured, please configure it in the settings.')
+        setSimulationRequestStatus(FETCH_STATUS.ERROR)
+        return
+      }
 
       try {
         const simulationPayload = await getSimulationPayload(params)

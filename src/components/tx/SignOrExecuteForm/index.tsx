@@ -87,7 +87,6 @@ export const SignOrExecuteForm = ({
         />
       </TxCard>
 
-      {/* TODO(devanon): If Tenderly settings not set, show a message here */}
       <TxCard>
         <TxChecks />
       </TxCard>

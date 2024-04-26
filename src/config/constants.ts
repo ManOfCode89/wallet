@@ -19,11 +19,6 @@ export const SAFE_TOKEN_ADDRESSES: { [chainId: string]: string } = {
   [chains.eth]: '0x5aFE3855358E112B5647B952709E6165e1c1eEEe',
 }
 
-// Tenderly - API docs: https://www.notion.so/Simulate-API-Documentation-6f7009fe6d1a48c999ffeb7941efc104
-export const TENDERLY_SIMULATE_ENDPOINT_URL = process.env.NEXT_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL || ''
-export const TENDERLY_PROJECT_NAME = process.env.NEXT_PUBLIC_TENDERLY_PROJECT_NAME || ''
-export const TENDERLY_ORG_NAME = process.env.NEXT_PUBLIC_TENDERLY_ORG_NAME || ''
-
 // Safe Apps tags
 export enum SafeAppsTag {
   NFT = 'nft',

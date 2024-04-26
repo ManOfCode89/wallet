@@ -33,14 +33,15 @@ describe('settingsSlice', () => {
   })
 
   describe('setTenderly', () => {
-    it('should set the Tenderly URL and access token', () => {
+    it('should set the Tenderly orgname, project name and access token', () => {
       const state = settingsSlice.reducer(
         undefined,
-        settingsSlice.actions.setTenderly({ url: 'https://example.com', accessToken: 'test123' }),
+        settingsSlice.actions.setTenderly({ orgName: 'myorg', projectName: 'myproj', accessToken: 'test123' }),
       )
 
       expect(state.env.tenderly).toEqual({
-        url: 'https://example.com',
+        orgName: 'myorg',
+        projectName: 'myproj',
         accessToken: 'test123',
       })
     })
@@ -49,16 +50,21 @@ describe('settingsSlice', () => {
       const initialState = {
         env: {
           tenderly: {
-            url: '',
+            orgName: '',
+            projectName: '',
             accessToken: '',
           },
         },
       } as unknown as SettingsState
 
-      const state = settingsSlice.reducer(initialState, settingsSlice.actions.setTenderly({ url: '', accessToken: '' }))
+      const state = settingsSlice.reducer(
+        initialState,
+        settingsSlice.actions.setTenderly({ orgName: '', projectName: '', accessToken: '' }),
+      )
 
       expect(state.env.tenderly).toEqual({
-        url: '',
+        orgName: '',
+        projectName: '',
         accessToken: '',
       })
     })
