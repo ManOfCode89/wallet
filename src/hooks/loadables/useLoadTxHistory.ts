@@ -8,6 +8,8 @@ import { useMultiWeb3ReadOnly } from '@/hooks/wallets/web3'
 import { useAppDispatch } from '@/store'
 import { showNotification } from '@/store/notificationsSlice'
 import { getSafeContract } from '@/utils/safe-versions'
+import type { SafeTransactionData } from '@safe-global/safe-core-sdk-types'
+import type { Result } from 'ethers/lib/utils'
 
 export type TxHistoryItem = {
   txId: string
@@ -15,10 +17,27 @@ export type TxHistoryItem = {
   safeTxHash: string
   timestamp: number
   executor: string
+  decodedTxData?: SafeTransactionData
 }
 
 export type TxHistory = {
   [txId: string]: TxHistoryItem
+}
+
+function parseDecodedTxData(decodedTxData: Result, nonce: number): SafeTransactionData {
+  const [to, value, data, operation, safeTxGas, baseGas, gasPrice, gasToken, refundReceiver] = decodedTxData
+  return {
+    to,
+    value,
+    data,
+    operation,
+    safeTxGas,
+    baseGas,
+    gasPrice,
+    gasToken,
+    refundReceiver,
+    nonce,
+  }
 }
 
 export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
@@ -39,10 +58,20 @@ export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
       const logs = await safeContract.queryFilter(safeContract.filters.ExecutionSuccess(), 0, 'latest')
 
       let txs = await Promise.all(
-        logs.map(async (log) => {
-          const [timestamp, executor] = await Promise.all([
+        logs.map(async (log, i) => {
+          const [timestamp, { executor, decodedTxData }]: [
+            number,
+            { executor: string; decodedTxData: Result | undefined },
+          ] = await Promise.all([
             provider.getBlock(log.blockNumber).then((block) => block.timestamp * 1000),
-            provider.getTransaction(log.transactionHash).then((tx) => tx.from),
+            provider.getTransaction(log.transactionHash).then((tx) => {
+              try {
+                const decodedTxData = safeContract.interface.decodeFunctionData('execTransaction', tx.data)
+                return { executor: tx.from, decodedTxData }
+              } catch (e) {
+                return { executor: tx.from, decodedTxData: undefined }
+              }
+            }),
           ])
 
           return {
@@ -51,6 +80,7 @@ export const useLoadTxHistory = (): AsyncResult<TxHistory> => {
             safeTxHash: log.args.txHash,
             timestamp,
             executor,
+            decodedTxData: decodedTxData ? parseDecodedTxData(decodedTxData, i) : undefined,
           }
         }),
       )

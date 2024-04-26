@@ -24,7 +24,7 @@ const Summary = ({ txDetails, defaultExpanded = false }: Props): ReactElement =>
 
   const { txHash, detailedExecutionInfo, executedAt, txData } = txDetails
 
-  let confirmations, safeTxHash: string | undefined, baseGas, gasPrice, gasToken, refundReceiver, safeTxGas, submittedAt
+  let confirmations, safeTxHash, baseGas, gasPrice, gasToken, refundReceiver, safeTxGas, submittedAt
   if (isMultisigDetailedExecutionInfo(detailedExecutionInfo)) {
     ;({ confirmations, safeTxHash, baseGas, gasPrice, gasToken, safeTxGas, submittedAt } = detailedExecutionInfo)
     refundReceiver = detailedExecutionInfo.refundReceiver?.value
@@ -33,17 +33,17 @@ const Summary = ({ txDetails, defaultExpanded = false }: Props): ReactElement =>
   return (
     <>
       <TxDataRow datatestid="tx-hash" title="Transaction hash:">
-        {generateDataRowValue(txHash, 'hash', true)}{' '}
+        {generateDataRowValue(txHash, 'hash', true)}
       </TxDataRow>
       <TxDataRow datatestid="tx-safe-hash" title="safeTxHash:">
         {generateDataRowValue(safeTxHash, 'hash')}
       </TxDataRow>
-      {submittedAt && (
+      {!!submittedAt && (
         <TxDataRow datatestid="tx-created-at" title="Created/Imported:">
           {dateString(submittedAt)}
         </TxDataRow>
       )}
-      {executedAt && (
+      {!!executedAt && (
         <TxDataRow datatestid="tx-executed-at" title="Executed:">
           {dateString(executedAt)}
         </TxDataRow>

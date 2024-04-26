@@ -311,7 +311,10 @@ export const enrichTransactionDetailsFromHistory = (details: TransactionDetails,
   details.detailedExecutionInfo.executor = addressEx(executedTx.executor)
 }
 
-export const emptyUnknownTransaction = (executedTx: TxHistoryItem, safeAddress: string): DetailedTransaction => {
+export const partiallyDecodedTransaction = (executedTx: TxHistoryItem, safeAddress: string): DetailedTransaction => {
+  const dataByteLength = executedTx.decodedTxData?.data ? Buffer.byteLength(executedTx.decodedTxData?.data) : 0
+  const dataSize = dataByteLength >= 2 ? Math.floor((dataByteLength - 2) / 2) : 0
+
   return {
     type: TransactionListItemType.TRANSACTION,
     conflictType: ConflictType.NONE,
@@ -321,10 +324,17 @@ export const emptyUnknownTransaction = (executedTx: TxHistoryItem, safeAddress: 
       txStatus: TransactionStatus.SUCCESS,
       txInfo: {
         type: TransactionInfoType.CUSTOM,
-        to: addressEx('0x'),
-        dataSize: '',
-        value: '',
+        to: addressEx(executedTx.decodedTxData?.to ?? '0x'),
+        dataSize: dataSize.toString(),
+        value: executedTx.decodedTxData?.value ?? '0',
         isCancellation: false,
+      },
+      executionInfo: {
+        type: DetailedExecutionInfoType.MULTISIG,
+        nonce: executedTx.decodedTxData?.nonce ?? 0,
+        confirmationsRequired: 0,
+        confirmationsSubmitted: 1,
+        missingSigners: [],
       },
     },
     details: {
@@ -335,20 +345,27 @@ export const emptyUnknownTransaction = (executedTx: TxHistoryItem, safeAddress: 
       txHash: executedTx.txHash,
       txInfo: {
         type: TransactionInfoType.CUSTOM,
-        to: addressEx('0x'),
-        dataSize: '',
-        value: '',
+        to: addressEx(executedTx.decodedTxData?.to ?? '0x'),
+        dataSize: dataSize.toString(),
+        value: executedTx.decodedTxData?.value ?? '0',
         isCancellation: false,
+      },
+      txData: {
+        hexData: executedTx.decodedTxData?.data ?? '',
+        to: addressEx(executedTx.decodedTxData?.to ?? '0x'),
+        value: executedTx.decodedTxData?.value ?? '0',
+        operation: executedTx.decodedTxData?.operation.valueOf() ?? 0,
+        trustedDelegateCallTarget: false,
       },
       detailedExecutionInfo: {
         type: DetailedExecutionInfoType.MULTISIG,
         submittedAt: 0,
-        nonce: 0,
-        safeTxGas: '',
-        baseGas: '',
-        gasPrice: '',
-        gasToken: '',
-        refundReceiver: addressEx('0x'),
+        nonce: executedTx.decodedTxData?.nonce ?? 0,
+        safeTxGas: executedTx.decodedTxData?.safeTxGas.toString() ?? '0',
+        baseGas: executedTx.decodedTxData?.baseGas.toString() ?? '0',
+        gasPrice: executedTx.decodedTxData?.gasPrice.toString() ?? '0',
+        gasToken: executedTx.decodedTxData?.gasToken ?? '',
+        refundReceiver: addressEx(executedTx.decodedTxData?.refundReceiver ?? '0x'),
         safeTxHash: executedTx.safeTxHash,
         signers: [],
         confirmationsRequired: 0,

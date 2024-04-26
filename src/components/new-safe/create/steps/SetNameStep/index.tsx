@@ -98,7 +98,7 @@ function SetNameStep({
             By continuing, you agree to have read and understood the{' '}
             <Link href={AppRoutes.imprint} passHref legacyBehavior>
               <MUILink>legal imprint</MUILink>
-            </Link>{' '}
+            </Link>
             .
           </Typography>
 

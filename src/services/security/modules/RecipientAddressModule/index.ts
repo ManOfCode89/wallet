@@ -52,7 +52,6 @@ export class RecipientAddressModule
 
     try {
       let [sdk, implementation] = await getSafeSDKAndImplementation(provider, address, currentChainId)
-      console.log({ sdk, implementation })
       if (!sdk) {
         throw new Error('Safe SDK not available')
       }

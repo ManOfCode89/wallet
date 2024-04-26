@@ -5,7 +5,7 @@ import { selectAddedTxs } from '@/store/addedTxsSlice'
 import { isEqual } from 'lodash'
 import { extractTxDetails } from '@/services/tx/extractTxInfo'
 import {
-  emptyUnknownTransaction,
+  partiallyDecodedTransaction,
   enrichTransactionDetailsFromHistory,
   getTxKeyFromTxId,
   makeTxFromDetails,
@@ -34,28 +34,29 @@ const useTxHistory = (): {
       }
 
       const results: Array<DetailedTransaction | undefined> = await Promise.all(
-        Object.values(executedTransactions).map(async (executedTx) => {
-          let txKey = getTxKeyFromTxId(executedTx.txId)
-          if (!txKey) return
+        Object.values(executedTransactions)
+          .map(async (executedTx) => {
+            let txKey = getTxKeyFromTxId(executedTx.txId)
+            if (!txKey) return
 
-          const tx = transactions?.[txKey]
+            const tx = transactions?.[txKey]
 
-          if (!tx) {
-            // TODO(devanon): parse info from L2 contract
-            return emptyUnknownTransaction(executedTx, safeAddress)
-          }
+            if (!tx) {
+              return partiallyDecodedTransaction(executedTx, safeAddress)
+            }
 
-          const details = await extractTxDetails(safeAddress, tx, safe)
+            const details = await extractTxDetails(safeAddress, tx, safe)
 
-          enrichTransactionDetailsFromHistory(details, executedTx)
+            enrichTransactionDetailsFromHistory(details, executedTx)
 
-          const transaction = makeTxFromDetails(details)
+            const transaction = makeTxFromDetails(details)
 
-          return {
-            ...transaction,
-            details,
-          }
-        }),
+            return {
+              ...transaction,
+              details,
+            }
+          })
+          .reverse(),
       )
 
       return results.filter(isDetailedTransactionListItem)
