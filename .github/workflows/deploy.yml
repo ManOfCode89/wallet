@@ -1,0 +1,30 @@
+name: Deploy to IPFS
+on:
+  push:
+    tags:
+      - 'v\d+'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        uses: ./.github/workflows/yarn
+
+      - name: Build next.js app
+        uses: ./.github/workflows/build
+        with:
+          secrets: ${{ toJSON(secrets) }}
+          prod: ${{ true }}
+
+      - name: Deploy using web3.storage
+        uses: web3-storage/add-to-web3@v3
+        id: w3up
+        with:
+          path_to_add: 'out'
+          secret_key: ${{ secrets.W3_PRINCIPAL }}
+          proof: ${{ secrets.W3_PROOF }}
+
+      - run: echo ${{ steps.w3up.outputs.cid }}
