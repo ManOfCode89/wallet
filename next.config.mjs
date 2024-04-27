@@ -17,7 +17,6 @@ const withPWA = withPWAInit({
 const nextConfig = {
   output: 'export', // static site export
 
-  assetPrefix: './', // IPFS support
   trailingSlash: true, // IPFS support
 
   images: {

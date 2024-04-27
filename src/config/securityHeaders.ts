@@ -11,7 +11,7 @@ import { IS_PRODUCTION } from '@/config/constants'
 export const ContentSecurityPolicy = `
  default-src 'self';
  connect-src 'self' *;
- script-src 'self' 'unsafe-inline' ${!IS_PRODUCTION ? "'unsafe-eval'" : "'wasm-unsafe-eval'"};
+ script-src 'self' ${!IS_PRODUCTION ? "'unsafe-eval'" : "'wasm-unsafe-eval'"};
  frame-src *;
  style-src 'self' 'unsafe-inline';
  font-src 'self' data:;

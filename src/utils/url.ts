@@ -1,3 +1,5 @@
+import { resolve } from 'url'
+
 const trimTrailingSlash = (url: string): string => {
   return url.replace(/\/$/, '')
 }
@@ -34,4 +36,10 @@ const sanitizeUrl = (url: string): string => {
   return sanitizedUrl
 }
 
-export { trimTrailingSlash, isSameUrl, sanitizeUrl, isRelativeUrl }
+const relativeURI = (uri: string): string => {
+  if (uri.startsWith('/')) uri = '.' + uri
+
+  return resolve(document.baseURI, uri)
+}
+
+export { trimTrailingSlash, isSameUrl, sanitizeUrl, isRelativeUrl, relativeURI }
