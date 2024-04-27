@@ -7,11 +7,24 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 import createEmotionServer from '@emotion/server/create-instance'
 import createEmotionCache from '@/utils/createEmotionCache'
 
+const scriptTxt = `
+(function () {
+  const subPath = window.location.pathname.replace('index.html', '').replace(/\/$/, '')
+  if (subPath) {
+    const baseElement = document.createElement('base')
+    baseElement.setAttribute('href', ${'`${subPath}/`'})
+    document.head.appendChild(baseElement)
+  }
+})();
+`
+
 export default class WebCoreDocument extends Document {
   render() {
     return (
       <Html lang="en">
         <Head>
+          <script dangerouslySetInnerHTML={{ __html: scriptTxt }} />
+          <style dangerouslySetInnerHTML={{ __html: '@import url(./fonts/fonts.css);' }} />
           <meta name="emotion-insertion-point" content="" />
           {(this.props as any).emotionStyleTags}
         </Head>
