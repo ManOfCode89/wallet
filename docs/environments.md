@@ -25,5 +25,5 @@ Any feature which is in the issue list will be developed as follows:
 1. All merged branches sit on `eternal-safe`, which is occasionally reviewed on the [staging site](https://eternalsafe.vercel.app).
 2. In case some regression is noticed, it's fixed.
 3. Once a sufficient amount of features are ready for a release and final testing has been done, a release tag is made (normally from the HEAD of `eternal-safe`).
-4. The code is deployed automatically to IPFS using the [GitHub workflow](#) (TODO(devanon): Add IPFS workflow).
+4. The code is deployed automatically to IPFS using the [GitHub workflow](../.github/workflows/deploy.yml)
 5. A new version subdomain is created on eternalsafe.eth e.g. v2.eternalsafe.eth and the root domain is updated to point to the latest version.

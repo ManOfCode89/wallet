@@ -4,10 +4,9 @@ This served as a working todo list for the scope of the [wave 1 grant](https://a
 
 ### Todo
 
-- [ ] Deploy first version to IPFS using GitHub workflow
-
 ### Done ✓
 
+- [x] Deploy first version to IPFS using GitHub workflow
 - [x] Update `docs/`
 - [x] Update terms and other imprint
 - [x] Remove all uses of Safe Gateway SDK, leaving only type usage
