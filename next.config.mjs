@@ -17,6 +17,8 @@ const withPWA = withPWAInit({
 const nextConfig = {
   output: 'export', // static site export
 
+  trailingSlash: true, // IPFS support
+
   images: {
     unoptimized: true,
   },
