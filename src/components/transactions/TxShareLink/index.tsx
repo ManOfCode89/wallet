@@ -15,7 +15,7 @@ const TxShareLink = ({ safeTx }: { safeTx: SafeTransaction }): ReactElement => {
 
   const router = useRouter()
   const { safe = '' } = router.query
-  const href = `${AppRoutes.transactions.tx}?safe=${safe}&tx=${tx}`
+  const href = `${AppRoutes.transactions.tx}/?safe=${safe}&tx=${tx}`
 
   const onClick = (e: MouseEvent) => {
     if (!e.ctrlKey && !e.metaKey) {

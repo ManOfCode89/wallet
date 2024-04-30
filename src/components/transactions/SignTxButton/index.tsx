@@ -48,7 +48,7 @@ const SignTxButton = ({
 
   useEffect(() => {
     if (tx && safe && showMagicLink) {
-      setLink(`${AppRoutes.transactions.tx}?safe=${safe}&tx=${tx}`)
+      setLink(`${AppRoutes.transactions.tx}/?safe=${safe}&tx=${tx}`)
     } else {
       setLink(undefined)
     }
