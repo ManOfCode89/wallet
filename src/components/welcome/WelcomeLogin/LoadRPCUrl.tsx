@@ -5,7 +5,6 @@ import { selectSettings, setRpc } from '@/store/settingsSlice'
 import { useForm, FormProvider } from 'react-hook-form'
 import useChainId from '@/hooks/useChainId'
 import InfoIcon from '@/public/images/notifications/info.svg'
-import { useCurrentChain } from '@/hooks/useChains'
 
 export enum LoadRPCVariablesField {
   rpc = 'rpc',
@@ -21,14 +20,13 @@ type LoadRPCUrlProps = {
 
 const LoadRPCUrl = ({ hideRpcInput }: LoadRPCUrlProps) => {
   const chainId = useChainId()
-  const chain = useCurrentChain()
   const settings = useAppSelector(selectSettings)
   const dispatch = useAppDispatch()
 
   const formMethods = useForm<LoadRPCFormData>({
     mode: 'onChange',
     values: {
-      [LoadRPCVariablesField.rpc]: settings.env?.rpc[chainId] ?? chain?.publicRpcUri.value ?? '',
+      [LoadRPCVariablesField.rpc]: settings.env?.rpc[chainId] ?? '',
     },
   })
 
@@ -69,20 +67,16 @@ const LoadRPCUrl = ({ hideRpcInput }: LoadRPCUrlProps) => {
         </Typography>
 
         <TextField
-          {...register(LoadRPCVariablesField.rpc, { required: true })}
+          {...register(LoadRPCVariablesField.rpc, { required: true, validate: (value) => value.startsWith('https') })}
           variant="outlined"
           type="url"
           InputProps={{
-            endAdornment: rpc ? null : (
+            endAdornment: !!settings.env?.rpc[chainId] ? (
               <InputAdornment position="end">
-                <Tooltip title="Reset to default value">
+                <Tooltip title="Reset to saved value">
                   <IconButton
                     onClick={() =>
-                      setValue(
-                        LoadRPCVariablesField.rpc,
-                        settings.env?.rpc[chainId] ?? chain?.publicRpcUri.value ?? '',
-                        { shouldValidate: true },
-                      )
+                      setValue(LoadRPCVariablesField.rpc, settings.env.rpc[chainId], { shouldValidate: true })
                     }
                     size="small"
                     color="primary"
@@ -91,7 +85,7 @@ const LoadRPCUrl = ({ hideRpcInput }: LoadRPCUrlProps) => {
                   </IconButton>
                 </Tooltip>
               </InputAdornment>
-            ),
+            ) : null,
           }}
           fullWidth
           required

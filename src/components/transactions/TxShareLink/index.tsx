@@ -1,12 +1,11 @@
 import type { ReactElement, MouseEvent } from 'react'
-import { IconButton, Link, SvgIcon } from '@mui/material'
+import { IconButton, Link, SvgIcon, Tooltip } from '@mui/material'
 import ShareIcon from '@/public/images/common/share.svg'
 import { AppRoutes } from '@/config/routes'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import type { SafeTransaction } from '@safe-global/safe-core-sdk-types'
 import { useShareMagicLink } from '@/hooks/useMagicLink'
-import { OnboardingTooltip } from '@/components/common/OnboardingTooltip'
 
 const LS_MAGICLINK_ONBOARDING = 'magiclink_onboarding'
 
@@ -33,18 +32,7 @@ const TxShareLink = ({ safeTx }: { safeTx: SafeTransaction }): ReactElement => {
   }
 
   return (
-    <OnboardingTooltip
-      widgetLocalStorageId={LS_MAGICLINK_ONBOARDING}
-      text={
-        <>
-          Eternal Safe relies on magic links to share transaction details.
-          <br />
-          These links are unique to each transaction and should be shared with other signers in order to collect
-          signatures and share full transaction details.
-        </>
-      }
-      postText="Copy magic link to clipboard"
-    >
+    <Tooltip title="Copy Magic Link" disableInteractive placement="top">
       <IconButton
         data-testid="share-btn"
         component={Link}
@@ -55,7 +43,7 @@ const TxShareLink = ({ safeTx }: { safeTx: SafeTransaction }): ReactElement => {
       >
         <SvgIcon component={ShareIcon} inheritViewBox fontSize="small" color="border" />
       </IconButton>
-    </OnboardingTooltip>
+    </Tooltip>
   )
 }
 

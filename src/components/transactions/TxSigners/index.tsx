@@ -129,8 +129,8 @@ export const TxSigners = ({ txDetails, txSummary }: TxSignersProps): ReactElemen
   const confirmationsCount = confirmations.length
   const canExecute = wallet?.address ? isExecutable(txSummary, wallet.address, safe) : false
   const confirmationsNeeded = confirmationsRequired - confirmations.length
-  const isConfirmed = confirmationsNeeded <= 0 || canExecute
-  const showConfirmationCount = confirmationsRequired > 0
+  const isConfirmed = confirmationsNeeded <= 0 || canExecute || executor
+  const showConfirmationCount = confirmationsRequired > 0 && !executor
 
   return (
     <>

@@ -79,11 +79,15 @@ export const useTransactionMagicLink = (): { tx: SafeTransaction | undefined; tx
   return { tx, txKey }
 }
 
-export const useShareMagicLink = (tx: SafeTransaction): string | undefined => {
+export const useShareMagicLink = (tx: SafeTransaction | undefined): string | undefined => {
   const [encodedTx, setEncodedTx] = useState<string | undefined>()
 
   useEffect(() => {
-    setEncodedTx(encodeTransactionMagicLink(tx))
+    if (tx) {
+      setEncodedTx(encodeTransactionMagicLink(tx))
+    } else {
+      setEncodedTx(undefined)
+    }
   }, [tx])
 
   return encodedTx
