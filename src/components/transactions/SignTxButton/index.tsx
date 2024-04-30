@@ -20,7 +20,7 @@ import { AppRoutes } from '@/config/routes'
 import { OnboardingTooltip } from '@/components/common/OnboardingTooltip'
 
 const LS_MAGICLINK_ONBOARDING = 'magiclink_onboarding'
-const INITIAL_TOOLTIP_TEXT = 'Copy Magic Link'
+const INITIAL_TOOLTIP_TEXT = 'Copy Smart Link'
 
 const SignTxButton = ({
   txSummary,
@@ -119,7 +119,7 @@ ${fullLink}
           placement="top"
           text={
             <>
-              Eternal Safe relies on magic links to share transaction details.
+              Eternal Safe relies on smart links to share transaction details.
               <br />
               These links are unique to each transaction and should be shared with other signers in order to collect
               signatures and share full transaction details.
@@ -131,7 +131,7 @@ ${fullLink}
           onClose={() => setShowMagicTooltip(false)}
         >
           <Button sx={{ whiteSpace: 'nowrap' }} onClick={onClick} variant="contained" disabled={!link} size="stretched">
-            Magic Link
+            Smart Link
           </Button>
         </OnboardingTooltip>
       )}

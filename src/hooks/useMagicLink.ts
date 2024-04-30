@@ -63,8 +63,8 @@ export const useTransactionMagicLink = (): { tx: SafeTransaction | undefined; tx
           const e = asError(_e)
           dispatch(
             showNotification({
-              message: 'Could not load magic link, please check the URL and try again.',
-              groupKey: 'magic-link-error',
+              message: 'Could not load smart link, please check the URL and try again.',
+              groupKey: 'smart-link-error',
               variant: 'error',
               detailedMessage: e.message,
             }),

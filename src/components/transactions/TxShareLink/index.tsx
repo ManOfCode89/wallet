@@ -32,7 +32,7 @@ const TxShareLink = ({ safeTx }: { safeTx: SafeTransaction }): ReactElement => {
   }
 
   return (
-    <Tooltip title="Copy Magic Link" disableInteractive placement="top">
+    <Tooltip title="Copy Smart Link" disableInteractive placement="top">
       <IconButton
         data-testid="share-btn"
         component={Link}
