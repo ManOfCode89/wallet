@@ -18,6 +18,9 @@ export const OnboardingTooltip = ({
   initiallyShown = true,
   className,
   placement,
+  open,
+  onOpen,
+  onClose,
 }: {
   children: ReactElement // NB: this has to be an actual HTML element, otherwise the Tooltip will not work
   widgetLocalStorageId: string
@@ -26,6 +29,9 @@ export const OnboardingTooltip = ({
   initiallyShown?: boolean
   className?: string
   placement?: TooltipProps['placement']
+  open?: boolean
+  onOpen?: () => void
+  onClose?: () => void
 }): ReactElement => {
   const [widgetHidden = !initiallyShown, setWidgetHidden] = useLocalStorage<boolean>(widgetLocalStorageId)
   const isDarkMode = useDarkMode()
@@ -40,6 +46,9 @@ export const OnboardingTooltip = ({
         title={postText}
         disableInteractive
         placement="top"
+        open={open}
+        onOpen={onOpen}
+        onClose={onClose}
       >
         {children}
       </Tooltip>

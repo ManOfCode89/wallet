@@ -114,7 +114,7 @@ const TxSummary = ({ item, txDetails, isGrouped }: TxSummaryProps): ReactElement
         </Box>
       )}
 
-      {wallet && isQueue && (
+      {isQueue && (
         <Box
           gridArea="actions"
           display="flex"

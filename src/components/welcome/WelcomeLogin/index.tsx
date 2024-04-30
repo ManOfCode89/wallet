@@ -15,10 +15,6 @@ const WelcomeLogin = () => {
 
   const [forceShowRpcInput, setForceShowRpcInput] = useState(false)
 
-  const providedPublic = chain?.publicRpcUri.value
-    ? ` We have detected and prefilled a public RPC URL for ${chain.chainName}. More public URLs can be found on `
-    : ` If you don't have one, you can find a public RPC URL on `
-
   const toggleShowRpcInput = () => {
     setForceShowRpcInput(!forceShowRpcInput)
   }
@@ -47,11 +43,11 @@ const WelcomeLogin = () => {
               To get started you must provide a RPC URL for the {chain.chainName} network.
               <br />
               <br />
-              {providedPublic}
+              For best performance we recommend using a private RPC URL. Public URLs can be found on{' '}
               <Link href={`${CHAINLIST_URL}chain/${chain.chainId}`} color="primary" target="_blank" rel="noreferrer">
                 Chainlist
-              </Link>
-              .
+              </Link>{' '}
+              however they may be rate limited or have other restrictions.
               <br />
               <br />
               You can change this later in the settings.
