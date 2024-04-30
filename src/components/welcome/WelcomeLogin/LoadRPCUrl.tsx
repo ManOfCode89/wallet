@@ -67,7 +67,7 @@ const LoadRPCUrl = ({ hideRpcInput }: LoadRPCUrlProps) => {
         </Typography>
 
         <TextField
-          {...register(LoadRPCVariablesField.rpc, { required: true, validate: (value) => value.startsWith('https') })}
+          {...register(LoadRPCVariablesField.rpc, { required: true, validate: (value) => value.startsWith('http') })}
           variant="outlined"
           type="url"
           InputProps={{
