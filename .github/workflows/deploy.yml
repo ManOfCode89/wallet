@@ -40,7 +40,8 @@ jobs:
           #### ENS Domain
           Every version of Eternal Safe is connected to an immutable ENS subdomain.
 
-          [https://$GITHUB_REF_NAME.eternalsafe.eth](https://$GITHUB_REF_NAME.eternalsafe.eth) __(Recommended)__ _requires Brave Browser or Metamask Extension_  
+          [https://$GITHUB_REF_NAME.eternalsafe.eth](https://$GITHUB_REF_NAME.eternalsafe.eth)  
+          __(Recommended)__ _requires Brave Browser or Metamask Extension_  
           [https://$GITHUB_REF_NAME.eternalsafe.eth.limo](https://$GITHUB_REF_NAME.eternalsafe.eth.limo)  
 
           #### IPFS Hash
@@ -51,7 +52,8 @@ jobs:
 
           You can also view this version of Eternal Safe through any IPFS Gateway. Note: only subdomain gateways are supported.
 
-          [ipfs://$IPFS_HASH](ipfs://$IPFS_HASH) __(Recommended)__ _requires Brave Browser or IPFS Desktop_  
+          [ipfs://$IPFS_HASH](ipfs://$IPFS_HASH)  
+          __(Recommended)__ _requires Brave Browser or IPFS Desktop_  
           [https://$IPFS_HASH.ipfs.cf-ipfs.com](https://$IPFS_HASH.ipfs.cf-ipfs.com)  
           [https://$IPFS_HASH.ipfs.dweb.link](https://$IPFS_HASH.ipfs.dweb.link)  
           EOF
