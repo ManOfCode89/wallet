@@ -90,7 +90,9 @@ const SafeOwnerStep = ({ data, onSubmit, onBack }: StepRenderProps<LoadSafeFormD
               </>
             ) : error ? (
               <>
-                <ErrorMessage>Error loading Safe owners, please try again or change your RPC URL.</ErrorMessage>
+                <ErrorMessage error={error}>
+                  Error loading Safe owners, please try again or change your RPC URL.
+                </ErrorMessage>
               </>
             ) : (
               fields.map((field, index) => <OwnerRow key={field.id} index={index} groupName="owners" readOnly />)

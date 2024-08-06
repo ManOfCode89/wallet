@@ -25,7 +25,7 @@ export const getSafeInfo = async (sdk: Safe, implementation: string): Promise<Sa
     sdk.getThreshold(),
     sdk.getOwners(),
     sdk.getModules(),
-    sdk.getGuard(),
+    sdk.getGuard().catch(console.error),
     sdk.getFallbackHandler(),
     sdk.getContractVersion(),
   ])
@@ -51,7 +51,7 @@ export const getSafeInfo = async (sdk: Safe, implementation: string): Promise<Sa
     implementationVersionState,
 
     modules: modules.map(addressEx),
-    guard: addressEx(guard),
+    guard: guard ? addressEx(guard) : null,
     fallbackHandler: addressEx(fallbackHandler),
     version,
 
