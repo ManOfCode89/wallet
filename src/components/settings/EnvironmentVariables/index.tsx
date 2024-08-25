@@ -37,7 +37,7 @@ const EnvironmentVariables = () => {
   const formMethods = useForm<EnvVariablesFormData>({
     mode: 'onChange',
     values: {
-      [EnvVariablesField.rpc]: settings.env?.rpc[chainId] ?? chain?.publicRpcUri.value ?? '',
+      [EnvVariablesField.rpc]: settings.env?.rpc[chainId] ?? '',
       [EnvVariablesField.ipfs]: settings.env?.ipfs ?? '',
       [EnvVariablesField.tenderlyOrgName]: settings.env?.tenderly.orgName ?? '',
       [EnvVariablesField.tenderlyProjectName]: settings.env?.tenderly.projectName ?? '',
@@ -149,7 +149,7 @@ const EnvironmentVariables = () => {
               </Typography>
 
               <TextField
-                {...register(EnvVariablesField.rpc, { required: true })}
+                {...register(EnvVariablesField.rpc)}
                 variant="outlined"
                 type="url"
                 InputProps={{
@@ -174,7 +174,6 @@ const EnvironmentVariables = () => {
                   ),
                 }}
                 fullWidth
-                required
               />
 
               <Typography fontWeight={700} mb={2} mt={3}>
