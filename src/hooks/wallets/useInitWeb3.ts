@@ -50,6 +50,7 @@ export const useInitWeb3 = () => {
       if (wallet && wallet.chainId === chainId) {
         const internalWeb3 = createWeb3(wallet.provider)
         setWeb3(MulticallWrapper.wrap(internalWeb3, 50))
+        dispatch(closeByGroupKey({ groupKey: RPC_URL_ERROR_KEY }))
         if (internalWeb3) {
           setWeb3ReadOnly(internalWeb3)
           setMultiWeb3ReadOnly(MulticallWrapper.wrap(internalWeb3, 50))
